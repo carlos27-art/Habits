@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Nexora · Panel de Rendimiento y Hábitos</title>
+
+  <!-- PWA & Mobile Web App Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Nexora">
+  <meta name="theme-color" content="#FDFBF7">
+
+  <!-- Tipografías Modernas (Plus Jakarta Sans & Space Grotesk) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+
+      /* Paleta inspirada en Nexora: Marfil, Arena Cálida, Burdeos Profundo y Carbón */
+      --bg: #FDFBF7;
+      --bg-warm: #F6EFE2;
+      --surface: #FFFFFF;
+      --surface-sand: #EFE6D5;
+      --fg: #181512;
+      --fg-muted: #6E655C;
+      --border: #EAE0D0;
+      --border-strong: #DFD2BE;
+
+      --burgundy: #7C0A24;
+      --burgundy-dark: #4A0514;
+      --burgundy-soft: #FBE9ED;
+
+      --gold: #D49B4B;
+      --gold-soft: #FDF3E1;
+
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+
+      --shadow-soft: 0 12px 32px -8px rgba(24, 21, 18, 0.06);
+      --shadow-float: 0 20px 45px -12px rgba(24, 21, 18, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 85% 10%, var(--bg-warm) 0%, var(--bg) 55%);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 16px 20px 48px;
+      max-width: 1120px;
+      margin: 0 auto;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Barra de Navegación Estilo SaaS Moderno */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-soft);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+      color: var(--fg);
+    }
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--burgundy);
+      display: grid;
+      place-items: center;
+      color: #FFF;
+      font-weight: 800;
+      font-size: 14px;
+      box-shadow: 0 4px 10px rgba(124, 10, 36, 0.3);
+    }
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-warm);
+      padding: 4px;
+      border-radius: 100px;
+    }
+    .nav-link {
+      border: none;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fg-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-link.active {
+      background: var(--surface);
+      color: var(--fg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .cta-pill {
+      background: var(--burgundy);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 100px;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s ease, background 0.2s ease;
+      box-shadow: 0 6px 16px -4px rgba(124, 10, 36, 0.4);
+    }
+    .cta-pill:hover {
+      background: var(--burgundy-dark);
+      transform: translateY(-1px);
+    }
+
+    /* Layout Principal en 2 Columnas (Estilo Imagen) */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Hero Izquierdo con Gráfico 3D Escultórico */
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 600px) {
+      .hero-card {
+        grid-template-columns: 1fr;
+        padding: 24px;
+      }
+    }
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-warm);
+      border: 1px solid var(--border-strong);
+      color: var(--fg);
+      padding: 5px 12px;
+      border-radius: 100px;
+      font-size: 11.5px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--burgundy);
+    }
+    .hero-title {
+      font-size: 38px;
+      line-height: 1.06;
+      font-weight: 800;
+      letter-spacing: -1.3px;
+      margin: 0 0 12px;
+      color: var(--fg);
+    }
+    .hero-title span {
+      color: var(--burgundy);
+    }
+    .hero-sub {
+      color: var(--fg-muted);
+      font-size: 14px;
+      margin: 0 0 20px;
+      max-width: 380px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .btn-outline {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--fg);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-outline:hover {
+      background: var(--bg-warm);
+    }
+    .hero-features {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--fg-muted);
+      font-weight: 600;
+    }
+    .hero-features span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Anillo 3D Escultórico (Inspirado en la pieza beige/burdeos) */
+    .sculpture-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .sculpture-svg {
+      width: 100%;
+      max-width: 220px;
+      height: auto;
+      filter: drop-shadow(0 18px 24px rgba(24, 21, 18, 0.14));
+    }
+    .sculpture-pct {
+      position: absolute;
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -1px;
+    }
+
+    /* Selector de Días Tipo Píldoras Modernas */
+    .days-bar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .day-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .day-pill:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+    }
+    .day-pill b {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--fg);
+    }
+    .day-pill small {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 11px;
+      color: var(--fg-muted);
+      margin-top: 2px;
+    }
+    .day-pill.on {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+      color: #FFFFFF;
+      box-shadow: 0 8px 18px -4px rgba(124, 10, 36, 0.38);
+    }
+    .day-pill.on b, .day-pill.on small {
+      color: #FFFFFF;
+    }
+
+    /* Lista de Tareas / Horario */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 24px;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .task-item:hover {
+      border-color: var(--border-strong);
+      background: #FFFFFF;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+    }
+    .task-item.now {
+      border-color: var(--burgundy);
+      background: #FFFFFF;
+      box-shadow: 0 8px 24px -6px rgba(124, 10, 36, 0.18);
+    }
+    .task-item.done {
+      opacity: 0.58;
+      background: var(--bg-warm);
+    }
+    .task-item.done .task-title {
+      text-decoration: line-through;
+      color: var(--fg-muted);
+    }
+    .task-left {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .task-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--bg-warm);
+      border: 1px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .task-time {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--fg-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .now-badge {
+      background: var(--burgundy);
+      color: #FFF;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 100px;
+      letter-spacing: 0.8px;
+    }
+    .task-title {
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--fg);
+      margin: 2px 0 4px;
+    }
+    .task-loc {
+      font-size: 11.5px;
+      color: var(--fg-muted);
+      font-weight: 500;
+    }
+    .supp-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .supp-chip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--fg);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .supp-chip.done {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+      color: #FFFFFF;
+    }
+    .check-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      color: #FFF;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 4px;
+      transition: all 0.15s;
+    }
+    .task-item.done .check-circle {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+    }
+
+    /* Hidratación */
+    .water-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .water-btn {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg);
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--fg);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .water-btn.done {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+      color: #FFFFFF;
+      box-shadow: 0 6px 14px -4px rgba(124, 10, 36, 0.35);
+    }
+
+    /* COLUMNA DERECHA: Panel de Impacto y Gráficos (Idéntico a la tarjeta derecha de la imagen) */
+    .impact-panel {
+      background: var(--bg-warm);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+    }
+    .impact-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+      line-height: 1.15;
+      margin: 0 0 6px;
+    }
+    .impact-sub {
+      font-size: 13px;
+      color: var(--fg-muted);
+      margin: 0 0 20px;
+    }
+
+    /* 3 KPIs Blancos con Iconos Dorados */
+    .kpi-band {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+      box-shadow: 0 8px 24px -6px rgba(24, 21, 18, 0.05);
+      margin-bottom: 22px;
+    }
+    .kpi-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .kpi-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--gold-soft);
+      color: var(--gold);
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .kpi-num {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -0.5px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      color: var(--fg-muted);
+      line-height: 1.25;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    /* Tarjeta Flotante de Gráfico ("Crecimiento semanal") */
+    .floating-chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: var(--shadow-float);
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .fc-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .fc-head b {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .fc-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--fg-muted);
+    }
+    .fc-svg-container {
+      position: relative;
+      width: 100%;
+      height: 155px;
+    }
+    .fc-highlight-box {
+      position: absolute;
+      right: 6px;
+      bottom: 8px;
+      background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+      color: #FFFFFF;
+      padding: 10px 14px;
+      border-radius: 14px;
+      box-shadow: 0 10px 20px -4px rgba(124, 10, 36, 0.45);
+      text-align: center;
+      pointer-events: none;
+    }
+    .fc-highlight-box b {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .fc-highlight-box span {
+      font-size: 9.5px;
+      opacity: 0.85;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Lista de Hábitos Clave ("Nuestras soluciones" style) */
+    .solutions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sol-item {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.15s;
+    }
+    .sol-item:hover {
+      background: var(--surface);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .sol-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sol-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--burgundy-soft);
+      color: var(--burgundy);
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .sol-name {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--fg);
+    }
+    .sol-desc {
+      font-size: 11.5px;
+      color: var(--fg-muted);
+    }
+    .sol-streak {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--burgundy);
+      white-space: nowrap;
+    }
+
+    /* Tarjeta Testimonial / Cita de Enfoque */
+    .quote-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+    }
+    .quote-mark {
+      font-family: Georgia, serif;
+      font-size: 40px;
+      line-height: 1;
+      color: var(--burgundy);
+      margin-bottom: 4px;
+    }
+    .quote-text {
+      font-size: 13px;
+      color: var(--fg);
+      font-weight: 500;
+      margin: 0 0 12px;
+    }
+    .quote-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--fg-muted);
+      font-weight: 600;
+    }
+    .stars {
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    /* Matriz Completa */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin-top: 10px;
+    }
+    .matrix-table th {
+      padding: 8px 4px;
+      color: var(--fg-muted);
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .matrix-table th:first-child { text-align: left; }
+    .matrix-table td {
+      padding: 8px 4px;
+      text-align: center;
+      border-bottom: 1px solid var(--bg-warm);
+    }
+    .matrix-table td:first-child {
+      text-align: left;
+      font-weight: 600;
+    }
+    .m-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: inline-grid;
+      place-items: center;
+      background: var(--bg-warm);
+      border: 1px solid var(--border-strong);
+      color: var(--fg-muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .m-dot.on {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+      color: #FFF;
+    }
+
+    .reset-btn {
+      width: 100%;
+      margin-top: 18px;
+      padding: 11px;
+      border-radius: 12px;
+      border: 1px dashed var(--border-strong);
+      background: transparent;
+      color: var(--fg-muted);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .reset-btn:hover {
+      border-color: var(--burgundy);
+      color: var(--burgundy);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Superior Estilo Nexora -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">N</div>
+      <span>Nexora<span style="font-weight:400; color:var(--fg-muted)">Habits</span></span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-link active" id="nav-all" onclick="filterMode('all')">Panel Completo</button>
+      <button class="nav-link" id="nav-focus" onclick="filterMode('pending')">Pendientes Hoy</button>
+      <button class="nav-link" id="nav-matrix" onclick="scrollToMatrix()">Matriz 7D</button>
+    </div>
+    <button class="cta-pill" onclick="jumpToday()">
+      Ir a hoy <span>→</span>
+    </button>
+  </header>
+
+  <!-- Grid Principal de 2 Columnas -->
+  <div class="dashboard-grid">
+
+    <!-- COLUMNA IZQUIERDA: Hero + Horario Diario -->
+    <div>
+      <!-- Hero Card con pieza escultórica 3D -->
+      <section class="hero-card">
+        <div>
+          <div class="badge-pill">
+            <span class="badge-dot"></span>
+            <span id="wk-label">Semana activa · 2026</span>
+          </div>
+          <h1 class="hero-title">
+            Empieza ahora,<br>firme y <span>rápido</span>
+          </h1>
+          <p class="hero-sub">
+            Estructuración diaria, estudio profundo, entrenamiento y suplementación para mantener tu rendimiento al máximo nivel.
+          </p>
+          <div class="hero-actions">
+            <button class="cta-pill" onclick="markCurrentBlock()">Completar bloque actual →</button>
+            <button class="btn-outline" onclick="scrollToMatrix()">Ver métricas</button>
+          </div>
+          <div class="hero-features">
+            <span>⚙️ Enfoque 50/10</span>
+            <span>⚡ Progreso continuo</span>
+          </div>
+        </div>
+
+        <!-- Gráfico Escultórico 3D (Anillo Biselado Beige + Núcleo Burdeos) -->
+        <div class="sculpture-wrap">
+          <svg class="sculpture-svg" viewBox="0 0 220 220">
+            <defs>
+              <!-- Gradiente 3D Beige Escultórico -->
+              <linearGradient id="beige3D" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#F5E6C8"/>
+                <stop offset="45%" stop-color="#DFC496"/>
+                <stop offset="85%" stop-color="#B89762"/>
+                <stop offset="100%" stop-color="#8F7143"/>
+              </linearGradient>
+              <!-- Gradiente 3D Burdeos Profundo -->
+              <linearGradient id="burgundy3D" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#B8143A"/>
+                <stop offset="55%" stop-color="#7C0A24"/>
+                <stop offset="100%" stop-color="#3D0310"/>
+              </linearGradient>
+              <!-- Sombra interna suave -->
+              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#181512" flood-opacity="0.18"/>
+              </filter>
+            </defs>
+
+            <!-- Aro interior Burdeos 3D -->
+            <circle cx="110" cy="110" r="52" fill="none" stroke="url(#burgundy3D)" stroke-width="22" stroke-dasharray="210 330" stroke-dashoffset="-35" stroke-linecap="round" filter="url(#softShadow)"/>
+
+            <!-- Aro exterior Beige 3D (Fondo del tubo) -->
+            <circle cx="110" cy="110" r="78" fill="none" stroke="#EFE6D5" stroke-width="28" stroke-linecap="round"/>
+
+            <!-- Aro exterior Beige 3D Dinámico según el % semanal -->
+            <circle id="ring-3d" cx="110" cy="110" r="78" fill="none" stroke="url(#beige3D)" stroke-width="28" stroke-linecap="round" stroke-dasharray="0 490" transform="rotate(-90 110 110)" filter="url(#softShadow)" style="transition: stroke-dasharray 0.6s cubic-bezier(0.22, 1, 0.36, 1);"/>
+
+            <!-- Cubo 3D decorativo superior izquierdo (guiño directo a la imagen) -->
+            <g transform="translate(26, 30)" filter="url(#softShadow)">
+              <polygon points="20,0 40,10 20,20 0,10" fill="#F7EAD0"/>
+              <polygon points="0,10 20,20 20,40 0,30" fill="#DFC496"/>
+              <polygon points="20,20 40,10 40,30 20,40" fill="#B89762"/>
+            </g>
+          </svg>
+          <div class="sculpture-pct" id="global-pct">0%</div>
+        </div>
+      </section>
+
+      <!-- Barra de 7 Días -->
+      <nav class="days-bar" id="days-bar"></nav>
+
+      <!-- Tarjeta de Agenda del Día -->
+      <section class="section-card">
+        <div class="section-head">
+          <h2 id="day-title">Jueves</h2>
+          <span class="badge-pill" id="day-counter">0 completados</span>
+        </div>
+        <div class="task-list" id="task-list"></div>
+      </section>
+
+      <!-- Tarjeta de Hidratación -->
+      <section class="section-card">
+        <div class="section-head" style="margin-bottom:6px;">
+          <h2>💧 Hidratación Diaria</h2>
+          <span style="font-size:12px; font-weight:700; color:var(--burgundy);" id="water-status">0 / 3 L</span>
+        </div>
+        <p style="margin:0; font-size:13px; color:var(--fg-muted);">Objetivo diario de 3 litros para mantener el foco cognitivo y rendimiento físico.</p>
+        <div class="water-row" id="water-row"></div>
+      </section>
+    </div>
+
+    <!-- COLUMNA DERECHA: Resultados que generan impacto + Gráfico Curvo + Rachas -->
+    <aside class="impact-panel">
+      <h2 class="impact-title">Resultados que<br>generan impacto</h2>
+      <p class="impact-sub">
+        Combinamos disciplina académica, entrenamiento de fuerza y descanso para entregar resultados reales cada semana.
+      </p>
+
+      <!-- Banda de 3 KPIs estilo imagen -->
+      <div class="kpi-band">
+        <div class="kpi-box">
+          <div class="kpi-icon">◎</div>
+          <div class="kpi-num" id="kpi-done">+0</div>
+          <div class="kpi-label">Objetivos<br>completados</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-icon">↗</div>
+          <div class="kpi-num" id="kpi-day-pct">0%</div>
+          <div class="kpi-label">Cumplimiento<br>del día activo</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-icon">⚡</div>
+          <div class="kpi-num" id="kpi-supps">0/0</div>
+          <div class="kpi-label">Suplementos<br>y agua hoy</div>
+        </div>
+      </div>
+
+      <!-- Tarjeta Flotante: Gráfico de Curva Suave + Caja Burdeos -->
+      <div class="floating-chart-card">
+        <div class="fc-head">
+          <b>Rendimiento semanal</b>
+          <span class="fc-pill">Lunes a Domingo ▾</span>
+        </div>
+        <div class="fc-svg-container" id="curve-chart"></div>
+        <div class="fc-highlight-box">
+          <b id="fc-badge-val">+0%</b>
+          <span id="fc-badge-sub">media semanal</span>
+        </div>
+      </div>
+
+      <!-- Hábitos Clave y Rachas ("Nuestras soluciones") -->
+      <h3 style="font-size:18px; font-weight:800; margin: 0 0 4px; letter-spacing:-0.4px;">Hábitos clave y rachas</h3>
+      <p style="font-size:12.5px; color:var(--fg-muted); margin: 0 0 14px;">Consistencia acumulada en tus pilares diarios.</p>
+      <div class="solutions-list" id="streaks-list"></div>
+
+      <!-- Matriz de 7 Días -->
+      <div class="quote-card" id="matrix-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <b style="font-size:14px; font-weight:800;">Matriz de Consistencia 7D</b>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="matrix-table" id="matrix-table"></table>
+        </div>
+      </div>
+
+      <!-- Cita Inferior Estilo Imagen -->
+      <div class="quote-card">
+        <div class="quote-mark">“</div>
+        <p class="quote-text">
+          La excelencia no es un acto aislado, sino el resultado directo de tus bloques de estudio, entrenamiento y descanso cumplidos cada día.
+        </p>
+        <div class="quote-footer">
+          <span>Ingeniería Informática & IA · US</span>
+          <span>4.9/5 consistencia</span>
+        </div>
+      </div>
+
+      <button class="reset-btn" id="rs">Reiniciar progreso de la semana</button>
+    </aside>
+
+  </div>
+
+  <script>
+    const CT = {
+      m: ['🌅','Mañana'], c: ['🍳','Nutrición'], u: ['📚','Universidad'],
+      p: ['🛠','Productividad'], s: ['💪','Fuerza & Salud'], n: ['🌙','Noche'],
+      d: ['💤','Descanso'], o: ['🎉','Social']
+    };
+
+    const W = [
+      ['09:30','Despertar, estiramientos (YT) y ducha','m','Casa',['Spray nasal','Calcio']],
+      ['10:00','Desayuno y aseo dental','c','Casa'],
+      ['10:30','Estudio profundo · 2-3 sesiones 50/10 (asignatura del día)','u','Escritorio'],
+      ['13:00','Almuerzo y tiempo libre','c','Casa'],
+      ['14:15','Repaso ligero (30-45 min)','u','Casa'],
+      ['15:00','Preparar mochila, ordenar cuarto y salir','p','Casa']
+    ];
+    const C = (t,x,l,s) => [t,x,'u',l,s||[]];
+    const N = ['19:30','Entrenamiento de cuello','s','Casa'];
+    const CE = ['20:00','Cena ligera (termina ≥75 min antes del gym)','c','Casa'];
+    const G = x => ['21:15','Entrenamiento: '+x,'s','Gimnasio'];
+    const POST = (t,x) => [
+      [t, x||'Llegada y estiramientos nocturnos','n','Casa',['Creatina','Magnesio']],
+      ['23:30','Desconexión: pantallas fuera, luz baja','n','Casa'],
+      ['00:00','Dormir','d','Cama']
+    ];
+    const WE = [
+      ['11:00','Despertar, estiramientos (YT) y ducha','m','Casa',['Spray nasal','Calcio']],
+      ['11:30','Entrenamiento de cuello','s','Casa'],
+      ['11:45','Desayuno / almuerzo unificado','c','Casa'],
+      ['13:00','Estudio / proyectos · sesiones 50/10','p','Casa'],
+      ['16:00','Ocio y ordenar cuarto','p','Casa'],
+      ['17:30','Merienda','c','Casa',['Calcio']],
+      ['20:00','Cena','c','Casa']
+    ];
+
+    const D = [
+      ['Lunes','L',[...W,C('15:30','CIN (Cálculo infinitesimal)','H.012',['Calcio']),C('17:40','MD1 (Matemática discreta 1)','H.012'),N,CE,G('Pierna'),...POST('23:15')]],
+      ['Martes','M',[...W,C('15:30','AE (Administración de empresas)','H.012',['Calcio']),C('17:40','FP1 (Fundamentos de prog. 1)','H.012'),CE,G('Torso'),...POST('23:15')]],
+      ['Miércoles','X',[...W,C('15:30','CED (Circuitos electrónicos)','H.012 - G1.35',['Calcio']),C('17:40','MD1 (Matemática discreta 1)','H.012 - B1.35'),N,['20:00','Cena','c','Casa'],['21:00','Proyectos personales (día sin gym)','p','Escritorio'],...POST('22:45','Estiramientos nocturnos')]],
+      ['Jueves','J',[...W,C('15:30','FP1 (Fundamentos de prog. 1)','I2.31',['Calcio']),C('17:40','CIN (Cálculo infinitesimal)','H.012 - B1.32'),CE,G('Pierna'),...POST('23:15')]],
+      ['Viernes','V',[...W,C('15:30','CED (Circuitos electrónicos)','H0.12',['Calcio']),C('17:40','AE (Administración de empresas)','H.012'),CE,G('Pull'),['23:15','Llegada a casa y fiesta','o','—',['Creatina','Magnesio']]]],
+      ['Sábado','S',[...WE,G('Push'),['23:15','Fiesta o descanso en casa','o','—',['Creatina','Magnesio']]]],
+      ['Domingo','D',[...WE,['21:00','Relax de domingo','d','Casa',['Creatina','Magnesio']],['22:30','Planificación semanal (20 min)','p','Escritorio'],...POST('23:30').slice(1)]]
+    ];
+
+    const KEY_HABITS = [
+      { id: 'morning', icon: '🌅', name: 'Rutina de Mañana', desc: 'Estiramientos, ducha y calcio', match: b => b[2]==='m' },
+      { id: 'study', icon: '📚', name: 'Estudio Profundo 50/10', desc: 'Bloques de alta concentración', match: b => b[1].includes('Estudio') },
+      { id: 'uni', icon: '🎓', name: 'Clases Universidad', desc: 'Asistencia y seguimiento diario', match: b => b[3].includes('H.') || b[3].includes('I2.') },
+      { id: 'gym', icon: '💪', name: 'Entrenamiento Fuerza', desc: 'Pierna, Torso, Pull & Push', match: b => b[3]==='Gimnasio' },
+      { id: 'neck', icon: '🛡️', name: 'Entreno de Cuello', desc: 'Fuerza cervical específica', match: b => b[1].includes('cuello') },
+      { id: 'supps', icon: '💊', name: 'Suplementación', desc: 'Creatina, Magnesio y Calcio', isSupps: true },
+      { id: 'water', icon: '💧', name: 'Hidratación 3 L', desc: 'Objetivo hídrico completado', isWater: true }
+    ];
+
+    const $ = s => document.querySelector(s);
+    const mon = () => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - (d.getDay()+6)%7); return d; };
+    const wkKey = () => mon().toISOString().slice(0,10) + '|' + mon().getDate();
+    const mm = t => { const [h,m] = t.split(':').map(Number); const v = h*60+m; return v<300 ? v+1440 : v; };
+    const nowv = () => { const d = new Date(); const v = d.getHours()*60+d.getMinutes(); return v<300 ? v+1440 : v; };
+    const td = (new Date().getDay()+6)%7;
+
+    let S, day = td, mode = 'all', confirmRs = false;
+
+    function load() {
+      let r = {};
+      try { r = JSON.parse(localStorage.getItem('vida3') || '{}') || {}; } catch(e){}
+      S = { wk: wkKey(), pal: 0, c: r.wk === wkKey() ? (r.c || {}) : {} };
+    }
+
+    function save() {
+      try { localStorage.setItem('vida3', JSON.stringify(S)); } catch(e){}
+    }
+
+    const tot = d => D[d][2].reduce((a,b) => a + 1 + (b[4]||[]).length, 0) + 3;
+    const keys = d => Object.keys(S.c).filter(k => S.c[k] && k.split('.')[0] == d);
+    const done = d => keys(d).length;
+
+    function filterMode(m) {
+      mode = m;
+      $('#nav-all').classList.toggle('active', m === 'all');
+      $('#nav-focus').classList.toggle('active', m === 'pending');
+      render();
+    }
+
+    function jumpToday() {
+      day = td;
+      render();
+    }
+
+    function scrollToMatrix() {
+      $('#matrix-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function markCurrentBlock() {
+      let cur = 0;
+      D[day][2].forEach((b, i) => { if (mm(b[0]) <= nowv()) cur = i; });
+      const k = day + '.' + cur;
+      S.c[k] = true;
+      save();
+      render();
+    }
+
+    function isHabitDone(dIdx, h) {
+      if (h.isWater) return [1,2,3].every(n => S.c[dIdx + '.w' + n]);
+      if (h.isSupps) {
+        let total = 0, doneCount = 0;
+        D[dIdx][2].forEach((b, i) => {
+          (b[4]||[]).forEach((_, sIdx) => {
+            total++;
+            if (S.c[dIdx + '.' + i + '.' + sIdx]) doneCount++;
+          });
+        });
+        return total > 0 && doneCount === total;
+      }
+      const matchingIdxs = [];
+      D[dIdx][2].forEach((b, i) => { if (h.match(b)) matchingIdxs.push(i); });
+      if (matchingIdxs.length === 0) return true;
+      return matchingIdxs.every(idx => S.c[dIdx + '.' + idx]);
+    }
+
+    function calcStreak(h) {
+      let s = 0;
+      for (let i = td; i >= 0; i--) {
+        if (isHabitDone(i, h)) s++;
+        else break;
+      }
+      return s;
+    }
+
+    // Genera una curva Bézier suave idéntica al gráfico "Crecimiento mensual" de la imagen
+    function renderSmoothCurve(pcts) {
+      const W = 380, H = 145, padL = 16, padR = 24, padT = 18, padB = 26;
+      const gw = W - padL - padR;
+      const gh = H - padT - padB;
+      const step = gw / 6;
+
+      const pts = pcts.map((v, i) => ({
+        x: padL + i * step,
+        y: padT + gh - (v / 100) * gh,
+        v,
+        label: D[i][1]
+      }));
+
+      // Construir path curvo suave (Catmull-Rom / Cubic Bezier)
+      let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[i];
+        const p1 = pts[i + 1];
+        const cx1 = p0.x + step * 0.45;
+        const cy1 = p0.y;
+        const cx2 = p1.x - step * 0.45;
+        const cy2 = p1.y;
+        d += ` C ${cx1.toFixed(1)},${cy1.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${p1.x.toFixed(1)},${p1.y.toFixed(1)}`;
+      }
+
+      const areaD = `${d} L ${pts[6].x.toFixed(1)},${(padT + gh).toFixed(1)} L ${pts[0].x.toFixed(1)},${(padT + gh).toFixed(1)} Z`;
+      const activePt = pts[day];
+
+      $('#curve-chart').innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;">
+          <defs>
+            <linearGradient id="curveArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#D49B4B" stop-opacity="0.28"/>
+              <stop offset="100%" stop-color="#D49B4B" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          <line x1="${padL}" y1="${padT + gh}" x2="${W - padR}" y2="${padT + gh}" stroke="#EAE0D0" stroke-width="1"/>
+          <path d="${areaD}" fill="url(#curveArea)"/>
+          <path d="${d}" fill="none" stroke="#181512" stroke-width="2.6" stroke-linecap="round"/>
+          ${pts.map((p, idx) => `
+            <g style="cursor:pointer" onclick="selectDay(${idx})">
+              <circle cx="${p.x}" cy="${p.y}" r="${idx === day ? 8 : 4}" fill="${idx === day ? '#7C0A24' : '#FFFFFF'}" stroke="#181512" stroke-width="${idx === day ? 2.5 : 1.8}"/>
+              <text x="${p.x}" y="${H - 4}" text-anchor="middle" font-size="10.5" font-weight="${idx === day ? '800' : '600'}" fill="${idx === day ? '#7C0A24' : '#6E655C'}">${p.label}</text>
+            </g>
+          `).join('')}
+        </svg>
+      `;
+    }
+
+    function selectDay(dIdx) {
+      day = dIdx;
+      render();
+    }
+
+    function render() {
+      const m = mon();
+      const e = new Date(m);
+      e.setDate(e.getDate() + 6);
+      const f = x => x.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+      $('#wk-label').textContent = `Semana ${f(m)} – ${f(e)}`;
+
+      // Totales semanales
+      let totalWeek = 0, doneWeek = 0;
+      const dailyPcts = D.map((_, i) => {
+        const t = tot(i), dn = done(i);
+        totalWeek += t;
+        doneWeek += dn;
+        return Math.round((dn / t) * 100);
+      });
+
+      const globalPct = Math.round((doneWeek / totalWeek) * 100);
+      $('#global-pct').textContent = `${globalPct}%`;
+      $('#ring-3d').setAttribute('stroke-dasharray', `${(globalPct * 490) / 100} 490`);
+
+      // KPIs del día seleccionado
+      const ks = keys(day);
+      const supTotal = D[day][2].reduce((a, b) => a + (b[4] || []).length, 0);
+      const supDone = ks.filter(k => k.split('.').length === 3).length;
+      const waterDone = ks.filter(k => k.includes('.w')).length;
+      const dayPct = dailyPcts[day];
+
+      $('#kpi-done').textContent = `+${doneWeek}`;
+      $('#kpi-day-pct').textContent = `${dayPct}%`;
+      $('#kpi-supps').textContent = `${supDone + waterDone}/${supTotal + 3}`;
+
+      $('#fc-badge-val').textContent = `${globalPct}%`;
+      $('#fc-badge-sub').textContent = `progreso semanal`;
+
+      // Barra de días
+      $('#days-bar').innerHTML = D.map((d, i) => `
+        <div class="day-pill ${i === day ? 'on' : ''}" data-d="${i}">
+          <b>${d[1]}</b>
+          <small>${dailyPcts[i]}%</small>
+        </div>
+      `).join('');
+
+      // Cabecera y lista de tareas del día
+      $('#day-title').textContent = `${D[day][0]} · Objetivos`;
+      $('#day-counter').textContent = `${ks.length} / ${tot(day)} completados`;
+
+      let cur = -1;
+      if (day === td) {
+        D[day][2].forEach((b, i) => { if (mm(b[0]) <= nowv()) cur = i; });
+      }
+
+      const tasksHtml = D[day][2].map((b, i) => {
+        const k = day + '.' + i;
+        const isDone = !!S.c[k];
+        if (mode === 'pending' && isDone) return '';
+        return `
+          <div class="task-item ${isDone ? 'done' : ''} ${i === cur ? 'now' : ''}" data-k="${k}">
+            <div class="task-left">
+              <div class="task-icon">${CT[b[2]][0]}</div>
+              <div>
+                <div class="task-time">
+                  <span>${b[0]}</span>
+                  ${i === cur ? '<span class="now-badge">AHORA</span>' : ''}
+                </div>
+                <div class="task-title">${b[1]}</div>
+                <div class="task-loc">${CT[b[2]][1]} · ${b[3]}</div>
+                ${(b[4] && b[4].length) ? `
+                  <div class="supp-wrap">
+                    ${b[4].map((s, j) => `
+                      <span class="supp-chip ${S.c[k + '.' + j] ? 'done' : ''}" data-k="${k + '.' + j}">💊 ${s}</span>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+            <div class="check-circle">${isDone ? '✓' : ''}</div>
+          </div>
+        `;
+      }).join('');
+
+      $('#task-list').innerHTML = tasksHtml || `<p style="text-align:center; color:var(--fg-muted); padding:20px 0;">🎉 ¡Todo completado por hoy!</p>`;
+
+      // Agua
+      $('#water-status').textContent = `${waterDone} / 3 L`;
+      $('#water-row').innerHTML = [1, 2, 3].map(n => `
+        <button class="water-btn ${S.c[day + '.w' + n] ? 'done' : ''}" data-k="${day + '.w' + n}">
+          💧 ${n} Litro${n > 1 ? 's' : ''}
+        </button>
+      `).join('');
+
+      // Gráfico de curva suave
+      renderSmoothCurve(dailyPcts);
+
+      // Lista de rachas
+      $('#streaks-list').innerHTML = KEY_HABITS.map(h => {
+        const st = calcStreak(h);
+        return `
+          <div class="sol-item">
+            <div class="sol-left">
+              <div class="sol-icon">${h.icon}</div>
+              <div>
+                <div class="sol-name">${h.name}</div>
+                <div class="sol-desc">${h.desc}</div>
+              </div>
+            </div>
+            <div class="sol-streak">🔥 ${st} ${st === 1 ? 'día' : 'días'}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Matriz 7D
+      const head = `<tr><th>Hábito</th>${D.map(d => `<th>${d[1]}</th>`).join('')}</tr>`;
+      const body = KEY_HABITS.map(h => `
+        <tr>
+          <td>${h.icon} ${h.name.split(' ')[0]}</td>
+          ${D.map((_, dIdx) => {
+            const ok = isHabitDone(dIdx, h);
+            return `<td><span class="m-dot ${ok ? 'on' : ''}">${ok ? '✓' : '·'}</span></td>`;
+          }).join('')}
+        </tr>
+      `).join('');
+      $('#matrix-table').innerHTML = head + body;
+    }
+
+    document.addEventListener('click', e => {
+      const t = e.target.closest('[data-k],[data-d],#rs');
+      if (!t) return;
+      if (t.dataset.d != null) {
+        day = +t.dataset.d;
+      } else if (t.id === 'rs') {
+        if (!confirmRs) {
+          confirmRs = true;
+          t.textContent = '¿Confirmas borrar el progreso semanal? Toca de nuevo';
+          return;
+        }
+        S.c = {};
+        confirmRs = false;
+        t.textContent = 'Reiniciar progreso de la semana';
+      } else {
+        const k = t.dataset.k;
+        S.c[k] = !S.c[k];
+        if (!S.c[k]) delete S.c[k];
+      }
+      save();
+      render();
+    });
+
+    load();
+    render();
+  </script>
+</body>
+</html>
