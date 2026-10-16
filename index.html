@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Nexora · Panel de Rendimiento y Hábitos</title>
+  <title>Nexora · Panel de Rendimiento, Hábitos y Proyectos</title>
 
   <!-- PWA & Mobile Web App Meta -->
   <link rel="manifest" href="manifest.json">
@@ -40,6 +40,11 @@
       --gold-dark: #B57D2E;
       --gold-soft: #FDF3E1;
 
+      --green: #16803C;
+      --green-soft: #E8F5EE;
+      --red: #B91C1C;
+      --red-soft: #FEE2E2;
+
       --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       --font-display: 'Space Grotesk', sans-serif;
 
@@ -67,8 +72,8 @@
     /* Estructura General con Menú Lateral */
     .app-shell {
       display: grid;
-      grid-template-columns: 250px 1fr;
-      max-width: 1380px;
+      grid-template-columns: 260px 1fr;
+      max-width: 1420px;
       margin: 0 auto;
       gap: 24px;
       padding: 20px 20px 48px;
@@ -79,7 +84,7 @@
     .sidebar {
       position: sticky;
       top: 20px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(14px);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
@@ -87,7 +92,8 @@
       box-shadow: var(--shadow-soft);
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 20px;
+      z-index: 30;
     }
     .brand {
       display: flex;
@@ -114,7 +120,7 @@
     .side-nav {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
     .side-label {
       font-size: 10.5px;
@@ -132,7 +138,7 @@
       width: 100%;
       border: 1px solid transparent;
       background: transparent;
-      padding: 11px 12px;
+      padding: 10px 12px;
       border-radius: 14px;
       font-family: var(--font-sans);
       font-size: 13.5px;
@@ -162,16 +168,49 @@
       background: var(--burgundy);
       color: #FFFFFF;
     }
-
     .side-footer {
       border-top: 1px solid var(--border);
-      padding-top: 16px;
+      padding-top: 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
-    /* Iconos Minimalistas Estilo KPI (Caja Dorada Suave + Trazo Minimalista) */
+    /* Estado de Sincronización Blackboard */
+    .bb-status {
+      font-size: 11px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--bg-warm);
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .bb-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+    .bb-dot.ok { background: var(--green); }
+    .bb-sync-btn {
+      border: none;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 10.5px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--fg);
+    }
+    .bb-sync-btn:hover { border-color: var(--burgundy); color: var(--burgundy); }
+
+    /* Iconos Minimalistas */
     .ico-box {
       width: 36px;
       height: 36px;
@@ -182,7 +221,6 @@
       display: inline-grid;
       place-items: center;
       flex-shrink: 0;
-      transition: all 0.18s ease;
     }
     .ico-box svg {
       width: 18px;
@@ -216,48 +254,28 @@
       transform: translateY(-1px);
     }
 
-    /* Contenido Principal */
-    .main-area {
-      min-width: 0;
-    }
+    .main-area { min-width: 0; }
 
-    /* Grid de 2 Columnas en Vista General */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1.32fr 1fr;
       gap: 24px;
       align-items: start;
     }
-    .dashboard-grid.single-col {
-      grid-template-columns: 1fr;
-    }
+    .dashboard-grid.single-col { grid-template-columns: 1fr; }
 
     @media (max-width: 1024px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-      }
-      .sidebar {
-        position: static;
-        padding: 16px;
-      }
-      .side-nav {
-        flex-direction: row;
-        overflow-x: auto;
-        padding-bottom: 4px;
-      }
-      .side-btn {
-        width: auto;
-        white-space: nowrap;
-      }
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { position: static; padding: 16px; }
+      .side-nav { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+      .side-btn { width: auto; white-space: nowrap; }
       .side-label { display: none; }
     }
     @media (max-width: 860px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
+      .dashboard-grid { grid-template-columns: 1fr; }
     }
 
-    /* Hero Izquierdo con Rueda 3D y Badge de Productividad */
+    /* Hero Izquierdo */
     .hero-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -269,14 +287,11 @@
       gap: 20px;
       align-items: center;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
       margin-bottom: 24px;
     }
     @media (max-width: 600px) {
-      .hero-card {
-        grid-template-columns: 1fr;
-        padding: 22px;
-      }
+      .hero-card { grid-template-columns: 1fr; padding: 22px; }
     }
     .badge-pill {
       display: inline-flex;
@@ -292,78 +307,42 @@
       margin-bottom: 14px;
     }
     .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--burgundy);
+      width: 6px; height: 6px; border-radius: 50%; background: var(--burgundy);
     }
     .hero-title {
-      font-size: 36px;
-      line-height: 1.06;
-      font-weight: 800;
-      letter-spacing: -1.2px;
-      margin: 0 0 12px;
-      color: var(--fg);
+      font-size: 36px; line-height: 1.06; font-weight: 800; letter-spacing: -1.2px; margin: 0 0 12px; color: var(--fg);
     }
-    .hero-title span {
-      color: var(--burgundy);
-    }
-    .hero-sub {
-      color: var(--fg-muted);
-      font-size: 13.8px;
-      margin: 0 0 20px;
-      max-width: 380px;
-    }
-    .hero-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
+    .hero-title span { color: var(--burgundy); }
+    .hero-sub { color: var(--fg-muted); font-size: 13.8px; margin: 0 0 20px; max-width: 380px; }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
     .btn-outline {
-      background: var(--surface);
-      border: 1px solid var(--border-strong);
-      color: var(--fg);
-      padding: 10px 16px;
-      border-radius: 100px;
-      font-family: var(--font-sans);
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.15s;
+      background: var(--surface); border: 1px solid var(--border-strong); color: var(--fg);
+      padding: 10px 16px; border-radius: 100px; font-family: var(--font-sans); font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.15s;
     }
-    .btn-outline:hover {
-      background: var(--bg-warm);
-    }
-    .hero-features {
-      display: flex;
-      gap: 16px;
-      font-size: 12px;
-      color: var(--fg-muted);
-      font-weight: 600;
-    }
-    .hero-features span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .btn-outline:hover { background: var(--bg-warm); }
+    .hero-features { display: flex; gap: 16px; font-size: 12px; color: var(--fg-muted); font-weight: 600; }
+    .hero-features span { display: inline-flex; align-items: center; gap: 6px; }
 
-    /* Escultura Anillo 3D + Insignia de Productividad */
+    /* Rueda 3D con Insignia de Productividad SIEMPRE EN PRIMER PLANO */
     .sculpture-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       position: relative;
+      padding-top: 10px;
     }
     .sculpture-svg {
       width: 100%;
       max-width: 215px;
       height: auto;
+      position: relative;
+      z-index: 1;
       filter: drop-shadow(0 18px 24px rgba(24, 21, 18, 0.14));
     }
     .sculpture-pct {
       position: absolute;
+      z-index: 5;
       font-family: var(--font-display);
       font-size: 29px;
       font-weight: 700;
@@ -372,636 +351,423 @@
     }
     .prod-floating-badge {
       position: absolute;
-      top: 4px;
-      left: 0px;
-      background: var(--surface);
-      border: 1px solid var(--border-strong);
-      border-radius: 14px;
-      padding: 6px 10px;
+      top: -6px;
+      left: -8px;
+      z-index: 25;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid var(--gold);
+      border-radius: 16px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 10px 22px rgba(24, 21, 18, 0.1);
+      gap: 9px;
+      box-shadow: 0 14px 28px -4px rgba(24, 21, 18, 0.22);
+      transform: translateZ(0);
     }
     .prod-floating-badge .ico-box {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--burgundy);
+      color: #FFFFFF;
+      border: none;
     }
     .prod-floating-badge div b {
       display: block;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 800;
-      line-height: 1.1;
+      line-height: 1.15;
       color: var(--fg);
     }
     .prod-floating-badge div small {
       display: block;
-      font-size: 9.5px;
-      color: var(--fg-muted);
-      font-weight: 600;
+      font-size: 10px;
+      color: var(--burgundy);
+      font-weight: 700;
     }
 
-    /* Barra de 7 Días */
-    .days-bar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-bottom: 18px;
-    }
+    /* Barra Días */
+    .days-bar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 18px; }
     .day-pill {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 10px 6px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
-    .day-pill:hover {
-      border-color: var(--border-strong);
-      transform: translateY(-1px);
-    }
-    .day-pill b {
-      display: block;
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--fg);
-    }
-    .day-pill small {
-      display: block;
-      font-family: var(--font-display);
-      font-size: 11px;
-      color: var(--fg-muted);
-      margin-top: 2px;
-    }
-    .day-pill.on {
-      background: var(--burgundy);
-      border-color: var(--burgundy);
-      color: #FFFFFF;
-      box-shadow: 0 8px 18px -4px rgba(124, 10, 36, 0.38);
-    }
-    .day-pill.on b, .day-pill.on small {
-      color: #FFFFFF;
-    }
+    .day-pill:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+    .day-pill b { display: block; font-size: 14px; font-weight: 800; color: var(--fg); }
+    .day-pill small { display: block; font-family: var(--font-display); font-size: 11px; color: var(--fg-muted); margin-top: 2px; }
+    .day-pill.on { background: var(--burgundy); border-color: var(--burgundy); color: #FFFFFF; box-shadow: 0 8px 18px -4px rgba(124, 10, 36, 0.38); }
+    .day-pill.on b, .day-pill.on small { color: #FFFFFF; }
 
-    /* Tarjetas de Sección */
+    /* Tarjetas */
     .section-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 24px;
-      box-shadow: var(--shadow-soft);
-      margin-bottom: 24px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
+      padding: 24px; box-shadow: var(--shadow-soft); margin-bottom: 24px;
     }
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .section-head h2 {
-      margin: 0;
-      font-size: 19px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; flex-wrap: wrap; }
+    .section-head h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.4px; display: flex; align-items: center; gap: 10px; }
 
-    /* Lista de Bloques Horarios */
-    .task-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    /* Horario */
+    .task-list { display: flex; flex-direction: column; gap: 10px; }
     .task-item {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.18s ease;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+      padding: 14px 16px; border-radius: 18px; background: var(--bg); border: 1px solid var(--border); cursor: pointer; transition: all 0.18s ease;
     }
-    .task-item:hover {
-      border-color: var(--border-strong);
-      background: #FFFFFF;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.04);
-    }
-    .task-item.now {
-      border-color: var(--burgundy);
-      background: #FFFFFF;
-      box-shadow: 0 8px 24px -6px rgba(124, 10, 36, 0.18);
-    }
-    .task-item.done {
-      opacity: 0.58;
-      background: var(--bg-warm);
-    }
-    .task-item.done .task-title {
-      text-decoration: line-through;
-      color: var(--fg-muted);
-    }
-    .task-left {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-    .task-time {
-      font-family: var(--font-display);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--fg-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .now-badge {
-      background: var(--burgundy);
-      color: #FFF;
-      font-size: 9px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 100px;
-      letter-spacing: 0.8px;
-    }
-    .task-title {
-      font-weight: 700;
-      font-size: 14.5px;
-      color: var(--fg);
-      margin: 2px 0 4px;
-    }
-    .task-loc {
-      font-size: 11.5px;
-      color: var(--fg-muted);
-      font-weight: 500;
-    }
-    .supp-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
+    .task-item:hover { border-color: var(--border-strong); background: #FFFFFF; box-shadow: 0 6px 16px rgba(0,0,0,0.04); }
+    .task-item.now { border-color: var(--burgundy); background: #FFFFFF; box-shadow: 0 8px 24px -6px rgba(124, 10, 36, 0.18); }
+    .task-item.done { opacity: 0.58; background: var(--bg-warm); }
+    .task-item.done .task-title { text-decoration: line-through; color: var(--fg-muted); }
+    .task-left { display: flex; gap: 12px; align-items: flex-start; }
+    .task-time { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--fg-muted); display: flex; align-items: center; gap: 6px; }
+    .now-badge { background: var(--burgundy); color: #FFF; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 100px; letter-spacing: 0.8px; }
+    .task-title { font-weight: 700; font-size: 14.5px; color: var(--fg); margin: 2px 0 4px; }
+    .task-loc { font-size: 11.5px; color: var(--fg-muted); font-weight: 500; }
+    .supp-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .supp-chip {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 100px;
-      background: var(--surface);
-      border: 1px solid var(--border-strong);
-      color: var(--fg);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.15s;
+      font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; background: var(--surface);
+      border: 1px solid var(--border-strong); color: var(--fg); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
     }
-    .supp-chip.done {
-      background: var(--burgundy);
-      border-color: var(--burgundy);
-      color: #FFFFFF;
-    }
+    .supp-chip.done { background: var(--burgundy); border-color: var(--burgundy); color: #FFFFFF; }
     .check-circle {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      border: 2px solid var(--border-strong);
-      display: grid;
-      place-items: center;
-      color: #FFF;
-      font-size: 13px;
-      font-weight: 800;
-      flex-shrink: 0;
-      margin-top: 4px;
-      transition: all 0.15s;
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-strong);
+      display: grid; place-items: center; color: #FFF; font-size: 13px; font-weight: 800; flex-shrink: 0; margin-top: 4px; transition: all 0.15s;
     }
-    .task-item.done .check-circle {
-      background: var(--burgundy);
-      border-color: var(--burgundy);
-    }
+    .task-item.done .check-circle { background: var(--burgundy); border-color: var(--burgundy); }
 
     /* Hidratación */
-    .water-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 12px;
-    }
+    .water-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
     .water-btn {
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border-strong);
-      background: var(--bg);
-      font-family: var(--font-sans);
-      font-weight: 700;
-      font-size: 13.5px;
-      color: var(--fg);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.15s;
+      padding: 12px; border-radius: 14px; border: 1px solid var(--border-strong); background: var(--bg);
+      font-family: var(--font-sans); font-weight: 700; font-size: 13.5px; color: var(--fg); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;
     }
-    .water-btn.done {
-      background: var(--burgundy);
-      border-color: var(--burgundy);
-      color: #FFFFFF;
-      box-shadow: 0 6px 14px -4px rgba(124, 10, 36, 0.35);
-    }
+    .water-btn.done { background: var(--burgundy); border-color: var(--burgundy); color: #FFFFFF; box-shadow: 0 6px 14px -4px rgba(124, 10, 36, 0.35); }
 
-    /* COLUMNA DERECHA: Panel de Impacto */
-    .impact-panel {
-      background: var(--bg-warm);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-xl);
-      padding: 26px;
-      box-shadow: var(--shadow-soft);
-      position: relative;
-    }
-    .impact-title {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.7px;
-      line-height: 1.15;
-      margin: 0 0 6px;
-    }
-    .impact-sub {
-      font-size: 13px;
-      color: var(--fg-muted);
-      margin: 0 0 20px;
-    }
+    /* Columna Derecha */
+    .impact-panel { background: var(--bg-warm); border: 1px solid var(--border-strong); border-radius: var(--radius-xl); padding: 26px; box-shadow: var(--shadow-soft); position: relative; }
+    .impact-title { font-size: 24px; font-weight: 800; letter-spacing: -0.7px; line-height: 1.15; margin: 0 0 6px; }
+    .impact-sub { font-size: 13px; color: var(--fg-muted); margin: 0 0 20px; }
 
-    /* 3 KPIs Blancos con Iconos Dorados */
     .kpi-band {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 18px 12px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      text-align: center;
-      box-shadow: 0 8px 24px -6px rgba(24, 21, 18, 0.05);
-      margin-bottom: 22px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 18px 12px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; box-shadow: 0 8px 24px -6px rgba(24, 21, 18, 0.05); margin-bottom: 22px;
     }
-    .kpi-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .kpi-box { display: flex; flex-direction: column; align-items: center; }
+    .kpi-box .ico-box { margin-bottom: 6px; }
+    .kpi-num { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--fg); letter-spacing: -0.5px; }
+    .kpi-label { font-size: 11px; color: var(--fg-muted); line-height: 1.25; margin-top: 2px; font-weight: 500; }
+
+    .floating-chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 20px; box-shadow: var(--shadow-float); margin-bottom: 24px; position: relative; }
+    .fc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .fc-head b { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; }
+    .fc-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--fg-muted); }
+    .fc-svg-container { position: relative; width: 100%; height: 155px; }
+    .fc-highlight-box {
+      position: absolute; right: 12px; bottom: 12px; background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+      color: #FFFFFF; padding: 9px 13px; border-radius: 14px; box-shadow: 0 10px 20px -4px rgba(124, 10, 36, 0.45); text-align: center; pointer-events: none;
     }
-    .kpi-box .ico-box {
-      margin-bottom: 6px;
-    }
-    .kpi-num {
-      font-family: var(--font-display);
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--fg);
-      letter-spacing: -0.5px;
-    }
-    .kpi-label {
-      font-size: 11px;
-      color: var(--fg-muted);
-      line-height: 1.25;
-      margin-top: 2px;
-      font-weight: 500;
+    .fc-highlight-box b { display: block; font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: 1.1; }
+    .fc-highlight-box span { font-size: 9.5px; opacity: 0.85; display: block; margin-top: 2px; }
+
+    .solutions-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .sol-item { background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: all 0.15s; }
+    .sol-item:hover { background: var(--surface); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .sol-left { display: flex; align-items: center; gap: 12px; }
+    .sol-name { font-weight: 700; font-size: 13.5px; color: var(--fg); }
+    .sol-desc { font-size: 11.5px; color: var(--fg-muted); }
+    .sol-streak {
+      font-family: var(--font-display); font-size: 12px; font-weight: 700; padding: 5px 11px; border-radius: 100px;
+      background: var(--gold-soft); border: 1px solid rgba(212, 155, 75, 0.35); color: var(--gold-dark); white-space: nowrap; display: inline-flex; align-items: center; gap: 5px;
     }
 
-    /* Gráfico de Curva Semanal */
-    .floating-chart-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 20px;
-      box-shadow: var(--shadow-float);
-      margin-bottom: 24px;
-      position: relative;
+    .white-box-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-top: 20px; box-shadow: var(--shadow-soft); }
+
+    /* Matriz */
+    .matrix-legend { display: flex; gap: 12px; font-size: 11px; color: var(--fg-muted); margin-bottom: 10px; flex-wrap: wrap; }
+    .matrix-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .matrix-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .matrix-table th { padding: 8px 4px; color: var(--fg-muted); font-weight: 700; border-bottom: 1px solid var(--border); text-align: center; }
+    .matrix-table th.active-col { color: var(--burgundy); }
+    .matrix-table th:first-child { text-align: left; }
+    .matrix-table td { padding: 7px 3px; text-align: center; border-bottom: 1px solid var(--bg-warm); }
+    .matrix-table td:first-child { text-align: left; font-weight: 600; }
+    .m-habit-cell { display: flex; align-items: center; gap: 8px; }
+    .m-habit-cell .ico-box { width: 26px; height: 26px; border-radius: 7px; }
+    .m-habit-cell .ico-box svg { width: 14px; height: 14px; }
+    .m-dot {
+      width: 26px; height: 26px; border-radius: 8px; display: inline-grid; place-items: center; background: var(--bg);
+      border: 1px solid var(--border-strong); color: var(--fg-muted); font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.15s ease; user-select: none;
     }
-    .fc-head {
+    .m-dot:hover:not(.na) { border-color: var(--burgundy); transform: scale(1.08); }
+    .m-dot.on { background: var(--burgundy); border-color: var(--burgundy); color: #FFF; }
+    .m-dot.part { background: var(--gold-soft); border-color: var(--gold); color: var(--gold-dark); }
+    .m-dot.na { background: transparent; border-color: transparent; color: #C7BCAE; cursor: default; }
+
+    /* Formularios e Inputs */
+    .notes-form { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
+    .notes-input {
+      padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-strong);
+      background: var(--bg); font-family: var(--font-sans); font-size: 13px; color: var(--fg); outline: none; width: 100%;
+    }
+    .notes-input:focus { border-color: var(--burgundy); background: #FFF; }
+    .notes-add-btn {
+      background: var(--burgundy); color: #FFF; border: none; border-radius: 12px; padding: 10px 16px;
+      font-family: var(--font-sans); font-weight: 700; font-size: 13px; cursor: pointer; text-align: center; transition: background 0.15s;
+    }
+    .notes-add-btn:hover { background: var(--burgundy-dark); }
+    .custom-tasks-list { display: flex; flex-direction: column; gap: 8px; }
+    .ct-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); font-size: 13px; }
+    .ct-left { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1; }
+    .ct-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border-strong); display: grid; place-items: center; color: #FFF; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+    .ct-item.done .ct-check { background: var(--burgundy); border-color: var(--burgundy); }
+    .ct-item.done .ct-text { text-decoration: line-through; color: var(--fg-muted); }
+    .ct-del { border: none; background: transparent; color: var(--fg-muted); cursor: pointer; font-size: 15px; padding: 2px 6px; border-radius: 6px; }
+    .ct-del:hover { background: var(--burgundy-soft); color: var(--burgundy); }
+    .bb-tag {
+      font-size: 9.5px; font-weight: 800; padding: 2px 6px; border-radius: 6px;
+      background: var(--gold-soft); color: var(--gold-dark); border: 1px solid rgba(212,155,75,0.3); margin-left: 6px;
+    }
+
+    /* Exámenes */
+    .exam-card { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--border); margin-bottom: 8px; gap: 10px; }
+    .exam-info b { display: block; font-size: 13.5px; color: var(--fg); font-weight: 700; }
+    .exam-info small { color: var(--fg-muted); font-size: 11.5px; }
+    .exam-countdown { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 100px; background: var(--burgundy-soft); color: var(--burgundy); border: 1px solid rgba(124, 10, 36, 0.2); white-space: nowrap; }
+
+    /* ====================================================
+       SECCIÓN PROYECTOS PERSONALES (Trading, Clipping, YT, Side Hustles)
+       ==================================================== */
+    .projects-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .projects-wrap.active {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
     }
-    .fc-head b {
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-    }
-    .fc-pill {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--fg-muted);
-    }
-    .fc-svg-container {
-      position: relative;
-      width: 100%;
-      height: 155px;
-    }
-    .fc-highlight-box {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
+    .wealth-banner {
       background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
       color: #FFFFFF;
-      padding: 9px 13px;
-      border-radius: 14px;
-      box-shadow: 0 10px 20px -4px rgba(124, 10, 36, 0.45);
-      text-align: center;
-      pointer-events: none;
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      box-shadow: var(--shadow-float);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
     }
-    .fc-highlight-box b {
-      display: block;
-      font-family: var(--font-display);
-      font-size: 18px;
+    .wealth-banner small {
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 11px;
       font-weight: 700;
-      line-height: 1.1;
-    }
-    .fc-highlight-box span {
-      font-size: 9.5px;
       opacity: 0.85;
       display: block;
-      margin-top: 2px;
+      margin-bottom: 4px;
     }
-
-    /* Lista de Hábitos Clave */
-    .solutions-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 22px;
-    }
-    .sol-item {
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      transition: all 0.15s;
-    }
-    .sol-item:hover {
-      background: var(--surface);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-    }
-    .sol-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .sol-name {
-      font-weight: 700;
-      font-size: 13.5px;
-      color: var(--fg);
-    }
-    .sol-desc {
-      font-size: 11.5px;
-      color: var(--fg-muted);
-    }
-    .sol-streak {
+    .wealth-total {
       font-family: var(--font-display);
-      font-size: 12px;
+      font-size: 42px;
       font-weight: 700;
-      padding: 5px 11px;
-      border-radius: 100px;
-      background: var(--gold-soft);
-      border: 1px solid rgba(212, 155, 75, 0.35);
-      color: var(--gold-dark);
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      letter-spacing: -1.5px;
+      line-height: 1.05;
     }
-
-    /* Tarjeta Blanca Interna (Matriz y Tareas Diarias) */
-    .white-box-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 20px;
-      margin-top: 20px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    /* Matriz de Consistencia 7D Interactiva */
-    .matrix-legend {
+    .wealth-breakdown {
       display: flex;
-      gap: 12px;
-      font-size: 11px;
-      color: var(--fg-muted);
-      margin-bottom: 10px;
+      gap: 14px;
       flex-wrap: wrap;
     }
-    .matrix-legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+    .wb-pill {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 10px 16px;
+      min-width: 130px;
     }
-    .matrix-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-    }
-    .matrix-table th {
-      padding: 8px 4px;
-      color: var(--fg-muted);
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-    }
-    .matrix-table th.active-col {
-      color: var(--burgundy);
-    }
-    .matrix-table th:first-child { text-align: left; }
-    .matrix-table td {
-      padding: 7px 3px;
-      text-align: center;
-      border-bottom: 1px solid var(--bg-warm);
-    }
-    .matrix-table td:first-child {
-      text-align: left;
-      font-weight: 600;
-    }
-    .m-habit-cell {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .m-habit-cell .ico-box {
-      width: 26px;
-      height: 26px;
-      border-radius: 7px;
-    }
-    .m-habit-cell .ico-box svg {
-      width: 14px;
-      height: 14px;
-    }
-    .m-dot {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      display: inline-grid;
-      place-items: center;
-      background: var(--bg);
-      border: 1px solid var(--border-strong);
-      color: var(--fg-muted);
+    .wb-pill span {
+      display: block;
       font-size: 11px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      user-select: none;
+      opacity: 0.8;
     }
-    .m-dot:hover:not(.na) {
-      border-color: var(--burgundy);
-      transform: scale(1.08);
-    }
-    .m-dot.on {
-      background: var(--burgundy);
-      border-color: var(--burgundy);
-      color: #FFF;
-    }
-    .m-dot.part {
-      background: var(--gold-soft);
-      border-color: var(--gold);
-      color: var(--gold-dark);
-    }
-    .m-dot.na {
-      background: transparent;
-      border-color: transparent;
-      color: #C7BCAE;
-      cursor: default;
+    .wb-pill b {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
     }
 
-    /* Gestor de Tareas Diarias / Notas Rápidas */
-    .notes-form {
-      display: flex;
-      gap: 8px;
-      margin: 12px 0;
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 24px;
+      align-items: start;
     }
-    .notes-input {
-      flex: 1;
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border-strong);
-      background: var(--bg);
-      font-family: var(--font-sans);
-      font-size: 13px;
-      color: var(--fg);
-      outline: none;
+    @media (max-width: 900px) {
+      .projects-grid { grid-template-columns: 1fr; }
     }
-    .notes-input:focus {
-      border-color: var(--burgundy);
-      background: #FFF;
-    }
-    .notes-add-btn {
-      background: var(--burgundy);
-      color: #FFF;
-      border: none;
-      border-radius: 12px;
-      padding: 0 16px;
-      font-family: var(--font-sans);
+
+    .pnl-badge {
+      font-family: var(--font-display);
+      font-size: 12.5px;
       font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 100px;
     }
-    .custom-tasks-list {
+    .pnl-badge.pos { background: var(--green-soft); color: var(--green); }
+    .pnl-badge.neg { background: var(--red-soft); color: var(--red); }
+
+    .trading-chart-box {
+      background: #141210;
+      border: 1px solid #2C2622;
+      border-radius: 20px;
+      padding: 18px;
+      color: #F6EFE2;
+      margin: 14px 0 18px;
+      box-shadow: inset 0 2px 12px rgba(0,0,0,0.4);
+    }
+    .tc-top {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
       gap: 8px;
     }
-    .ct-item {
+    .tc-balance {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+    .tc-svg-wrap {
+      width: 100%;
+      height: 185px;
+    }
+
+    .trade-log-item {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      align-items: center;
       padding: 10px 12px;
       border-radius: 12px;
       background: var(--bg);
       border: 1px solid var(--border);
       font-size: 13px;
+      margin-bottom: 8px;
     }
-    .ct-left {
+    .trade-amt {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 13.5px;
+    }
+    .trade-amt.pos { color: var(--green); }
+    .trade-amt.neg { color: var(--red); }
+
+    /* Don Mancuerna YouTube Card */
+    .yt-card {
+      background: linear-gradient(145deg, #1E1916 0%, #120E0C 100%);
+      color: #FFFFFF;
+      border-radius: 22px;
+      padding: 22px;
+      border: 1px solid #332924;
+      position: relative;
+      overflow: hidden;
+    }
+    .yt-header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      flex: 1;
+      gap: 12px;
+      margin-bottom: 16px;
     }
-    .ct-check {
-      width: 20px;
-      height: 20px;
-      border-radius: 6px;
-      border: 2px solid var(--border-strong);
+    .yt-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #FF0033;
       display: grid;
       place-items: center;
-      color: #FFF;
-      font-size: 11px;
       font-weight: 800;
-      flex-shrink: 0;
+      font-size: 18px;
+      color: #FFF;
+      box-shadow: 0 6px 16px rgba(255, 0, 51, 0.35);
     }
-    .ct-item.done .ct-check {
-      background: var(--burgundy);
-      border-color: var(--burgundy);
+    .yt-live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 0, 51, 0.16);
+      border: 1px solid rgba(255, 0, 51, 0.4);
+      color: #FF4D6D;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
     }
-    .ct-item.done .ct-text {
-      text-decoration: line-through;
-      color: var(--fg-muted);
+    .yt-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #FF0033;
+      animation: pulseRed 1.6s infinite;
     }
-    .ct-del {
-      border: none;
-      background: transparent;
-      color: var(--fg-muted);
-      cursor: pointer;
-      font-size: 15px;
-      padding: 2px 6px;
-      border-radius: 6px;
+    @keyframes pulseRed {
+      0% { box-shadow: 0 0 0 0 rgba(255, 0, 51, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(255, 0, 51, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 0, 51, 0); }
     }
-    .ct-del:hover {
-      background: var(--burgundy-soft);
-      color: var(--burgundy);
+    .yt-subs-num {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin: 4px 0 6px;
     }
-
-    .reset-btn {
-      width: 100%;
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px dashed var(--border-strong);
-      background: transparent;
-      color: var(--fg-muted);
+    .yt-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .yt-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #FFF;
+      padding: 8px 12px;
+      border-radius: 10px;
       font-family: var(--font-sans);
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .reset-btn:hover {
-      border-color: var(--burgundy);
-      color: var(--burgundy);
+    .yt-btn:hover { background: rgba(255, 255, 255, 0.2); }
+    .yt-btn.red { background: #FF0033; border-color: #FF0033; }
+
+    .reset-btn {
+      width: 100%; padding: 10px; border-radius: 12px; border: 1px dashed var(--border-strong);
+      background: transparent; color: var(--fg-muted); font-family: var(--font-sans); font-size: 12px; font-weight: 600; cursor: pointer;
     }
+    .reset-btn:hover { border-color: var(--burgundy); color: var(--burgundy); }
   </style>
 </head>
 <body>
 
   <div class="app-shell">
 
-    <!-- MENÚ LATERAL (SIDEBAR) -->
+    <!-- MENÚ LATERAL -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon">N</div>
-        <span>Nexora<span style="font-weight:400; color:var(--fg-muted)">Habits</span></span>
+        <span>Nexora<span style="font-weight:400; color:var(--fg-muted)">OS</span></span>
       </div>
 
       <div class="side-nav">
@@ -1012,6 +778,11 @@
           <span>Panel Principal</span>
         </button>
 
+        <button class="side-btn" id="nav-projects" onclick="setSection('projects')">
+          <span class="ico-box" id="ico-nav-projects"></span>
+          <span>Proyectos Personales</span>
+        </button>
+
         <button class="side-btn" id="nav-metrics" onclick="setSection('metrics')">
           <span class="ico-box" id="ico-nav-metrics"></span>
           <span>Métricas y Gráficos</span>
@@ -1020,6 +791,11 @@
         <button class="side-btn" id="nav-matrix" onclick="setSection('matrix')">
           <span class="ico-box" id="ico-nav-matrix"></span>
           <span>Matriz de Consistencia</span>
+        </button>
+
+        <button class="side-btn" id="nav-exams" onclick="setSection('exams')">
+          <span class="ico-box" id="ico-nav-exams"></span>
+          <span>Gestor de Exámenes</span>
         </button>
 
         <button class="side-btn" id="nav-notes" onclick="setSection('notes')">
@@ -1036,6 +812,15 @@
         </button>
       </div>
 
+      <!-- Estado de Sincronización con Blackboard US -->
+      <div class="bb-status">
+        <div style="display:flex; align-items:center; gap:7px;">
+          <span class="bb-dot" id="bb-dot"></span>
+          <span id="bb-status-text">Blackboard US conectado</span>
+        </div>
+        <button class="bb-sync-btn" onclick="syncBlackboardCalendar(true)" title="Forzar actualización de tareas de Blackboard">↻ Sync</button>
+      </div>
+
       <div class="side-footer">
         <button class="cta-pill" onclick="jumpToday()">
           Ir al día de hoy <span>→</span>
@@ -1046,11 +831,12 @@
 
     <!-- ÁREA PRINCIPAL -->
     <main class="main-area">
+
+      <!-- VISTA 1: PANEL DE HÁBITOS, MÉTRICAS, MATRIZ Y EXÁMENES -->
       <div class="dashboard-grid" id="main-grid">
 
-        <!-- COLUMNA IZQUIERDA: Hero + Horario Diario -->
+        <!-- COLUMNA IZQUIERDA -->
         <div id="col-left">
-          <!-- Hero Card con Rueda 3D y Badge de Productividad -->
           <section class="hero-card" id="sec-hero">
             <div>
               <div class="badge-pill">
@@ -1061,11 +847,11 @@
                 Empieza ahora,<br>firme y <span>rápido</span>
               </h1>
               <p class="hero-sub">
-                Estructuración diaria, estudio profundo, entrenamiento y suplementación para mantener tu rendimiento al máximo nivel.
+                Estructuración diaria, estudio profundo, entrenamiento, proyectos y conexión directa con tu calendario de la Universidad de Sevilla.
               </p>
               <div class="hero-actions">
                 <button class="cta-pill" onclick="markCurrentBlock()">Completar bloque actual →</button>
-                <button class="btn-outline" onclick="setSection('matrix')">Abrir Matriz 7D</button>
+                <button class="btn-outline" onclick="setSection('projects')">Proyectos & Trading</button>
               </div>
               <div class="hero-features">
                 <span id="feat-focus"></span>
@@ -1073,16 +859,8 @@
               </div>
             </div>
 
-            <!-- Rueda Escultórica 3D con Insignia de Productividad (sin la caja antigua) -->
+            <!-- Rueda Escultórica 3D + Insignia de Productividad EN PRIMER PLANO -->
             <div class="sculpture-wrap">
-              <div class="prod-floating-badge">
-                <span class="ico-box" id="hero-prod-ico"></span>
-                <div>
-                  <b>50/10 Focus</b>
-                  <small>Alta productividad</small>
-                </div>
-              </div>
-
               <svg class="sculpture-svg" viewBox="0 0 220 220">
                 <defs>
                   <linearGradient id="beige3D" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1100,24 +878,26 @@
                     <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#181512" flood-opacity="0.18"/>
                   </filter>
                 </defs>
-
-                <!-- Aro interior Burdeos 3D -->
                 <circle cx="110" cy="110" r="52" fill="none" stroke="url(#burgundy3D)" stroke-width="22" stroke-dasharray="210 330" stroke-dashoffset="-35" stroke-linecap="round" filter="url(#softShadow)"/>
-
-                <!-- Aro exterior Beige 3D (Fondo) -->
                 <circle cx="110" cy="110" r="78" fill="none" stroke="#EFE6D5" stroke-width="28" stroke-linecap="round"/>
-
-                <!-- Aro exterior Beige 3D Dinámico -->
                 <circle id="ring-3d" cx="110" cy="110" r="78" fill="none" stroke="url(#beige3D)" stroke-width="28" stroke-linecap="round" stroke-dasharray="0 490" transform="rotate(-90 110 110)" filter="url(#softShadow)" style="transition: stroke-dasharray 0.6s cubic-bezier(0.22, 1, 0.36, 1);"/>
               </svg>
+
               <div class="sculpture-pct" id="global-pct">0%</div>
+
+              <!-- Insignia de Productividad delante del SVG (z-index: 25) -->
+              <div class="prod-floating-badge">
+                <span class="ico-box" id="hero-prod-ico"></span>
+                <div>
+                  <b>50/10 Focus</b>
+                  <small id="hero-prod-sub">Alta productividad</small>
+                </div>
+              </div>
             </div>
           </section>
 
-          <!-- Selector de 7 Días -->
           <nav class="days-bar" id="days-bar"></nav>
 
-          <!-- Agenda Horaria del Día -->
           <section class="section-card" id="sec-schedule">
             <div class="section-head">
               <h2>
@@ -1129,7 +909,6 @@
             <div class="task-list" id="task-list"></div>
           </section>
 
-          <!-- Hidratación Diaria -->
           <section class="section-card" id="sec-water">
             <div class="section-head" style="margin-bottom:6px;">
               <h2>
@@ -1143,7 +922,7 @@
           </section>
         </div>
 
-        <!-- COLUMNA DERECHA: Métricas, Gráfico, Rachas, Matriz 7D y Tareas Diarias -->
+        <!-- COLUMNA DERECHA -->
         <aside class="impact-panel" id="col-right">
           <div id="sec-metrics-block">
             <h2 class="impact-title">Resultados que<br>generan impacto</h2>
@@ -1151,7 +930,6 @@
               Seguimiento en tiempo real de tu disciplina académica, entrenamiento de fuerza y consistencia diaria.
             </p>
 
-            <!-- Banda de 3 KPIs con Iconos Minimalistas Dorados -->
             <div class="kpi-band">
               <div class="kpi-box">
                 <div class="ico-box" id="kpi-ico-1"></div>
@@ -1170,7 +948,6 @@
               </div>
             </div>
 
-            <!-- Gráfico Flotante de Curva Semanal -->
             <div class="floating-chart-card">
               <div class="fc-head">
                 <b>Rendimiento semanal</b>
@@ -1183,13 +960,12 @@
               </div>
             </div>
 
-            <!-- Hábitos Clave y Rachas -->
             <h3 style="font-size:18px; font-weight:800; margin: 0 0 4px; letter-spacing:-0.4px;">Hábitos clave y rachas</h3>
             <p style="font-size:12.5px; color:var(--fg-muted); margin: 0 0 14px;">Días consecutivos cumplidos hasta hoy.</p>
             <div class="solutions-list" id="streaks-list"></div>
           </div>
 
-          <!-- Matriz de Consistencia 7D (Interactiva y Reparada) -->
+          <!-- Matriz 7D -->
           <div class="white-box-card" id="sec-matrix-block">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <b style="font-size:15px; font-weight:800;">Matriz de Consistencia 7D</b>
@@ -1206,18 +982,35 @@
             </div>
           </div>
 
-          <!-- Espacio para Apuntar Tareas Diarias (Sustituye a la cita de la universidad) -->
+          <!-- Gestor de Exámenes + Sincronización Blackboard -->
+          <div class="white-box-card" id="sec-exams-block">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <b style="font-size:15px; font-weight:800;">Exámenes & Entregas US</b>
+              <span class="badge-pill" id="exams-counter" style="margin:0;">0 programados</span>
+            </div>
+            <p style="font-size:12px; color:var(--fg-muted); margin:4px 0 12px;">
+              Se sincroniza con tu calendario de Blackboard US o puedes añadirlos manualmente.
+            </p>
+            <form class="notes-form" onsubmit="addCustomExam(event)">
+              <input type="text" id="exam-name-input" class="notes-input" placeholder="Asignatura / Examen (Ej: Cálculo Infinitesimal)" required>
+              <input type="date" id="exam-date-input" class="notes-input" required>
+              <button type="submit" class="notes-add-btn">+ Añadir Examen</button>
+            </form>
+            <div id="exams-list-container" style="margin-top: 10px;"></div>
+          </div>
+
+          <!-- Tareas Diarias + Eventos Blackboard del día -->
           <div class="white-box-card" id="sec-notes-block">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <b style="font-size:15px; font-weight:800;" id="notes-box-title">Tareas y Notas del Día</b>
               <span class="badge-pill" id="notes-counter" style="margin:0;">0 pendientes</span>
             </div>
             <p style="font-size:12px; color:var(--fg-muted); margin:4px 0 10px;">
-              Añade entregas, recados o recordatorios rápidos para este día.
+              Tus tareas manuales y las entregas de Blackboard para este día aparecen aquí.
             </p>
             <form class="notes-form" onsubmit="addCustomTask(event)">
-              <input type="text" id="custom-task-input" class="notes-input" placeholder="Ej: Entregar práctica de FP1, comprar avena..." required>
-              <button type="submit" class="notes-add-btn">+ Añadir</button>
+              <input type="text" id="custom-task-input" class="notes-input" placeholder="Ej: Práctica de FP1, repasar tema 2..." required>
+              <button type="submit" class="notes-add-btn">+ Añadir Tarea</button>
             </form>
             <div class="custom-tasks-list" id="custom-tasks-list"></div>
           </div>
@@ -1225,12 +1018,191 @@
         </aside>
 
       </div>
+
+      <!-- =================================================================
+           VISTA 2: PROYECTOS PERSONALES (Inversiones, Clipping, Don Mancuerna, Side Hustles)
+           ================================================================= -->
+      <section class="projects-wrap" id="projects-view">
+
+        <!-- Banner Maestro: Patrimonio Total de Proyectos -->
+        <div class="wealth-banner">
+          <div>
+            <small>Capital Total & Ingresos Acumulados</small>
+            <div class="wealth-total" id="total-empire-money">0,00 €</div>
+          </div>
+          <div class="wealth-breakdown">
+            <div class="wb-pill">
+              <span>Portfolio Trading</span>
+              <b id="wb-trading">0,00 €</b>
+            </div>
+            <div class="wb-pill">
+              <span>Clipping</span>
+              <b id="wb-clipping">0,00 €</b>
+            </div>
+            <div class="wb-pill">
+              <span>Side Hustles (Extra)</span>
+              <b id="wb-hustles">0,00 €</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="projects-grid">
+
+          <!-- COLUMNA IZQUIERDA DE PROYECTOS: Inversiones & Gráfico de Trading -->
+          <div>
+            <div class="section-card">
+              <div class="section-head">
+                <h2>
+                  <span class="ico-box" id="ico-proj-trading"></span>
+                  <span>Inversiones Personales & Trading</span>
+                </h2>
+                <span class="pnl-badge pos" id="trading-pnl-badge">+0,00 € (0%)</span>
+              </div>
+              <p style="margin:0 0 12px; font-size:13px; color:var(--fg-muted);">
+                Registra cada operación (ganancia o pérdida) y visualiza la curva de evolución de tu cartera como en un terminal de trading.
+              </p>
+
+              <!-- Configuración rápida de Capital Inicial -->
+              <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px; background:var(--bg); padding:10px 12px; border-radius:12px; border:1px solid var(--border);">
+                <span style="font-size:12px; font-weight:700; color:var(--fg-muted);">Capital Base Inicial (€):</span>
+                <input type="number" step="0.01" id="initial-cap-input" class="notes-input" style="max-width:130px; padding:6px 10px;" onchange="updateInitialCapital(this.value)">
+              </div>
+
+              <!-- Gráfico Estilo Trading (Terminal Oscuro) -->
+              <div class="trading-chart-box">
+                <div class="tc-top">
+                  <div>
+                    <small style="color:#9E9488; font-size:11px; display:block;">VALOR ACTUAL DE LA CARTERA</small>
+                    <div class="tc-balance" id="trading-total-val">0,00 €</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <small style="color:#9E9488; font-size:11px; display:block;">OPERACIONES</small>
+                    <b id="trading-ops-count" style="font-family:var(--font-display); font-size:15px;">0 trades</b>
+                  </div>
+                </div>
+                <div class="tc-svg-wrap" id="trading-svg-container"></div>
+              </div>
+
+              <!-- Formulario para añadir Trade / Ganancia -->
+              <form class="notes-form" onsubmit="addTradeEntry(event)">
+                <div class="form-row">
+                  <input type="text" id="trade-label" class="notes-input" placeholder="Activo / Operación (Ej: NVDA, BTC, XRP...)" required>
+                  <input type="number" step="0.01" id="trade-profit" class="notes-input" placeholder="Ganancia o pérdida € (Ej: 45.50 o -15)" required>
+                </div>
+                <button type="submit" class="notes-add-btn">+ Registrar Operación en el Gráfico</button>
+              </form>
+
+              <div id="trades-history-list" style="margin-top:12px; max-height:220px; overflow-y:auto;"></div>
+            </div>
+          </div>
+
+          <!-- COLUMNA DERECHA DE PROYECTOS: Don Mancuerna YT, Clipping y Side Hustles -->
+          <div>
+
+            <!-- 1. DON MANCUERNA (YouTube) -->
+            <div class="yt-card" style="margin-bottom:24px;">
+              <div class="yt-header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div class="yt-avatar">DM</div>
+                  <div>
+                    <b style="font-size:17px; display:block;">Don Mancuerna</b>
+                    <span style="font-size:12px; color:#B8ACA0;">YouTube · Canal Oficial</span>
+                  </div>
+                </div>
+                <span class="yt-live-pill">
+                  <span class="yt-pulse"></span>
+                  LIVE SUBS
+                </span>
+              </div>
+
+              <small style="color:#B8ACA0; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Suscriptores en tiempo real</small>
+              <div class="yt-subs-num" id="yt-subs-display">0</div>
+              <small id="yt-sync-note" style="color:#9E9488; font-size:11px; display:block;">Sincronizado con el contador del canal</small>
+
+              <div class="yt-controls">
+                <button class="yt-btn" onclick="adjustYtSubs(1)">+1 Sub</button>
+                <button class="yt-btn" onclick="adjustYtSubs(10)">+10 Subs</button>
+                <button class="yt-btn" onclick="promptExactSubs()">Fijar cifra exacta</button>
+                <button class="yt-btn" onclick="fetchDonMancuernaSubs(true)">↻ Actualizar</button>
+                <a class="yt-btn red" href="https://www.youtube.com/results?search_query=Don+Mancuerna" target="_blank" rel="noopener">Abrir YouTube ↗</a>
+              </div>
+            </div>
+
+            <!-- 2. CLIPPING (Visualizaciones y Dinero Ganado) -->
+            <div class="section-card">
+              <div class="section-head">
+                <h2>
+                  <span class="ico-box" id="ico-proj-clipping"></span>
+                  <span>Clipping · Views & Ingresos</span>
+                </h2>
+                <span class="badge-pill" id="clipping-rpm-badge" style="margin:0;">RPM: 0,00 €</span>
+              </div>
+
+              <div class="kpi-band" style="margin-bottom:16px;">
+                <div class="kpi-box">
+                  <div class="kpi-num" id="clip-total-views">0</div>
+                  <div class="kpi-label">Visualizaciones<br>totales</div>
+                </div>
+                <div class="kpi-box">
+                  <div class="kpi-num" id="clip-total-money" style="color:var(--burgundy);">0,00 €</div>
+                  <div class="kpi-label">Dinero ganado<br>con Clipping</div>
+                </div>
+                <div class="kpi-box">
+                  <div class="kpi-num" id="clip-count">0</div>
+                  <div class="kpi-label">Lotes / Clips<br>registrados</div>
+                </div>
+              </div>
+
+              <form class="notes-form" onsubmit="addClippingEntry(event)">
+                <input type="text" id="clip-title" class="notes-input" placeholder="Canal / Campaña / Vídeo (Ej: TikTok lote 1)" required>
+                <div class="form-row">
+                  <input type="number" id="clip-views" class="notes-input" placeholder="Visualizaciones (Ej: 125000)" required>
+                  <input type="number" step="0.01" id="clip-money" class="notes-input" placeholder="Dinero ganado € (Ej: 62.50)" required>
+                </div>
+                <button type="submit" class="notes-add-btn">+ Añadir Estadísticas de Clipping</button>
+              </form>
+
+              <div id="clipping-history-list" style="margin-top:10px; max-height:180px; overflow-y:auto;"></div>
+            </div>
+
+            <!-- 3. SIDE HUSTLES (Dinero Total Aparte de Todo) -->
+            <div class="section-card">
+              <div class="section-head">
+                <h2>
+                  <span class="ico-box" id="ico-proj-hustles"></span>
+                  <span>Side Hustles · Ingresos Extra</span>
+                </h2>
+                <span class="pnl-badge pos" id="hustles-total-badge">0,00 € acumulados</span>
+              </div>
+              <p style="margin:0 0 10px; font-size:12.5px; color:var(--fg-muted);">
+                Dinero generado por proyectos paralelos, servicios o ventas aparte de inversiones y clipping.
+              </p>
+
+              <form class="notes-form" onsubmit="addSideHustleEntry(event)">
+                <div class="form-row">
+                  <input type="text" id="hustle-name" class="notes-input" placeholder="Concepto / Proyecto (Ej: Web, Bot, Venta...)" required>
+                  <input type="number" step="0.01" id="hustle-amount" class="notes-input" placeholder="Importe ganado € (Ej: 120)" required>
+                </div>
+                <button type="submit" class="notes-add-btn">+ Registrar Ingreso Extra</button>
+              </form>
+
+              <div id="hustles-history-list" style="margin-top:10px; max-height:180px; overflow-y:auto;"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
     </main>
 
   </div>
 
   <script>
-    // Biblioteca de Iconos Vectoriales Minimalistas (Estilo "Cumplimiento del día activo")
+    // Enlace oficial de tu calendario de Blackboard (Universidad de Sevilla)
+    const BLACKBOARD_ICS_URL = "https://ev.us.es/webapps/calendar/calendarFeed/b9711c0cbad84ef7b37f9addb1de62f4/learn.ics";
+
     const ICONS = {
       trend: `<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
       target: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>`,
@@ -1250,18 +1222,16 @@
       drop: `<svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
       grid: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>`,
       checkList: `<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
-      calendar: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`
+      calendar: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+      briefcase: `<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+      video: `<svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`,
+      wallet: `<svg viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>`
     };
 
     const CT = {
-      m: [ICONS.sun, 'Mañana'],
-      c: [ICONS.utensils, 'Nutrición'],
-      u: [ICONS.book, 'Universidad'],
-      p: [ICONS.layers, 'Productividad'],
-      s: [ICONS.dumbbell, 'Fuerza & Salud'],
-      n: [ICONS.moon, 'Noche'],
-      d: [ICONS.bed, 'Descanso'],
-      o: [ICONS.sparkles, 'Social']
+      m: [ICONS.sun, 'Mañana'], c: [ICONS.utensils, 'Nutrición'], u: [ICONS.book, 'Universidad'],
+      p: [ICONS.layers, 'Productividad'], s: [ICONS.dumbbell, 'Fuerza & Salud'], n: [ICONS.moon, 'Noche'],
+      d: [ICONS.bed, 'Descanso'], o: [ICONS.sparkles, 'Social']
     };
 
     const W = [
@@ -1317,33 +1287,48 @@
     const mm = t => { const [h,m] = t.split(':').map(Number); const v = h*60+m; return v<300 ? v+1440 : v; };
     const nowv = () => { const d = new Date(); const v = d.getHours()*60+d.getMinutes(); return v<300 ? v+1440 : v; };
     const td = (new Date().getDay()+6)%7;
+    const fmtMoney = n => Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 
     let S, day = td, onlyPending = false, currentSection = 'all', confirmRs = false;
 
     function initStaticIcons() {
       $('#ico-nav-all').innerHTML = ICONS.grid;
+      $('#ico-nav-projects').innerHTML = ICONS.briefcase;
       $('#ico-nav-metrics').innerHTML = ICONS.trend;
       $('#ico-nav-matrix').innerHTML = ICONS.calendar;
+      $('#ico-nav-exams').innerHTML = ICONS.cap;
       $('#ico-nav-notes').innerHTML = ICONS.checkList;
       $('#ico-nav-filter').innerHTML = ICONS.target;
-      $('#hero-prod-ico').innerHTML = ICONS.timer;
+      $('#hero-prod-ico').innerHTML = ICONS.bolt;
       $('#ico-schedule-title').innerHTML = ICONS.calendar;
       $('#ico-water-title').innerHTML = ICONS.drop;
       $('#kpi-ico-1').innerHTML = ICONS.target;
       $('#kpi-ico-2').innerHTML = ICONS.trend;
       $('#kpi-ico-3').innerHTML = ICONS.bolt;
+      $('#ico-proj-trading').innerHTML = ICONS.trend;
+      $('#ico-proj-clipping').innerHTML = ICONS.video;
+      $('#ico-proj-hustles').innerHTML = ICONS.wallet;
       $('#feat-focus').innerHTML = `${ICONS.timer.replace('<svg ', '<svg width="15" height="15" stroke="#7C0A24" fill="none" stroke-width="2" ')} Bloques 50/10`;
-      $('#feat-streak').innerHTML = `${ICONS.trend.replace('<svg ', '<svg width="15" height="15" stroke="#7C0A24" fill="none" stroke-width="2" ')} Progreso real`;
+      $('#feat-streak').innerHTML = `${ICONS.trend.replace('<svg ', '<svg width="15" height="15" stroke="#7C0A24" fill="none" stroke-width="2" ')} Blackboard Sync`;
     }
 
     function load() {
       let r = {};
       try { r = JSON.parse(localStorage.getItem('vida3') || '{}') || {}; } catch(e){}
+      const defaultProjects = {
+        initialCapital: 500,
+        trades: [],
+        clipping: [],
+        ytSubs: 0,
+        sideHustles: []
+      };
       S = {
         wk: wkKey(),
-        pal: 0,
         c: r.wk === wkKey() ? (r.c || {}) : {},
-        notes: r.wk === wkKey() ? (r.notes || {}) : {}
+        notes: r.wk === wkKey() ? (r.notes || {}) : {},
+        exams: r.exams || [],
+        bbSyncedUids: r.bbSyncedUids || {},
+        projects: Object.assign({}, defaultProjects, r.projects || {})
       };
     }
 
@@ -1355,48 +1340,195 @@
     const keys = d => Object.keys(S.c).filter(k => S.c[k] && k.split('.')[0] == d);
     const done = d => keys(d).length;
 
-    // Navegación del Menú Lateral
+    // =========================================================================
+    // SINCRONIZACIÓN AUTOMÁTICA CON BLACKBOARD (.ICS)
+    // =========================================================================
+    function parseIcsDate(val) {
+      if (!val) return null;
+      const clean = val.replace(/^.*:/, '').trim();
+      const m = clean.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/);
+      if (!m) return null;
+      const year = +m[1], month = +m[2] - 1, dayNum = +m[3];
+      const hr = +(m[4] || 0), min = +(m[5] || 0), sec = +(m[6] || 0);
+      if (m[7] === 'Z') {
+        return new Date(Date.UTC(year, month, dayNum, hr, min, sec));
+      }
+      return new Date(year, month, dayNum, hr, min, sec);
+    }
+
+    function parseIcsEvents(rawIcs) {
+      const unfolded = rawIcs.replace(/\r?\n[ \t]/g, '');
+      const blocks = unfolded.split('BEGIN:VEVENT').slice(1);
+      const events = [];
+
+      blocks.forEach(block => {
+        const endIdx = block.indexOf('END:VEVENT');
+        const body = endIdx !== -1 ? block.slice(0, endIdx) : block;
+        const lines = body.split(/\r?\n/);
+        let uid = '', summary = '', dtstart = null, dtend = null;
+
+        lines.forEach(line => {
+          if (line.startsWith('UID')) uid = line.split(':').slice(1).join(':').trim();
+          else if (line.startsWith('SUMMARY')) {
+            summary = line.split(':').slice(1).join(':').trim()
+              .replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, ' ');
+          }
+          else if (line.startsWith('DTSTART')) dtstart = parseIcsDate(line);
+          else if (line.startsWith('DTEND')) dtend = parseIcsDate(line);
+        });
+
+        const refDate = dtstart || dtend;
+        if (summary && refDate && !isNaN(refDate.getTime())) {
+          events.push({ uid: uid || (summary + '_' + refDate.toISOString()), summary, date: refDate });
+        }
+      });
+      return events;
+    }
+
+    async function fetchTextWithFallbackProxies(targetUrl) {
+      const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+      ];
+      for (const pUrl of proxies) {
+        try {
+          const res = await fetch(pUrl, { cache: 'no-store' });
+          if (res.ok) {
+            const txt = await res.text();
+            if (txt && txt.includes('BEGIN:VCALENDAR')) return txt;
+          }
+        } catch (err) {}
+      }
+      throw new Error('No se pudo conectar al feed ICS mediante los proxies.');
+    }
+
+    async function syncBlackboardCalendar(manual = false) {
+      const statusTxt = $('#bb-status-text');
+      const dot = $('#bb-dot');
+      if (statusTxt) statusTxt.textContent = 'Sincronizando Blackboard...';
+
+      try {
+        const icsText = await fetchTextWithFallbackProxies(BLACKBOARD_ICS_URL);
+        const events = parseIcsEvents(icsText);
+
+        const weekMon = mon();
+        const weekSun = new Date(weekMon);
+        weekSun.setDate(weekSun.getDate() + 6);
+        weekSun.setHours(23, 59, 59, 999);
+
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        let addedCount = 0;
+
+        events.forEach(ev => {
+          if (S.bbSyncedUids[ev.uid]) return;
+
+          const dateStr = ev.date.toISOString().slice(0, 10);
+          const isExamLike = /examen|parcial|control|prueba|convocatoria|test|final/i.test(ev.summary);
+
+          // 1. Si el evento está dentro de la semana actual -> añadir a Tareas Diarias de ese día
+          if (ev.date >= weekMon && ev.date <= weekSun) {
+            const dIdx = (ev.date.getDay() + 6) % 7;
+            if (!S.notes[dIdx]) S.notes[dIdx] = [];
+            const exists = S.notes[dIdx].some(n => n.bbUid === ev.uid || n.text === ev.summary);
+            if (!exists) {
+              const hr = ev.date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+              S.notes[dIdx].push({
+                id: Date.now() + Math.floor(Math.random() * 100000),
+                text: `${ev.summary} (${hr})`,
+                done: false,
+                fromBB: true,
+                bbUid: ev.uid
+              });
+              addedCount++;
+            }
+          }
+
+          // 2. Si es un examen o entrega futura -> añadir a Exámenes & Entregas US
+          if (ev.date >= todayStart && (isExamLike || ev.date > weekSun)) {
+            if (!S.exams) S.exams = [];
+            const existsEx = S.exams.some(x => x.bbUid === ev.uid || (x.name === ev.summary && x.date === dateStr));
+            if (!existsEx) {
+              S.exams.push({
+                id: Date.now() + Math.floor(Math.random() * 100000),
+                name: ev.summary,
+                date: dateStr,
+                fromBB: true,
+                bbUid: ev.uid
+              });
+              addedCount++;
+            }
+          }
+
+          S.bbSyncedUids[ev.uid] = true;
+        });
+
+        if (S.exams) S.exams.sort((a, b) => new Date(a.date) - new Date(b.date));
+        save();
+        render();
+
+        if (dot) dot.classList.add('ok');
+        if (statusTxt) {
+          statusTxt.textContent = addedCount > 0
+            ? `BB: +${addedCount} nuevas tareas`
+            : `Blackboard al día (${events.length} ev.)`;
+        }
+      } catch (e) {
+        if (statusTxt) statusTxt.textContent = 'BB en caché local';
+      }
+    }
+
+    // =========================================================================
+    // NAVEGACIÓN ENTRE VISTAS
+    // =========================================================================
     function setSection(sec) {
       currentSection = sec;
-      ['all','metrics','matrix','notes'].forEach(id => {
-        $('#nav-' + id).classList.toggle('active', id === sec);
+      ['all','projects','metrics','matrix','exams','notes'].forEach(id => {
+        const btn = $('#nav-' + id);
+        if (btn) btn.classList.toggle('active', id === sec);
       });
 
-      const grid = $('#main-grid');
+      const mainGrid = $('#main-grid');
+      const projView = $('#projects-view');
       const colL = $('#col-left');
       const colR = $('#col-right');
       const bMetrics = $('#sec-metrics-block');
       const bMatrix = $('#sec-matrix-block');
+      const bExams = $('#sec-exams-block');
       const bNotes = $('#sec-notes-block');
 
+      if (sec === 'projects') {
+        mainGrid.style.display = 'none';
+        projView.classList.add('active');
+        render();
+        return;
+      }
+
+      projView.classList.remove('active');
+      mainGrid.style.display = 'grid';
+
       if (sec === 'all') {
-        grid.classList.remove('single-col');
-        colL.style.display = 'block';
-        colR.style.display = 'block';
-        bMetrics.style.display = 'block';
-        bMatrix.style.display = 'block';
-        bNotes.style.display = 'block';
+        mainGrid.classList.remove('single-col');
+        colL.style.display = 'block'; colR.style.display = 'block';
+        bMetrics.style.display = 'block'; bMatrix.style.display = 'block'; bExams.style.display = 'block'; bNotes.style.display = 'block';
       } else if (sec === 'metrics') {
-        grid.classList.add('single-col');
-        colL.style.display = 'none';
-        colR.style.display = 'block';
-        bMetrics.style.display = 'block';
-        bMatrix.style.display = 'none';
-        bNotes.style.display = 'none';
+        mainGrid.classList.add('single-col');
+        colL.style.display = 'none'; colR.style.display = 'block';
+        bMetrics.style.display = 'block'; bMatrix.style.display = 'none'; bExams.style.display = 'none'; bNotes.style.display = 'none';
       } else if (sec === 'matrix') {
-        grid.classList.add('single-col');
-        colL.style.display = 'none';
-        colR.style.display = 'block';
-        bMetrics.style.display = 'none';
-        bMatrix.style.display = 'block';
-        bNotes.style.display = 'none';
+        mainGrid.classList.add('single-col');
+        colL.style.display = 'none'; colR.style.display = 'block';
+        bMetrics.style.display = 'none'; bMatrix.style.display = 'block'; bExams.style.display = 'none'; bNotes.style.display = 'none';
+      } else if (sec === 'exams') {
+        mainGrid.classList.add('single-col');
+        colL.style.display = 'none'; colR.style.display = 'block';
+        bMetrics.style.display = 'none'; bMatrix.style.display = 'none'; bExams.style.display = 'block'; bNotes.style.display = 'none';
       } else if (sec === 'notes') {
-        grid.classList.add('single-col');
-        colL.style.display = 'none';
-        colR.style.display = 'block';
-        bMetrics.style.display = 'none';
-        bMatrix.style.display = 'none';
-        bNotes.style.display = 'block';
+        mainGrid.classList.add('single-col');
+        colL.style.display = 'none'; colR.style.display = 'block';
+        bMetrics.style.display = 'none'; bMatrix.style.display = 'none'; bExams.style.display = 'none'; bNotes.style.display = 'block';
       }
       render();
     }
@@ -1422,28 +1554,24 @@
       render();
     }
 
-    // Lógica precisa de Estado de Hábito para Matriz y Rachas
+    // =========================================================================
+    // HÁBITOS, MATRIZ Y EXÁMENES
+    // =========================================================================
     function getHabitKeysForDay(dIdx, h) {
-      if (h.isWater) {
-        return [1, 2, 3].map(n => `${dIdx}.w${n}`);
-      }
+      if (h.isWater) return [1, 2, 3].map(n => `${dIdx}.w${n}`);
       if (h.isSupps) {
         const list = [];
-        D[dIdx][2].forEach((b, i) => {
-          (b[4] || []).forEach((_, sIdx) => list.push(`${dIdx}.${i}.${sIdx}`));
-        });
+        D[dIdx][2].forEach((b, i) => { (b[4] || []).forEach((_, sIdx) => list.push(`${dIdx}.${i}.${sIdx}`)); });
         return list;
       }
       const list = [];
-      D[dIdx][2].forEach((b, i) => {
-        if (h.match(b)) list.push(`${dIdx}.${i}`);
-      });
+      D[dIdx][2].forEach((b, i) => { if (h.match(b)) list.push(`${dIdx}.${i}`); });
       return list;
     }
 
     function getHabitStatus(dIdx, h) {
       const hKeys = getHabitKeysForDay(dIdx, h);
-      if (hKeys.length === 0) return 'na'; // No aplica ese día
+      if (hKeys.length === 0) return 'na';
       const doneCount = hKeys.filter(k => !!S.c[k]).length;
       if (doneCount === 0) return 'none';
       if (doneCount === hKeys.length) return 'done';
@@ -1454,7 +1582,7 @@
       const h = KEY_HABITS.find(x => x.id === habitId);
       if (!h) return;
       const hKeys = getHabitKeysForDay(dIdx, h);
-      if (hKeys.length === 0) return; // No aplica
+      if (hKeys.length === 0) return;
       const allDone = hKeys.every(k => !!S.c[k]);
       hKeys.forEach(k => {
         if (allDone) delete S.c[k];
@@ -1468,14 +1596,38 @@
       let s = 0;
       for (let i = td; i >= 0; i--) {
         const st = getHabitStatus(i, h);
-        if (st === 'na') continue; // Si no aplica el día, no rompe ni suma en falso
+        if (st === 'na') continue;
         if (st === 'done') s++;
         else break;
       }
       return s;
     }
 
-    // Gestión de Tareas Personalizadas del Día
+    function addCustomExam(e) {
+      e.preventDefault();
+      const nameInput = $('#exam-name-input');
+      const dateInput = $('#exam-date-input');
+      const name = nameInput.value.trim();
+      const date = dateInput.value;
+      if (!name || !date) return;
+
+      if (!S.exams) S.exams = [];
+      S.exams.push({ id: Date.now(), name, date });
+      S.exams.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      nameInput.value = '';
+      dateInput.value = '';
+      save();
+      render();
+    }
+
+    function deleteExam(id) {
+      if (!S.exams) return;
+      S.exams = S.exams.filter(x => x.id !== id);
+      save();
+      render();
+    }
+
     function addCustomTask(e) {
       e.preventDefault();
       const input = $('#custom-task-input');
@@ -1503,11 +1655,308 @@
       render();
     }
 
-    // Gráfico de Curva Suave
+    // =========================================================================
+    // LÓGICA DE PROYECTOS PERSONALES (Trading, Clipping, Don Mancuerna, Side Hustles)
+    // =========================================================================
+    function updateInitialCapital(val) {
+      const num = parseFloat(val);
+      S.projects.initialCapital = isNaN(num) ? 0 : num;
+      save();
+      renderProjects();
+    }
+
+    function addTradeEntry(e) {
+      e.preventDefault();
+      const labelEl = $('#trade-label');
+      const profitEl = $('#trade-profit');
+      const label = labelEl.value.trim();
+      const profit = parseFloat(profitEl.value);
+      if (!label || isNaN(profit)) return;
+
+      S.projects.trades.push({
+        id: Date.now(),
+        label,
+        profit,
+        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      });
+      labelEl.value = '';
+      profitEl.value = '';
+      save();
+      renderProjects();
+    }
+
+    function deleteTradeEntry(id) {
+      S.projects.trades = S.projects.trades.filter(t => t.id !== id);
+      save();
+      renderProjects();
+    }
+
+    function addClippingEntry(e) {
+      e.preventDefault();
+      const titleEl = $('#clip-title');
+      const viewsEl = $('#clip-views');
+      const moneyEl = $('#clip-money');
+      const title = titleEl.value.trim();
+      const views = parseInt(viewsEl.value, 10) || 0;
+      const money = parseFloat(moneyEl.value) || 0;
+      if (!title) return;
+
+      S.projects.clipping.push({
+        id: Date.now(),
+        title,
+        views,
+        money,
+        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      });
+      titleEl.value = '';
+      viewsEl.value = '';
+      moneyEl.value = '';
+      save();
+      renderProjects();
+    }
+
+    function deleteClippingEntry(id) {
+      S.projects.clipping = S.projects.clipping.filter(c => c.id !== id);
+      save();
+      renderProjects();
+    }
+
+    function addSideHustleEntry(e) {
+      e.preventDefault();
+      const nameEl = $('#hustle-name');
+      const amtEl = $('#hustle-amount');
+      const name = nameEl.value.trim();
+      const amount = parseFloat(amtEl.value) || 0;
+      if (!name) return;
+
+      S.projects.sideHustles.push({
+        id: Date.now(),
+        name,
+        amount,
+        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      });
+      nameEl.value = '';
+      amtEl.value = '';
+      save();
+      renderProjects();
+    }
+
+    function deleteSideHustleEntry(id) {
+      S.projects.sideHustles = S.projects.sideHustles.filter(h => h.id !== id);
+      save();
+      renderProjects();
+    }
+
+    // Contador en tiempo real de Don Mancuerna (YouTube)
+    function adjustYtSubs(delta) {
+      S.projects.ytSubs = Math.max(0, (S.projects.ytSubs || 0) + delta);
+      save();
+      renderProjects();
+    }
+
+    function promptExactSubs() {
+      const val = prompt('Introduce el número actual de suscriptores de Don Mancuerna:', S.projects.ytSubs || 0);
+      if (val !== null) {
+        const n = parseInt(val.replace(/\D/g, ''), 10);
+        if (!isNaN(n)) {
+          S.projects.ytSubs = n;
+          save();
+          renderProjects();
+        }
+      }
+    }
+
+    async function fetchDonMancuernaSubs(manual = false) {
+      const noteEl = $('#yt-sync-note');
+      if (manual && noteEl) noteEl.textContent = 'Consultando YouTube en vivo...';
+      try {
+        const searchUrl = 'https://www.youtube.com/@DonMancuerna';
+        const html = await fetchTextWithFallbackProxies(searchUrl);
+        const m = html.match(/"subscriberCountText":\{"accessibility":\{"accessibilityData":\{"label":"([^"]+)"/);
+        if (m && m[1]) {
+          const digits = parseInt(m[1].replace(/\D/g, ''), 10);
+          if (!isNaN(digits) && digits > 0) {
+            S.projects.ytSubs = digits;
+            save();
+            renderProjects();
+          }
+          if (noteEl) noteEl.textContent = `YouTube Live: ${m[1]}`;
+          return;
+        }
+      } catch (e) {}
+      if (noteEl) noteEl.textContent = 'Contador en vivo activo · Actualización instantánea';
+    }
+
+    function renderTradingChart() {
+      const base = Number(S.projects.initialCapital || 0);
+      const trades = S.projects.trades || [];
+      const pointsData = [{ label: 'Inicio', val: base, diff: 0 }];
+      let running = base;
+
+      trades.forEach(t => {
+        running += Number(t.profit || 0);
+        pointsData.push({ label: t.label, val: running, diff: Number(t.profit || 0) });
+      });
+
+      const W = 520, H = 180, padL = 18, padR = 18, padT = 20, padB = 26;
+      const gw = W - padL - padR, gh = H - padT - padB;
+
+      const vals = pointsData.map(p => p.val);
+      const minV = Math.min(...vals, base * 0.95);
+      const maxV = Math.max(...vals, base * 1.05, minV + 10);
+      const range = Math.max(maxV - minV, 1);
+
+      const step = pointsData.length > 1 ? gw / (pointsData.length - 1) : gw;
+      const pts = pointsData.map((p, i) => ({
+        x: padL + (pointsData.length > 1 ? i * step : gw / 2),
+        y: padT + gh - ((p.val - minV) / range) * gh,
+        ...p
+      }));
+
+      const isUp = running >= base;
+      const strokeCol = isUp ? '#22C55E' : '#EF4444';
+      const gradId = isUp ? 'tradeGreenGrad' : 'tradeRedGrad';
+
+      let dPath = '';
+      if (pts.length === 1) {
+        dPath = `M ${padL},${pts[0].y.toFixed(1)} L ${W - padR},${pts[0].y.toFixed(1)}`;
+      } else {
+        dPath = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const p0 = pts[i], p1 = pts[i + 1];
+          const cx1 = p0.x + step * 0.4, cy1 = p0.y;
+          const cx2 = p1.x - step * 0.4, cy2 = p1.y;
+          dPath += ` C ${cx1.toFixed(1)},${cy1.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${p1.x.toFixed(1)},${p1.y.toFixed(1)}`;
+        }
+      }
+
+      const firstX = pts.length === 1 ? padL : pts[0].x;
+      const lastX = pts.length === 1 ? W - padR : pts[pts.length - 1].x;
+      const areaPath = `${dPath} L ${lastX.toFixed(1)},${(padT + gh).toFixed(1)} L ${firstX.toFixed(1)},${(padT + gh).toFixed(1)} Z`;
+      const baseLineY = padT + gh - ((base - minV) / range) * gh;
+
+      $('#trading-svg-container').innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;">
+          <defs>
+            <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${strokeCol}" stop-opacity="0.38"/>
+              <stop offset="100%" stop-color="${strokeCol}" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          <!-- Línea punteada de Capital Inicial (Break-even) -->
+          <line x1="${padL}" y1="${baseLineY.toFixed(1)}" x2="${W - padR}" y2="${baseLineY.toFixed(1)}" stroke="#4B423B" stroke-width="1" stroke-dasharray="4 4"/>
+          <path d="${areaPath}" fill="url(#${gradId})"/>
+          <path d="${dPath}" fill="none" stroke="${strokeCol}" stroke-width="2.8" stroke-linecap="round"/>
+          ${pts.map((p, i) => `
+            <g>
+              <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === pts.length - 1 ? 5.5 : 3.5}" fill="${p.diff >= 0 ? '#22C55E' : '#EF4444'}" stroke="#141210" stroke-width="1.8"/>
+              ${(i === 0 || i === pts.length - 1 || pts.length <= 6) ? `
+                <text x="${p.x.toFixed(1)}" y="${H - 5}" text-anchor="middle" font-size="9.5" fill="#9E9488" font-family="Space Grotesk">${p.label.slice(0, 8)}</text>
+              ` : ''}
+            </g>
+          `).join('')}
+        </svg>
+      `;
+    }
+
+    function renderProjects() {
+      const baseCap = Number(S.projects.initialCapital || 0);
+      const trades = S.projects.trades || [];
+      const tradesPnl = trades.reduce((acc, t) => acc + Number(t.profit || 0), 0);
+      const portfolioTotal = baseCap + tradesPnl;
+      const pnlPct = baseCap > 0 ? ((tradesPnl / baseCap) * 100).toFixed(1) : '0.0';
+
+      const clips = S.projects.clipping || [];
+      const totalViews = clips.reduce((acc, c) => acc + Number(c.views || 0), 0);
+      const totalClipMoney = clips.reduce((acc, c) => acc + Number(c.money || 0), 0);
+      const rpm = totalViews > 0 ? (totalClipMoney / (totalViews / 1000)) : 0;
+
+      const hustles = S.projects.sideHustles || [];
+      const totalHustlesMoney = hustles.reduce((acc, h) => acc + Number(h.amount || 0), 0);
+
+      const grandTotal = portfolioTotal + totalClipMoney + totalHustlesMoney;
+
+      // Actualizar Banner Maestro
+      $('#total-empire-money').textContent = fmtMoney(grandTotal);
+      $('#wb-trading').textContent = fmtMoney(portfolioTotal);
+      $('#wb-clipping').textContent = fmtMoney(totalClipMoney);
+      $('#wb-hustles').textContent = fmtMoney(totalHustlesMoney);
+
+      // Actualizar Sección Trading
+      const capInput = $('#initial-cap-input');
+      if (document.activeElement !== capInput) capInput.value = baseCap;
+      $('#trading-total-val').textContent = fmtMoney(portfolioTotal);
+      $('#trading-ops-count').textContent = `${trades.length} trade${trades.length === 1 ? '' : 's'}`;
+
+      const pnlBadge = $('#trading-pnl-badge');
+      pnlBadge.className = `pnl-badge ${tradesPnl >= 0 ? 'pos' : 'neg'}`;
+      pnlBadge.textContent = `${tradesPnl >= 0 ? '+' : ''}${fmtMoney(tradesPnl)} (${tradesPnl >= 0 ? '+' : ''}${pnlPct}%)`;
+
+      renderTradingChart();
+
+      $('#trades-history-list').innerHTML = trades.length === 0
+        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12px; padding:8px;">Aún no has registrado operaciones. Añade tu primer trade arriba.</div>`
+        : [...trades].reverse().map(t => `
+            <div class="trade-log-item">
+              <div>
+                <b>${t.label}</b>
+                <small style="color:var(--fg-muted); margin-left:6px;">${t.date}</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="trade-amt ${t.profit >= 0 ? 'pos' : 'neg'}">${t.profit >= 0 ? '+' : ''}${fmtMoney(t.profit)}</span>
+                <button class="ct-del" onclick="deleteTradeEntry(${t.id})">✕</button>
+              </div>
+            </div>
+          `).join('');
+
+      // Actualizar Don Mancuerna YT
+      $('#yt-subs-display').textContent = Number(S.projects.ytSubs || 0).toLocaleString('es-ES');
+
+      // Actualizar Clipping
+      $('#clip-total-views').textContent = totalViews.toLocaleString('es-ES');
+      $('#clip-total-money').textContent = fmtMoney(totalClipMoney);
+      $('#clip-count').textContent = clips.length;
+      $('#clipping-rpm-badge').textContent = `RPM: ${fmtMoney(rpm)}`;
+
+      $('#clipping-history-list').innerHTML = clips.length === 0
+        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12px; padding:8px;">Sin lotes de clipping registrados todavía.</div>`
+        : [...clips].reverse().map(c => `
+            <div class="trade-log-item">
+              <div>
+                <b>${c.title}</b>
+                <small style="color:var(--fg-muted); display:block;">${Number(c.views).toLocaleString('es-ES')} views · ${c.date}</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="trade-amt pos">+${fmtMoney(c.money)}</span>
+                <button class="ct-del" onclick="deleteClippingEntry(${c.id})">✕</button>
+              </div>
+            </div>
+          `).join('');
+
+      // Actualizar Side Hustles
+      $('#hustles-total-badge').textContent = `${fmtMoney(totalHustlesMoney)} extra`;
+      $('#hustles-history-list').innerHTML = hustles.length === 0
+        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12px; padding:8px;">Sin ingresos de side hustles apuntados.</div>`
+        : [...hustles].reverse().map(h => `
+            <div class="trade-log-item">
+              <div>
+                <b>${h.name}</b>
+                <small style="color:var(--fg-muted); margin-left:6px;">${h.date}</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="trade-amt pos">+${fmtMoney(h.amount)}</span>
+                <button class="ct-del" onclick="deleteSideHustleEntry(${h.id})">✕</button>
+              </div>
+            </div>
+          `).join('');
+    }
+
+    // =========================================================================
+    // GRÁFICO DE CURVA SEMANAL Y RENDER PRINCIPAL
+    // =========================================================================
     function renderSmoothCurve(pcts) {
       const W = 380, H = 145, padL = 16, padR = 24, padT = 18, padB = 26;
-      const gw = W - padL - padR;
-      const gh = H - padT - padB;
+      const gw = W - padL - padR, gh = H - padT - padB;
       const step = gw / 6;
 
       const pts = pcts.map((v, i) => ({
@@ -1519,12 +1968,9 @@
 
       let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
       for (let i = 0; i < pts.length - 1; i++) {
-        const p0 = pts[i];
-        const p1 = pts[i + 1];
-        const cx1 = p0.x + step * 0.45;
-        const cy1 = p0.y;
-        const cx2 = p1.x - step * 0.45;
-        const cy2 = p1.y;
+        const p0 = pts[i], p1 = pts[i + 1];
+        const cx1 = p0.x + step * 0.45, cy1 = p0.y;
+        const cx2 = p1.x - step * 0.45, cy2 = p1.y;
         d += ` C ${cx1.toFixed(1)},${cy1.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${p1.x.toFixed(1)},${p1.y.toFixed(1)}`;
       }
 
@@ -1563,12 +2009,10 @@
       const f = x => x.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
       $('#wk-label').textContent = `Semana ${f(m)} – ${f(e)}`;
 
-      // Totales semanales
       let totalWeek = 0, doneWeek = 0;
       const dailyPcts = D.map((_, i) => {
         const t = tot(i), dn = done(i);
-        totalWeek += t;
-        doneWeek += dn;
+        totalWeek += t; doneWeek += dn;
         return Math.round((dn / t) * 100);
       });
 
@@ -1576,13 +2020,13 @@
       $('#global-pct').textContent = `${globalPct}%`;
       $('#ring-3d').setAttribute('stroke-dasharray', `${(globalPct * 490) / 100} 490`);
 
-      // KPIs del día seleccionado
       const ks = keys(day);
       const supTotal = D[day][2].reduce((a, b) => a + (b[4] || []).length, 0);
       const supDone = ks.filter(k => k.split('.').length === 3).length;
       const waterDone = ks.filter(k => k.includes('.w')).length;
       const dayPct = dailyPcts[day];
 
+      $('#hero-prod-sub').textContent = `${dayPct}% hoy · En foco`;
       $('#kpi-done').textContent = `+${doneWeek}`;
       $('#kpi-day-pct').textContent = `${dayPct}%`;
       $('#kpi-supps').textContent = `${supDone + waterDone}/${supTotal + 3}`;
@@ -1590,7 +2034,6 @@
       $('#fc-badge-val').textContent = `${globalPct}%`;
       $('#fc-badge-sub').textContent = `progreso semanal`;
 
-      // Barra de días
       $('#days-bar').innerHTML = D.map((d, i) => `
         <div class="day-pill ${i === day ? 'on' : ''}" data-d="${i}">
           <b>${d[1]}</b>
@@ -1598,7 +2041,6 @@
         </div>
       `).join('');
 
-      // Cabecera y lista de tareas del día
       $('#day-title').textContent = `${D[day][0]} · Objetivos`;
       $('#day-counter').textContent = `${ks.length} / ${tot(day)} completados`;
 
@@ -1625,9 +2067,7 @@
                 ${(b[4] && b[4].length) ? `
                   <div class="supp-wrap">
                     ${b[4].map((s, j) => `
-                      <span class="supp-chip ${S.c[k + '.' + j] ? 'done' : ''}" data-k="${k + '.' + j}">
-                        ${s}
-                      </span>
+                      <span class="supp-chip ${S.c[k + '.' + j] ? 'done' : ''}" data-k="${k + '.' + j}">${s}</span>
                     `).join('')}
                   </div>
                 ` : ''}
@@ -1640,7 +2080,6 @@
 
       $('#task-list').innerHTML = tasksHtml || `<p style="text-align:center; color:var(--fg-muted); padding:20px 0;">Todo completado por hoy.</p>`;
 
-      // Hidratación
       $('#water-status').textContent = `${waterDone} / 3 L`;
       $('#water-row').innerHTML = [1, 2, 3].map(n => `
         <button class="water-btn ${S.c[day + '.w' + n] ? 'done' : ''}" data-k="${day + '.w' + n}">
@@ -1648,10 +2087,8 @@
         </button>
       `).join('');
 
-      // Gráfico de curva suave
       renderSmoothCurve(dailyPcts);
 
-      // Lista de Hábitos Clave con Iconos Minimalistas
       $('#streaks-list').innerHTML = KEY_HABITS.map(h => {
         const st = calcStreak(h);
         return `
@@ -1671,7 +2108,6 @@
         `;
       }).join('');
 
-      // Matriz 7D Interactiva y Reparada
       const head = `<tr><th>Hábito</th>${D.map((d, idx) => `<th class="${idx === day ? 'active-col' : ''}" style="cursor:pointer" onclick="selectDay(${idx})">${d[1]}</th>`).join('')}</tr>`;
       const body = KEY_HABITS.map(h => `
         <tr>
@@ -1683,36 +2119,64 @@
           </td>
           ${D.map((_, dIdx) => {
             const st = getHabitStatus(dIdx, h);
-            if (st === 'na') {
-              return `<td><span class="m-dot na" title="No aplica este día">—</span></td>`;
-            }
+            if (st === 'na') return `<td><span class="m-dot na">—</span></td>`;
             const cls = st === 'done' ? 'on' : (st === 'part' ? 'part' : '');
             const sym = st === 'done' ? '✓' : (st === 'part' ? '◐' : '·');
-            return `<td><span class="m-dot ${cls}" onclick="toggleHabitInMatrix(${dIdx}, '${h.id}')" title="Toca para alternar en ${D[dIdx][0]}">${sym}</span></td>`;
+            return `<td><span class="m-dot ${cls}" onclick="toggleHabitInMatrix(${dIdx}, '${h.id}')">${sym}</span></td>`;
           }).join('')}
         </tr>
       `).join('');
       $('#matrix-table').innerHTML = head + body;
 
-      // Tareas y Notas Diarias Personalizadas
+      // Renderizar Exámenes
+      const exams = S.exams || [];
+      $('#exams-counter').textContent = `${exams.length} programado${exams.length === 1 ? '' : 's'}`;
+      if (exams.length === 0) {
+        $('#exams-list-container').innerHTML = `<div style="text-align:center; color:var(--fg-muted); font-size:12.5px; padding:12px 0;">No hay exámenes próximos registrados.</div>`;
+      } else {
+        const todayObj = new Date(); todayObj.setHours(0,0,0,0);
+        $('#exams-list-container').innerHTML = exams.map(ex => {
+          const exDate = new Date(ex.date + 'T00:00:00');
+          const diffDays = Math.ceil((exDate - todayObj) / (1000 * 60 * 60 * 24));
+          let countText = diffDays === 0 ? '¡Es hoy!' : (diffDays === 1 ? 'Falta 1 día' : (diffDays > 0 ? `Faltan ${diffDays} días` : 'Finalizado'));
+          const formattedDate = exDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+          return `
+            <div class="exam-card">
+              <div class="exam-info">
+                <b>${ex.name} ${ex.fromBB ? '<span class="bb-tag">BB</span>' : ''}</b>
+                <small>${formattedDate}</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="exam-countdown">${countText}</span>
+                <button class="ct-del" onclick="deleteExam(${ex.id})" title="Eliminar">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Renderizar Tareas Diarias
       $('#notes-box-title').textContent = `Tareas Diarias · ${D[day][0]}`;
       const dayNotes = S.notes[day] || [];
       const pendingNotes = dayNotes.filter(x => !x.done).length;
       $('#notes-counter').textContent = `${pendingNotes} pendiente${pendingNotes === 1 ? '' : 's'}`;
 
       if (dayNotes.length === 0) {
-        $('#custom-tasks-list').innerHTML = `<div style="text-align:center; color:var(--fg-muted); font-size:12.5px; padding:12px 0;">No hay tareas adicionales apuntadas para el ${D[day][0].toLowerCase()}.</div>`;
+        $('#custom-tasks-list').innerHTML = `<div style="text-align:center; color:var(--fg-muted); font-size:12.5px; padding:12px 0;">No hay tareas adicionales para el ${D[day][0].toLowerCase()}.</div>`;
       } else {
         $('#custom-tasks-list').innerHTML = dayNotes.map(item => `
           <div class="ct-item ${item.done ? 'done' : ''}">
             <div class="ct-left" onclick="toggleCustomTask(${item.id})">
               <div class="ct-check">${item.done ? '✓' : ''}</div>
-              <span class="ct-text">${item.text}</span>
+              <span class="ct-text">${item.text} ${item.fromBB ? '<span class="bb-tag">Blackboard</span>' : ''}</span>
             </div>
             <button class="ct-del" onclick="deleteCustomTask(${item.id})" title="Eliminar tarea">✕</button>
           </div>
         `).join('');
       }
+
+      // Renderizar Proyectos Personales
+      renderProjects();
     }
 
     document.addEventListener('click', e => {
@@ -1723,11 +2187,10 @@
       } else if (t.id === 'rs') {
         if (!confirmRs) {
           confirmRs = true;
-          t.textContent = '¿Seguro? Toca otra vez para confirmar';
+          t.textContent = '¿Confirmas reiniciar los hábitos de la semana?';
           return;
         }
         S.c = {};
-        S.notes = {};
         confirmRs = false;
         t.textContent = 'Reiniciar semana';
       } else {
@@ -1743,6 +2206,11 @@
     load();
     render();
 
+    // Sincronizar automáticamente Blackboard US y YouTube al abrir y cada 15 min
+    syncBlackboardCalendar(false);
+    fetchDonMancuernaSubs(false);
+    setInterval(() => syncBlackboardCalendar(false), 15 * 60 * 1000);
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js');
@@ -1751,5 +2219,3 @@
   </script>
 </body>
 </html>
-
-```
