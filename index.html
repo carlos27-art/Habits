@@ -1,3 +1,31 @@
+Aquí tienes el código completo de tu archivo **`index.html`** totalmente corregido y actualizado con todos los cambios que me has pedido.
+
+### Resumen de las correcciones aplicadas:
+
+1. **Menú Lateral (Sidebar) de navegación**: He añadido un panel lateral fijo en escritorio (y adaptable en móvil) desde el cual puedes alternar instantáneamente entre **Panel Principal**, **Métricas y Gráficos**, **Matriz 7D** y **Tareas Rápidas**.
+2. **Matriz de Consistencia 7D interactiva y reparada**:
+* Ahora distingue los días en los que un hábito no aplica (por ejemplo, Universidad los fines de semana o Cuello los días de descanso) mostrando `—` en lugar de darlo por completado por error.
+* Si un hábito tiene varias partes en el día (como los suplementos o varias clases), muestra un estado parcial (`◐`) o completado (`✓`).
+* **Es 100% clicable**: si pulsas cualquier casilla de la matriz, marca o desmarca ese hábito en ese día concreto y actualiza todo el panel al instante.
+
+
+3. **Espacio para apuntar tareas diarias (en lugar de la cita de abajo)**: He eliminado la tarjeta de la frase de la universidad y en su lugar tienes un **Gestor de Tareas y Notas Diarias** donde puedes escribir nuevas tareas para el día seleccionado, marcarlas como hechas o borrarlas (todo guardado en `localStorage`).
+
+
+4. **Icono de productividad en la rueda 3D**: He eliminado el cubo 3D que flotaba sobre el anillo y lo he sustituido por una **insignia flotante de productividad** con un icono minimalista de cronómetro/enfoque (`50/10 Focus`).
+
+
+5. **Iconos SVG minimalistas estilo «Cumplimiento del día activo»**: He eliminado todos los emojis de las actividades y hábitos y los he reemplazado por **iconos vectoriales de línea fina (`stroke`)** dentro de cajas con fondo dorado suave (`#FDF3E1`) y trazo dorado (`#D49B4B`), exactamente igual que el icono de *Cumplimiento del día activo*.
+
+
+
+---
+
+### Código completo (`index.html`)
+
+Copia todo este código y reemplaza el contenido de tu archivo `index.html`:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,12 +34,13 @@
   <title>Nexora · Panel de Rendimiento y Hábitos</title>
 
   <!-- PWA & Mobile Web App Meta -->
+  <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Nexora">
   <meta name="theme-color" content="#FDFBF7">
 
-  <!-- Tipografías Modernas (Plus Jakarta Sans & Space Grotesk) -->
+  <!-- Tipografías Modernas -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -22,7 +51,6 @@
       padding-top: env(safe-area-inset-top, 0px);
       padding-bottom: env(safe-area-inset-bottom, 0px);
 
-      /* Paleta inspirada en Nexora: Marfil, Arena Cálida, Burdeos Profundo y Carbón */
       --bg: #FDFBF7;
       --bg-warm: #F6EFE2;
       --surface: #FFFFFF;
@@ -37,6 +65,7 @@
       --burgundy-soft: #FBE9ED;
 
       --gold: #D49B4B;
+      --gold-dark: #B57D2E;
       --gold-soft: #FDF3E1;
 
       --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -59,78 +88,145 @@
       font-family: var(--font-sans);
       font-size: 15px;
       line-height: 1.5;
-      padding: 16px 20px 48px;
-      max-width: 1120px;
-      margin: 0 auto;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Barra de Navegación Estilo SaaS Moderno */
-    .navbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 22px;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
+    /* Estructura General con Menú Lateral */
+    .app-shell {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      max-width: 1380px;
+      margin: 0 auto;
+      gap: 24px;
+      padding: 20px 20px 48px;
+      align-items: start;
+    }
+
+    /* Menú Lateral (Sidebar) */
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(14px);
       border: 1px solid var(--border);
-      border-radius: 100px;
-      margin-bottom: 24px;
+      border-radius: var(--radius-xl);
+      padding: 24px 18px;
       box-shadow: var(--shadow-soft);
-      gap: 12px;
-      flex-wrap: wrap;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
     }
     .brand {
       display: flex;
       align-items: center;
       gap: 10px;
       font-weight: 800;
-      font-size: 18px;
+      font-size: 19px;
       letter-spacing: -0.5px;
       color: var(--fg);
+      padding: 0 8px;
     }
     .brand-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
       background: var(--burgundy);
       display: grid;
       place-items: center;
       color: #FFF;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 15px;
       box-shadow: 0 4px 10px rgba(124, 10, 36, 0.3);
     }
-    .nav-links {
+    .side-nav {
       display: flex;
+      flex-direction: column;
       gap: 6px;
-      background: var(--bg-warm);
-      padding: 4px;
-      border-radius: 100px;
     }
-    .nav-link {
-      border: none;
+    .side-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--fg-muted);
+      padding: 0 10px;
+      margin-bottom: 4px;
+    }
+    .side-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      border: 1px solid transparent;
       background: transparent;
-      padding: 8px 16px;
-      border-radius: 100px;
+      padding: 11px 12px;
+      border-radius: 14px;
       font-family: var(--font-sans);
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--fg-muted);
       cursor: pointer;
-      transition: all 0.2s ease;
+      text-align: left;
+      transition: all 0.18s ease;
     }
-    .nav-link.active {
-      background: var(--surface);
+    .side-btn:hover {
+      background: var(--bg-warm);
       color: var(--fg);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
+    .side-btn.active {
+      background: var(--surface);
+      border-color: var(--border-strong);
+      color: var(--fg);
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(24, 21, 18, 0.05);
+    }
+    .side-btn .ico-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+    }
+    .side-btn.active .ico-box {
+      background: var(--burgundy);
+      color: #FFFFFF;
+    }
+
+    .side-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Iconos Minimalistas Estilo KPI (Caja Dorada Suave + Trazo Minimalista) */
+    .ico-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: var(--gold-soft);
+      color: var(--gold-dark);
+      border: 1px solid rgba(212, 155, 75, 0.25);
+      display: inline-grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: all 0.18s ease;
+    }
+    .ico-box svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
     .cta-pill {
       background: var(--burgundy);
       color: #FFFFFF;
       border: none;
-      padding: 10px 18px;
+      padding: 11px 18px;
       border-radius: 100px;
       font-family: var(--font-sans);
       font-weight: 700;
@@ -138,6 +234,7 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       transition: transform 0.15s ease, background 0.2s ease;
       box-shadow: 0 6px 16px -4px rgba(124, 10, 36, 0.4);
@@ -147,25 +244,53 @@
       transform: translateY(-1px);
     }
 
-    /* Layout Principal en 2 Columnas (Estilo Imagen) */
+    /* Contenido Principal */
+    .main-area {
+      min-width: 0;
+    }
+
+    /* Grid de 2 Columnas en Vista General */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 1.35fr 1fr;
+      grid-template-columns: 1.32fr 1fr;
       gap: 24px;
       align-items: start;
     }
-    @media (max-width: 900px) {
+    .dashboard-grid.single-col {
+      grid-template-columns: 1fr;
+    }
+
+    @media (max-width: 1024px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        padding: 16px;
+      }
+      .side-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+      .side-btn {
+        width: auto;
+        white-space: nowrap;
+      }
+      .side-label { display: none; }
+    }
+    @media (max-width: 860px) {
       .dashboard-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    /* Hero Izquierdo con Gráfico 3D Escultórico */
+    /* Hero Izquierdo con Rueda 3D y Badge de Productividad */
     .hero-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
-      padding: 32px;
+      padding: 30px;
       box-shadow: var(--shadow-soft);
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
@@ -178,7 +303,7 @@
     @media (max-width: 600px) {
       .hero-card {
         grid-template-columns: 1fr;
-        padding: 24px;
+        padding: 22px;
       }
     }
     .badge-pill {
@@ -201,10 +326,10 @@
       background: var(--burgundy);
     }
     .hero-title {
-      font-size: 38px;
+      font-size: 36px;
       line-height: 1.06;
       font-weight: 800;
-      letter-spacing: -1.3px;
+      letter-spacing: -1.2px;
       margin: 0 0 12px;
       color: var(--fg);
     }
@@ -213,7 +338,7 @@
     }
     .hero-sub {
       color: var(--fg-muted);
-      font-size: 14px;
+      font-size: 13.8px;
       margin: 0 0 20px;
       max-width: 380px;
     }
@@ -221,14 +346,14 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .btn-outline {
       background: var(--surface);
       border: 1px solid var(--border-strong);
       color: var(--fg);
-      padding: 10px 18px;
-      border-radius: 12px;
+      padding: 10px 16px;
+      border-radius: 100px;
       font-family: var(--font-sans);
       font-weight: 600;
       font-size: 13px;
@@ -251,7 +376,7 @@
       gap: 6px;
     }
 
-    /* Anillo 3D Escultórico (Inspirado en la pieza beige/burdeos) */
+    /* Escultura Anillo 3D + Insignia de Productividad */
     .sculpture-wrap {
       display: flex;
       flex-direction: column;
@@ -261,20 +386,51 @@
     }
     .sculpture-svg {
       width: 100%;
-      max-width: 220px;
+      max-width: 215px;
       height: auto;
       filter: drop-shadow(0 18px 24px rgba(24, 21, 18, 0.14));
     }
     .sculpture-pct {
       position: absolute;
       font-family: var(--font-display);
-      font-size: 30px;
+      font-size: 29px;
       font-weight: 700;
       color: var(--fg);
       letter-spacing: -1px;
     }
+    .prod-floating-badge {
+      position: absolute;
+      top: 4px;
+      left: 0px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 22px rgba(24, 21, 18, 0.1);
+    }
+    .prod-floating-badge .ico-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+    }
+    .prod-floating-badge div b {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--fg);
+    }
+    .prod-floating-badge div small {
+      display: block;
+      font-size: 9.5px;
+      color: var(--fg-muted);
+      font-weight: 600;
+    }
 
-    /* Selector de Días Tipo Píldoras Modernas */
+    /* Barra de 7 Días */
     .days-bar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -318,7 +474,7 @@
       color: #FFFFFF;
     }
 
-    /* Lista de Tareas / Horario */
+    /* Tarjetas de Sección */
     .section-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -332,14 +488,20 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     .section-head h2 {
       margin: 0;
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
+    /* Lista de Bloques Horarios */
     .task-list {
       display: flex;
       flex-direction: column;
@@ -379,17 +541,6 @@
       display: flex;
       gap: 12px;
       align-items: flex-start;
-    }
-    .task-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: var(--bg-warm);
-      border: 1px solid var(--border-strong);
-      display: grid;
-      place-items: center;
-      font-size: 16px;
-      flex-shrink: 0;
     }
     .task-time {
       font-family: var(--font-display);
@@ -435,6 +586,9 @@
       border: 1px solid var(--border-strong);
       color: var(--fg);
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       transition: all 0.15s;
     }
     .supp-chip.done {
@@ -478,6 +632,10 @@
       font-size: 13.5px;
       color: var(--fg);
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       transition: all 0.15s;
     }
     .water-btn.done {
@@ -487,12 +645,12 @@
       box-shadow: 0 6px 14px -4px rgba(124, 10, 36, 0.35);
     }
 
-    /* COLUMNA DERECHA: Panel de Impacto y Gráficos (Idéntico a la tarjeta derecha de la imagen) */
+    /* COLUMNA DERECHA: Panel de Impacto */
     .impact-panel {
       background: var(--bg-warm);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius-xl);
-      padding: 28px;
+      padding: 26px;
       box-shadow: var(--shadow-soft);
       position: relative;
     }
@@ -514,7 +672,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 18px 14px;
+      padding: 18px 12px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
@@ -527,16 +685,7 @@
       flex-direction: column;
       align-items: center;
     }
-    .kpi-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: var(--gold-soft);
-      color: var(--gold);
-      display: grid;
-      place-items: center;
-      font-size: 15px;
-      font-weight: 800;
+    .kpi-box .ico-box {
       margin-bottom: 6px;
     }
     .kpi-num {
@@ -554,7 +703,7 @@
       font-weight: 500;
     }
 
-    /* Tarjeta Flotante de Gráfico ("Crecimiento semanal") */
+    /* Gráfico de Curva Semanal */
     .floating-chart-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -591,11 +740,11 @@
     }
     .fc-highlight-box {
       position: absolute;
-      right: 6px;
-      bottom: 8px;
+      right: 12px;
+      bottom: 12px;
       background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
       color: #FFFFFF;
-      padding: 10px 14px;
+      padding: 9px 13px;
       border-radius: 14px;
       box-shadow: 0 10px 20px -4px rgba(124, 10, 36, 0.45);
       text-align: center;
@@ -604,7 +753,7 @@
     .fc-highlight-box b {
       display: block;
       font-family: var(--font-display);
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 700;
       line-height: 1.1;
     }
@@ -615,14 +764,15 @@
       margin-top: 2px;
     }
 
-    /* Lista de Hábitos Clave ("Nuestras soluciones" style) */
+    /* Lista de Hábitos Clave */
     .solutions-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      margin-bottom: 22px;
     }
     .sol-item {
-      background: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.8);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 12px 14px;
@@ -641,18 +791,6 @@
       align-items: center;
       gap: 12px;
     }
-    .sol-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: var(--burgundy-soft);
-      color: var(--burgundy);
-      display: grid;
-      place-items: center;
-      font-size: 15px;
-      font-weight: 800;
-      flex-shrink: 0;
-    }
     .sol-name {
       font-weight: 700;
       font-size: 13.5px;
@@ -666,56 +804,45 @@
       font-family: var(--font-display);
       font-size: 12px;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 5px 11px;
       border-radius: 100px;
-      background: var(--surface);
-      border: 1px solid var(--border-strong);
-      color: var(--burgundy);
+      background: var(--gold-soft);
+      border: 1px solid rgba(212, 155, 75, 0.35);
+      color: var(--gold-dark);
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    /* Tarjeta Testimonial / Cita de Enfoque */
-    .quote-card {
+    /* Tarjeta Blanca Interna (Matriz y Tareas Diarias) */
+    .white-box-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 20px;
       margin-top: 20px;
       box-shadow: var(--shadow-soft);
-      position: relative;
-    }
-    .quote-mark {
-      font-family: Georgia, serif;
-      font-size: 40px;
-      line-height: 1;
-      color: var(--burgundy);
-      margin-bottom: 4px;
-    }
-    .quote-text {
-      font-size: 13px;
-      color: var(--fg);
-      font-weight: 500;
-      margin: 0 0 12px;
-    }
-    .quote-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11.5px;
-      color: var(--fg-muted);
-      font-weight: 600;
-    }
-    .stars {
-      color: var(--gold);
-      letter-spacing: 1px;
     }
 
-    /* Matriz Completa */
+    /* Matriz de Consistencia 7D Interactiva */
+    .matrix-legend {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--fg-muted);
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .matrix-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
     .matrix-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 12.5px;
-      margin-top: 10px;
     }
     .matrix-table th {
       padding: 8px 4px;
@@ -724,9 +851,12 @@
       border-bottom: 1px solid var(--border);
       text-align: center;
     }
+    .matrix-table th.active-col {
+      color: var(--burgundy);
+    }
     .matrix-table th:first-child { text-align: left; }
     .matrix-table td {
-      padding: 8px 4px;
+      padding: 7px 3px;
       text-align: center;
       border-bottom: 1px solid var(--bg-warm);
     }
@@ -734,28 +864,148 @@
       text-align: left;
       font-weight: 600;
     }
-    .m-dot {
-      width: 24px;
-      height: 24px;
+    .m-habit-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .m-habit-cell .ico-box {
+      width: 26px;
+      height: 26px;
       border-radius: 7px;
+    }
+    .m-habit-cell .ico-box svg {
+      width: 14px;
+      height: 14px;
+    }
+    .m-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
       display: inline-grid;
       place-items: center;
-      background: var(--bg-warm);
+      background: var(--bg);
       border: 1px solid var(--border-strong);
       color: var(--fg-muted);
       font-size: 11px;
       font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .m-dot:hover:not(.na) {
+      border-color: var(--burgundy);
+      transform: scale(1.08);
     }
     .m-dot.on {
       background: var(--burgundy);
       border-color: var(--burgundy);
       color: #FFF;
     }
+    .m-dot.part {
+      background: var(--gold-soft);
+      border-color: var(--gold);
+      color: var(--gold-dark);
+    }
+    .m-dot.na {
+      background: transparent;
+      border-color: transparent;
+      color: #C7BCAE;
+      cursor: default;
+    }
+
+    /* Gestor de Tareas Diarias / Notas Rápidas */
+    .notes-form {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .notes-input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--fg);
+      outline: none;
+    }
+    .notes-input:focus {
+      border-color: var(--burgundy);
+      background: #FFF;
+    }
+    .notes-add-btn {
+      background: var(--burgundy);
+      color: #FFF;
+      border: none;
+      border-radius: 12px;
+      padding: 0 16px;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .custom-tasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ct-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .ct-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      flex: 1;
+    }
+    .ct-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      color: #FFF;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .ct-item.done .ct-check {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+    }
+    .ct-item.done .ct-text {
+      text-decoration: line-through;
+      color: var(--fg-muted);
+    }
+    .ct-del {
+      border: none;
+      background: transparent;
+      color: var(--fg-muted);
+      cursor: pointer;
+      font-size: 15px;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .ct-del:hover {
+      background: var(--burgundy-soft);
+      color: var(--burgundy);
+    }
 
     .reset-btn {
       width: 100%;
-      margin-top: 18px;
-      padding: 11px;
+      padding: 10px;
       border-radius: 12px;
       border: 1px dashed var(--border-strong);
       background: transparent;
@@ -770,200 +1020,276 @@
       color: var(--burgundy);
     }
   </style>
-  <link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Hábitos">
 </head>
 <body>
 
-  <!-- Barra Superior Estilo Nexora -->
-  <header class="navbar">
-    <div class="brand">
-      <div class="brand-icon">N</div>
-      <span>Nexora<span style="font-weight:400; color:var(--fg-muted)">Habits</span></span>
-    </div>
-    <div class="nav-links">
-      <button class="nav-link active" id="nav-all" onclick="filterMode('all')">Panel Completo</button>
-      <button class="nav-link" id="nav-focus" onclick="filterMode('pending')">Pendientes Hoy</button>
-      <button class="nav-link" id="nav-matrix" onclick="scrollToMatrix()">Matriz 7D</button>
-    </div>
-    <button class="cta-pill" onclick="jumpToday()">
-      Ir a hoy <span>→</span>
-    </button>
-  </header>
+  <div class="app-shell">
 
-  <!-- Grid Principal de 2 Columnas -->
-  <div class="dashboard-grid">
-
-    <!-- COLUMNA IZQUIERDA: Hero + Horario Diario -->
-    <div>
-      <!-- Hero Card con pieza escultórica 3D -->
-      <section class="hero-card">
-        <div>
-          <div class="badge-pill">
-            <span class="badge-dot"></span>
-            <span id="wk-label">Semana activa · 2026</span>
-          </div>
-          <h1 class="hero-title">
-            Empieza ahora,<br>firme y <span>rápido</span>
-          </h1>
-          <p class="hero-sub">
-            Estructuración diaria, estudio profundo, entrenamiento y suplementación para mantener tu rendimiento al máximo nivel.
-          </p>
-          <div class="hero-actions">
-            <button class="cta-pill" onclick="markCurrentBlock()">Completar bloque actual →</button>
-            <button class="btn-outline" onclick="scrollToMatrix()">Ver métricas</button>
-          </div>
-          <div class="hero-features">
-            <span>⚙️ Enfoque 50/10</span>
-            <span>⚡ Progreso continuo</span>
-          </div>
-        </div>
-
-        <!-- Gráfico Escultórico 3D (Anillo Biselado Beige + Núcleo Burdeos) -->
-        <div class="sculpture-wrap">
-          <svg class="sculpture-svg" viewBox="0 0 220 220">
-            <defs>
-              <!-- Gradiente 3D Beige Escultórico -->
-              <linearGradient id="beige3D" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#F5E6C8"/>
-                <stop offset="45%" stop-color="#DFC496"/>
-                <stop offset="85%" stop-color="#B89762"/>
-                <stop offset="100%" stop-color="#8F7143"/>
-              </linearGradient>
-              <!-- Gradiente 3D Burdeos Profundo -->
-              <linearGradient id="burgundy3D" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#B8143A"/>
-                <stop offset="55%" stop-color="#7C0A24"/>
-                <stop offset="100%" stop-color="#3D0310"/>
-              </linearGradient>
-              <!-- Sombra interna suave -->
-              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#181512" flood-opacity="0.18"/>
-              </filter>
-            </defs>
-
-            <!-- Aro interior Burdeos 3D -->
-            <circle cx="110" cy="110" r="52" fill="none" stroke="url(#burgundy3D)" stroke-width="22" stroke-dasharray="210 330" stroke-dashoffset="-35" stroke-linecap="round" filter="url(#softShadow)"/>
-
-            <!-- Aro exterior Beige 3D (Fondo del tubo) -->
-            <circle cx="110" cy="110" r="78" fill="none" stroke="#EFE6D5" stroke-width="28" stroke-linecap="round"/>
-
-            <!-- Aro exterior Beige 3D Dinámico según el % semanal -->
-            <circle id="ring-3d" cx="110" cy="110" r="78" fill="none" stroke="url(#beige3D)" stroke-width="28" stroke-linecap="round" stroke-dasharray="0 490" transform="rotate(-90 110 110)" filter="url(#softShadow)" style="transition: stroke-dasharray 0.6s cubic-bezier(0.22, 1, 0.36, 1);"/>
-
-            <!-- Cubo 3D decorativo superior izquierdo (guiño directo a la imagen) -->
-            <g transform="translate(26, 30)" filter="url(#softShadow)">
-              <polygon points="20,0 40,10 20,20 0,10" fill="#F7EAD0"/>
-              <polygon points="0,10 20,20 20,40 0,30" fill="#DFC496"/>
-              <polygon points="20,20 40,10 40,30 20,40" fill="#B89762"/>
-            </g>
-          </svg>
-          <div class="sculpture-pct" id="global-pct">0%</div>
-        </div>
-      </section>
-
-      <!-- Barra de 7 Días -->
-      <nav class="days-bar" id="days-bar"></nav>
-
-      <!-- Tarjeta de Agenda del Día -->
-      <section class="section-card">
-        <div class="section-head">
-          <h2 id="day-title">Jueves</h2>
-          <span class="badge-pill" id="day-counter">0 completados</span>
-        </div>
-        <div class="task-list" id="task-list"></div>
-      </section>
-
-      <!-- Tarjeta de Hidratación -->
-      <section class="section-card">
-        <div class="section-head" style="margin-bottom:6px;">
-          <h2>💧 Hidratación Diaria</h2>
-          <span style="font-size:12px; font-weight:700; color:var(--burgundy);" id="water-status">0 / 3 L</span>
-        </div>
-        <p style="margin:0; font-size:13px; color:var(--fg-muted);">Objetivo diario de 3 litros para mantener el foco cognitivo y rendimiento físico.</p>
-        <div class="water-row" id="water-row"></div>
-      </section>
-    </div>
-
-    <!-- COLUMNA DERECHA: Resultados que generan impacto + Gráfico Curvo + Rachas -->
-    <aside class="impact-panel">
-      <h2 class="impact-title">Resultados que<br>generan impacto</h2>
-      <p class="impact-sub">
-        Combinamos disciplina académica, entrenamiento de fuerza y descanso para entregar resultados reales cada semana.
-      </p>
-
-      <!-- Banda de 3 KPIs estilo imagen -->
-      <div class="kpi-band">
-        <div class="kpi-box">
-          <div class="kpi-icon">◎</div>
-          <div class="kpi-num" id="kpi-done">+0</div>
-          <div class="kpi-label">Objetivos<br>completados</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-icon">↗</div>
-          <div class="kpi-num" id="kpi-day-pct">0%</div>
-          <div class="kpi-label">Cumplimiento<br>del día activo</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-icon">⚡</div>
-          <div class="kpi-num" id="kpi-supps">0/0</div>
-          <div class="kpi-label">Suplementos<br>y agua hoy</div>
-        </div>
+    <!-- MENÚ LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">N</div>
+        <span>Nexora<span style="font-weight:400; color:var(--fg-muted)">Habits</span></span>
       </div>
 
-      <!-- Tarjeta Flotante: Gráfico de Curva Suave + Caja Burdeos -->
-      <div class="floating-chart-card">
-        <div class="fc-head">
-          <b>Rendimiento semanal</b>
-          <span class="fc-pill">Lunes a Domingo ▾</span>
-        </div>
-        <div class="fc-svg-container" id="curve-chart"></div>
-        <div class="fc-highlight-box">
-          <b id="fc-badge-val">+0%</b>
-          <span id="fc-badge-sub">media semanal</span>
-        </div>
+      <div class="side-nav">
+        <div class="side-label">Vistas del Panel</div>
+
+        <button class="side-btn active" id="nav-all" onclick="setSection('all')">
+          <span class="ico-box" id="ico-nav-all"></span>
+          <span>Panel Principal</span>
+        </button>
+
+        <button class="side-btn" id="nav-metrics" onclick="setSection('metrics')">
+          <span class="ico-box" id="ico-nav-metrics"></span>
+          <span>Métricas y Gráficos</span>
+        </button>
+
+        <button class="side-btn" id="nav-matrix" onclick="setSection('matrix')">
+          <span class="ico-box" id="ico-nav-matrix"></span>
+          <span>Matriz de Consistencia</span>
+        </button>
+
+        <button class="side-btn" id="nav-notes" onclick="setSection('notes')">
+          <span class="ico-box" id="ico-nav-notes"></span>
+          <span>Tareas Diarias</span>
+        </button>
       </div>
 
-      <!-- Hábitos Clave y Rachas ("Nuestras soluciones") -->
-      <h3 style="font-size:18px; font-weight:800; margin: 0 0 4px; letter-spacing:-0.4px;">Hábitos clave y rachas</h3>
-      <p style="font-size:12.5px; color:var(--fg-muted); margin: 0 0 14px;">Consistencia acumulada en tus pilares diarios.</p>
-      <div class="solutions-list" id="streaks-list"></div>
-
-      <!-- Matriz de 7 Días -->
-      <div class="quote-card" id="matrix-section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <b style="font-size:14px; font-weight:800;">Matriz de Consistencia 7D</b>
-          <span class="stars">★★★★★</span>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="matrix-table" id="matrix-table"></table>
-        </div>
+      <div class="side-nav">
+        <div class="side-label">Filtro de Agenda</div>
+        <button class="side-btn" id="nav-pending" onclick="togglePendingFilter()">
+          <span class="ico-box" id="ico-nav-filter"></span>
+          <span id="filter-label">Solo pendientes hoy</span>
+        </button>
       </div>
 
-      <!-- Cita Inferior Estilo Imagen -->
-      <div class="quote-card">
-        <div class="quote-mark">“</div>
-        <p class="quote-text">
-          La excelencia no es un acto aislado, sino el resultado directo de tus bloques de estudio, entrenamiento y descanso cumplidos cada día.
-        </p>
-        <div class="quote-footer">
-          <span>Ingeniería Informática & IA · US</span>
-          <span>4.9/5 consistencia</span>
-        </div>
+      <div class="side-footer">
+        <button class="cta-pill" onclick="jumpToday()">
+          Ir al día de hoy <span>→</span>
+        </button>
+        <button class="reset-btn" id="rs">Reiniciar semana</button>
       </div>
-
-      <button class="reset-btn" id="rs">Reiniciar progreso de la semana</button>
     </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="main-area">
+      <div class="dashboard-grid" id="main-grid">
+
+        <!-- COLUMNA IZQUIERDA: Hero + Horario Diario -->
+        <div id="col-left">
+          <!-- Hero Card con Rueda 3D y Badge de Productividad -->
+          <section class="hero-card" id="sec-hero">
+            <div>
+              <div class="badge-pill">
+                <span class="badge-dot"></span>
+                <span id="wk-label">Semana activa</span>
+              </div>
+              <h1 class="hero-title">
+                Empieza ahora,<br>firme y <span>rápido</span>
+              </h1>
+              <p class="hero-sub">
+                Estructuración diaria, estudio profundo, entrenamiento y suplementación para mantener tu rendimiento al máximo nivel.
+              </p>
+              <div class="hero-actions">
+                <button class="cta-pill" onclick="markCurrentBlock()">Completar bloque actual →</button>
+                <button class="btn-outline" onclick="setSection('matrix')">Abrir Matriz 7D</button>
+              </div>
+              <div class="hero-features">
+                <span id="feat-focus"></span>
+                <span id="feat-streak"></span>
+              </div>
+            </div>
+
+            <!-- Rueda Escultórica 3D con Insignia de Productividad (sin la caja antigua) -->
+            <div class="sculpture-wrap">
+              <div class="prod-floating-badge">
+                <span class="ico-box" id="hero-prod-ico"></span>
+                <div>
+                  <b>50/10 Focus</b>
+                  <small>Alta productividad</small>
+                </div>
+              </div>
+
+              <svg class="sculpture-svg" viewBox="0 0 220 220">
+                <defs>
+                  <linearGradient id="beige3D" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#F5E6C8"/>
+                    <stop offset="45%" stop-color="#DFC496"/>
+                    <stop offset="85%" stop-color="#B89762"/>
+                    <stop offset="100%" stop-color="#8F7143"/>
+                  </linearGradient>
+                  <linearGradient id="burgundy3D" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#B8143A"/>
+                    <stop offset="55%" stop-color="#7C0A24"/>
+                    <stop offset="100%" stop-color="#3D0310"/>
+                  </linearGradient>
+                  <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#181512" flood-opacity="0.18"/>
+                  </filter>
+                </defs>
+
+                <!-- Aro interior Burdeos 3D -->
+                <circle cx="110" cy="110" r="52" fill="none" stroke="url(#burgundy3D)" stroke-width="22" stroke-dasharray="210 330" stroke-dashoffset="-35" stroke-linecap="round" filter="url(#softShadow)"/>
+
+                <!-- Aro exterior Beige 3D (Fondo) -->
+                <circle cx="110" cy="110" r="78" fill="none" stroke="#EFE6D5" stroke-width="28" stroke-linecap="round"/>
+
+                <!-- Aro exterior Beige 3D Dinámico -->
+                <circle id="ring-3d" cx="110" cy="110" r="78" fill="none" stroke="url(#beige3D)" stroke-width="28" stroke-linecap="round" stroke-dasharray="0 490" transform="rotate(-90 110 110)" filter="url(#softShadow)" style="transition: stroke-dasharray 0.6s cubic-bezier(0.22, 1, 0.36, 1);"/>
+              </svg>
+              <div class="sculpture-pct" id="global-pct">0%</div>
+            </div>
+          </section>
+
+          <!-- Selector de 7 Días -->
+          <nav class="days-bar" id="days-bar"></nav>
+
+          <!-- Agenda Horaria del Día -->
+          <section class="section-card" id="sec-schedule">
+            <div class="section-head">
+              <h2>
+                <span class="ico-box" id="ico-schedule-title"></span>
+                <span id="day-title">Objetivos del Día</span>
+              </h2>
+              <span class="badge-pill" id="day-counter" style="margin:0;">0 completados</span>
+            </div>
+            <div class="task-list" id="task-list"></div>
+          </section>
+
+          <!-- Hidratación Diaria -->
+          <section class="section-card" id="sec-water">
+            <div class="section-head" style="margin-bottom:6px;">
+              <h2>
+                <span class="ico-box" id="ico-water-title"></span>
+                <span>Hidratación Diaria</span>
+              </h2>
+              <span style="font-size:13px; font-weight:800; color:var(--burgundy);" id="water-status">0 / 3 L</span>
+            </div>
+            <p style="margin:0; font-size:13px; color:var(--fg-muted);">Objetivo diario de 3 litros para mantener el foco cognitivo y rendimiento físico.</p>
+            <div class="water-row" id="water-row"></div>
+          </section>
+        </div>
+
+        <!-- COLUMNA DERECHA: Métricas, Gráfico, Rachas, Matriz 7D y Tareas Diarias -->
+        <aside class="impact-panel" id="col-right">
+          <div id="sec-metrics-block">
+            <h2 class="impact-title">Resultados que<br>generan impacto</h2>
+            <p class="impact-sub">
+              Seguimiento en tiempo real de tu disciplina académica, entrenamiento de fuerza y consistencia diaria.
+            </p>
+
+            <!-- Banda de 3 KPIs con Iconos Minimalistas Dorados -->
+            <div class="kpi-band">
+              <div class="kpi-box">
+                <div class="ico-box" id="kpi-ico-1"></div>
+                <div class="kpi-num" id="kpi-done">+0</div>
+                <div class="kpi-label">Objetivos<br>completados</div>
+              </div>
+              <div class="kpi-box">
+                <div class="ico-box" id="kpi-ico-2"></div>
+                <div class="kpi-num" id="kpi-day-pct">0%</div>
+                <div class="kpi-label">Cumplimiento<br>del día activo</div>
+              </div>
+              <div class="kpi-box">
+                <div class="ico-box" id="kpi-ico-3"></div>
+                <div class="kpi-num" id="kpi-supps">0/0</div>
+                <div class="kpi-label">Suplementos<br>y agua hoy</div>
+              </div>
+            </div>
+
+            <!-- Gráfico Flotante de Curva Semanal -->
+            <div class="floating-chart-card">
+              <div class="fc-head">
+                <b>Rendimiento semanal</b>
+                <span class="fc-pill">Lunes a Domingo</span>
+              </div>
+              <div class="fc-svg-container" id="curve-chart"></div>
+              <div class="fc-highlight-box">
+                <b id="fc-badge-val">0%</b>
+                <span id="fc-badge-sub">media semanal</span>
+              </div>
+            </div>
+
+            <!-- Hábitos Clave y Rachas -->
+            <h3 style="font-size:18px; font-weight:800; margin: 0 0 4px; letter-spacing:-0.4px;">Hábitos clave y rachas</h3>
+            <p style="font-size:12.5px; color:var(--fg-muted); margin: 0 0 14px;">Días consecutivos cumplidos hasta hoy.</p>
+            <div class="solutions-list" id="streaks-list"></div>
+          </div>
+
+          <!-- Matriz de Consistencia 7D (Interactiva y Reparada) -->
+          <div class="white-box-card" id="sec-matrix-block">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <b style="font-size:15px; font-weight:800;">Matriz de Consistencia 7D</b>
+              <span style="font-size:11px; color:var(--burgundy); font-weight:700;">Interactiva · Toca para marcar</span>
+            </div>
+            <div class="matrix-legend">
+              <span><b style="color:var(--burgundy)">■</b> Completado</span>
+              <span><b style="color:var(--gold-dark)">◐</b> Parcial</span>
+              <span><b>·</b> Pendiente</span>
+              <span><b>—</b> No aplica</span>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="matrix-table" id="matrix-table"></table>
+            </div>
+          </div>
+
+          <!-- Espacio para Apuntar Tareas Diarias (Sustituye a la cita de la universidad) -->
+          <div class="white-box-card" id="sec-notes-block">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <b style="font-size:15px; font-weight:800;" id="notes-box-title">Tareas y Notas del Día</b>
+              <span class="badge-pill" id="notes-counter" style="margin:0;">0 pendientes</span>
+            </div>
+            <p style="font-size:12px; color:var(--fg-muted); margin:4px 0 10px;">
+              Añade entregas, recados o recordatorios rápidos para este día.
+            </p>
+            <form class="notes-form" onsubmit="addCustomTask(event)">
+              <input type="text" id="custom-task-input" class="notes-input" placeholder="Ej: Entregar práctica de FP1, comprar avena..." required>
+              <button type="submit" class="notes-add-btn">+ Añadir</button>
+            </form>
+            <div class="custom-tasks-list" id="custom-tasks-list"></div>
+          </div>
+
+        </aside>
+
+      </div>
+    </main>
 
   </div>
 
   <script>
+    // Biblioteca de Iconos Vectoriales Minimalistas (Estilo "Cumplimiento del día activo")
+    const ICONS = {
+      trend: `<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+      target: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>`,
+      bolt: `<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+      timer: `<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg>`,
+      sun: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+      utensils: `<svg viewBox="0 0 24 24"><path d="M4 3v7a3 3 0 0 0 6 0V3"/><path d="M7 3v18"/><path d="M18 3v18"/><path d="M18 3a3 3 0 0 0-3 3v5h3"/></svg>`,
+      book: `<svg viewBox="0 0 24 24"><path d="M2 4h7a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-7a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h8z"/></svg>`,
+      cap: `<svg viewBox="0 0 24 24"><polygon points="12 3 2 8 12 13 22 8 12 3"/><path d="M6 10.5v5.5c0 1.8 2.7 3.2 6 3.2s6-1.4 6-3.2v-5.5"/></svg>`,
+      layers: `<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 12 12 17 22 12"/><polyline points="2 17 12 22 22 17"/></svg>`,
+      dumbbell: `<svg viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><path d="M21 21l-1-1"/><path d="M3 3l1 1"/><path d="M18 22l4-4"/><path d="M2 6l4-4"/><path d="M3 10l7-7"/><path d="M14 21l7-7"/></svg>`,
+      shield: `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>`,
+      moon: `<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+      bed: `<svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>`,
+      sparkles: `<svg viewBox="0 0 24 24"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2L12 3z"/></svg>`,
+      pill: `<svg viewBox="0 0 24 24"><path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg>`,
+      drop: `<svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
+      grid: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>`,
+      checkList: `<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+      calendar: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`
+    };
+
     const CT = {
-      m: ['🌅','Mañana'], c: ['🍳','Nutrición'], u: ['📚','Universidad'],
-      p: ['🛠','Productividad'], s: ['💪','Fuerza & Salud'], n: ['🌙','Noche'],
-      d: ['💤','Descanso'], o: ['🎉','Social']
+      m: [ICONS.sun, 'Mañana'],
+      c: [ICONS.utensils, 'Nutrición'],
+      u: [ICONS.book, 'Universidad'],
+      p: [ICONS.layers, 'Productividad'],
+      s: [ICONS.dumbbell, 'Fuerza & Salud'],
+      n: [ICONS.moon, 'Noche'],
+      d: [ICONS.bed, 'Descanso'],
+      o: [ICONS.sparkles, 'Social']
     };
 
     const W = [
@@ -1004,13 +1330,13 @@
     ];
 
     const KEY_HABITS = [
-      { id: 'morning', icon: '🌅', name: 'Rutina de Mañana', desc: 'Estiramientos, ducha y calcio', match: b => b[2]==='m' },
-      { id: 'study', icon: '📚', name: 'Estudio Profundo 50/10', desc: 'Bloques de alta concentración', match: b => b[1].includes('Estudio') },
-      { id: 'uni', icon: '🎓', name: 'Clases Universidad', desc: 'Asistencia y seguimiento diario', match: b => b[3].includes('H.') || b[3].includes('I2.') },
-      { id: 'gym', icon: '💪', name: 'Entrenamiento Fuerza', desc: 'Pierna, Torso, Pull & Push', match: b => b[3]==='Gimnasio' },
-      { id: 'neck', icon: '🛡️', name: 'Entreno de Cuello', desc: 'Fuerza cervical específica', match: b => b[1].includes('cuello') },
-      { id: 'supps', icon: '💊', name: 'Suplementación', desc: 'Creatina, Magnesio y Calcio', isSupps: true },
-      { id: 'water', icon: '💧', name: 'Hidratación 3 L', desc: 'Objetivo hídrico completado', isWater: true }
+      { id: 'morning', icon: ICONS.sun, short: 'Mañana', name: 'Rutina de Mañana', desc: 'Estiramientos, ducha y activación', match: b => b[2]==='m' },
+      { id: 'study', icon: ICONS.timer, short: 'Estudio', name: 'Estudio Profundo 50/10', desc: 'Sesiones de alta concentración', match: b => b[1].includes('Estudio') },
+      { id: 'uni', icon: ICONS.cap, short: 'Clases Uni', name: 'Clases Universidad', desc: 'Asistencia a bloques lectivos', match: b => b[3].includes('H.') || b[3].includes('I2.') || b[3].includes('H0.') },
+      { id: 'gym', icon: ICONS.dumbbell, short: 'Gimnasio', name: 'Entrenamiento Fuerza', desc: 'Pierna, Torso, Pull & Push', match: b => b[3]==='Gimnasio' },
+      { id: 'neck', icon: ICONS.shield, short: 'Cuello', name: 'Entreno de Cuello', desc: 'Fuerza cervical específica', match: b => b[1].includes('cuello') },
+      { id: 'supps', icon: ICONS.pill, short: 'Suplem.', name: 'Suplementación', desc: 'Creatina, Magnesio y Calcio', isSupps: true },
+      { id: 'water', icon: ICONS.drop, short: 'Agua 3L', name: 'Hidratación 3 L', desc: 'Objetivo hídrico completado', isWater: true }
     ];
 
     const $ = s => document.querySelector(s);
@@ -1020,12 +1346,33 @@
     const nowv = () => { const d = new Date(); const v = d.getHours()*60+d.getMinutes(); return v<300 ? v+1440 : v; };
     const td = (new Date().getDay()+6)%7;
 
-    let S, day = td, mode = 'all', confirmRs = false;
+    let S, day = td, onlyPending = false, currentSection = 'all', confirmRs = false;
+
+    function initStaticIcons() {
+      $('#ico-nav-all').innerHTML = ICONS.grid;
+      $('#ico-nav-metrics').innerHTML = ICONS.trend;
+      $('#ico-nav-matrix').innerHTML = ICONS.calendar;
+      $('#ico-nav-notes').innerHTML = ICONS.checkList;
+      $('#ico-nav-filter').innerHTML = ICONS.target;
+      $('#hero-prod-ico').innerHTML = ICONS.timer;
+      $('#ico-schedule-title').innerHTML = ICONS.calendar;
+      $('#ico-water-title').innerHTML = ICONS.drop;
+      $('#kpi-ico-1').innerHTML = ICONS.target;
+      $('#kpi-ico-2').innerHTML = ICONS.trend;
+      $('#kpi-ico-3').innerHTML = ICONS.bolt;
+      $('#feat-focus').innerHTML = `${ICONS.timer.replace('<svg ', '<svg width="15" height="15" stroke="#7C0A24" fill="none" stroke-width="2" ')} Bloques 50/10`;
+      $('#feat-streak').innerHTML = `${ICONS.trend.replace('<svg ', '<svg width="15" height="15" stroke="#7C0A24" fill="none" stroke-width="2" ')} Progreso real`;
+    }
 
     function load() {
       let r = {};
       try { r = JSON.parse(localStorage.getItem('vida3') || '{}') || {}; } catch(e){}
-      S = { wk: wkKey(), pal: 0, c: r.wk === wkKey() ? (r.c || {}) : {} };
+      S = {
+        wk: wkKey(),
+        pal: 0,
+        c: r.wk === wkKey() ? (r.c || {}) : {},
+        notes: r.wk === wkKey() ? (r.notes || {}) : {}
+      };
     }
 
     function save() {
@@ -1036,20 +1383,62 @@
     const keys = d => Object.keys(S.c).filter(k => S.c[k] && k.split('.')[0] == d);
     const done = d => keys(d).length;
 
-    function filterMode(m) {
-      mode = m;
-      $('#nav-all').classList.toggle('active', m === 'all');
-      $('#nav-focus').classList.toggle('active', m === 'pending');
+    // Navegación del Menú Lateral
+    function setSection(sec) {
+      currentSection = sec;
+      ['all','metrics','matrix','notes'].forEach(id => {
+        $('#nav-' + id).classList.toggle('active', id === sec);
+      });
+
+      const grid = $('#main-grid');
+      const colL = $('#col-left');
+      const colR = $('#col-right');
+      const bMetrics = $('#sec-metrics-block');
+      const bMatrix = $('#sec-matrix-block');
+      const bNotes = $('#sec-notes-block');
+
+      if (sec === 'all') {
+        grid.classList.remove('single-col');
+        colL.style.display = 'block';
+        colR.style.display = 'block';
+        bMetrics.style.display = 'block';
+        bMatrix.style.display = 'block';
+        bNotes.style.display = 'block';
+      } else if (sec === 'metrics') {
+        grid.classList.add('single-col');
+        colL.style.display = 'none';
+        colR.style.display = 'block';
+        bMetrics.style.display = 'block';
+        bMatrix.style.display = 'none';
+        bNotes.style.display = 'none';
+      } else if (sec === 'matrix') {
+        grid.classList.add('single-col');
+        colL.style.display = 'none';
+        colR.style.display = 'block';
+        bMetrics.style.display = 'none';
+        bMatrix.style.display = 'block';
+        bNotes.style.display = 'none';
+      } else if (sec === 'notes') {
+        grid.classList.add('single-col');
+        colL.style.display = 'none';
+        colR.style.display = 'block';
+        bMetrics.style.display = 'none';
+        bMatrix.style.display = 'none';
+        bNotes.style.display = 'block';
+      }
       render();
+    }
+
+    function togglePendingFilter() {
+      onlyPending = !onlyPending;
+      $('#nav-pending').classList.toggle('active', onlyPending);
+      if (currentSection !== 'all') setSection('all');
+      else render();
     }
 
     function jumpToday() {
       day = td;
-      render();
-    }
-
-    function scrollToMatrix() {
-      $('#matrix-section').scrollIntoView({ behavior: 'smooth' });
+      setSection('all');
     }
 
     function markCurrentBlock() {
@@ -1061,34 +1450,88 @@
       render();
     }
 
-    function isHabitDone(dIdx, h) {
-      if (h.isWater) return [1,2,3].every(n => S.c[dIdx + '.w' + n]);
-      if (h.isSupps) {
-        let total = 0, doneCount = 0;
-        D[dIdx][2].forEach((b, i) => {
-          (b[4]||[]).forEach((_, sIdx) => {
-            total++;
-            if (S.c[dIdx + '.' + i + '.' + sIdx]) doneCount++;
-          });
-        });
-        return total > 0 && doneCount === total;
+    // Lógica precisa de Estado de Hábito para Matriz y Rachas
+    function getHabitKeysForDay(dIdx, h) {
+      if (h.isWater) {
+        return [1, 2, 3].map(n => `${dIdx}.w${n}`);
       }
-      const matchingIdxs = [];
-      D[dIdx][2].forEach((b, i) => { if (h.match(b)) matchingIdxs.push(i); });
-      if (matchingIdxs.length === 0) return true;
-      return matchingIdxs.every(idx => S.c[dIdx + '.' + idx]);
+      if (h.isSupps) {
+        const list = [];
+        D[dIdx][2].forEach((b, i) => {
+          (b[4] || []).forEach((_, sIdx) => list.push(`${dIdx}.${i}.${sIdx}`));
+        });
+        return list;
+      }
+      const list = [];
+      D[dIdx][2].forEach((b, i) => {
+        if (h.match(b)) list.push(`${dIdx}.${i}`);
+      });
+      return list;
+    }
+
+    function getHabitStatus(dIdx, h) {
+      const hKeys = getHabitKeysForDay(dIdx, h);
+      if (hKeys.length === 0) return 'na'; // No aplica ese día
+      const doneCount = hKeys.filter(k => !!S.c[k]).length;
+      if (doneCount === 0) return 'none';
+      if (doneCount === hKeys.length) return 'done';
+      return 'part';
+    }
+
+    function toggleHabitInMatrix(dIdx, habitId) {
+      const h = KEY_HABITS.find(x => x.id === habitId);
+      if (!h) return;
+      const hKeys = getHabitKeysForDay(dIdx, h);
+      if (hKeys.length === 0) return; // No aplica
+      const allDone = hKeys.every(k => !!S.c[k]);
+      hKeys.forEach(k => {
+        if (allDone) delete S.c[k];
+        else S.c[k] = true;
+      });
+      save();
+      render();
     }
 
     function calcStreak(h) {
       let s = 0;
       for (let i = td; i >= 0; i--) {
-        if (isHabitDone(i, h)) s++;
+        const st = getHabitStatus(i, h);
+        if (st === 'na') continue; // Si no aplica el día, no rompe ni suma en falso
+        if (st === 'done') s++;
         else break;
       }
       return s;
     }
 
-    // Genera una curva Bézier suave idéntica al gráfico "Crecimiento mensual" de la imagen
+    // Gestión de Tareas Personalizadas del Día
+    function addCustomTask(e) {
+      e.preventDefault();
+      const input = $('#custom-task-input');
+      const text = input.value.trim();
+      if (!text) return;
+      if (!S.notes[day]) S.notes[day] = [];
+      S.notes[day].push({ id: Date.now(), text, done: false });
+      input.value = '';
+      save();
+      render();
+    }
+
+    function toggleCustomTask(id) {
+      const list = S.notes[day] || [];
+      const item = list.find(x => x.id === id);
+      if (item) item.done = !item.done;
+      save();
+      render();
+    }
+
+    function deleteCustomTask(id) {
+      if (!S.notes[day]) return;
+      S.notes[day] = S.notes[day].filter(x => x.id !== id);
+      save();
+      render();
+    }
+
+    // Gráfico de Curva Suave
     function renderSmoothCurve(pcts) {
       const W = 380, H = 145, padL = 16, padR = 24, padT = 18, padB = 26;
       const gw = W - padL - padR;
@@ -1102,7 +1545,6 @@
         label: D[i][1]
       }));
 
-      // Construir path curvo suave (Catmull-Rom / Cubic Bezier)
       let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
       for (let i = 0; i < pts.length - 1; i++) {
         const p0 = pts[i];
@@ -1115,13 +1557,12 @@
       }
 
       const areaD = `${d} L ${pts[6].x.toFixed(1)},${(padT + gh).toFixed(1)} L ${pts[0].x.toFixed(1)},${(padT + gh).toFixed(1)} Z`;
-      const activePt = pts[day];
 
       $('#curve-chart').innerHTML = `
         <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;">
           <defs>
             <linearGradient id="curveArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#D49B4B" stop-opacity="0.28"/>
+              <stop offset="0%" stop-color="#D49B4B" stop-opacity="0.3"/>
               <stop offset="100%" stop-color="#D49B4B" stop-opacity="0.0"/>
             </linearGradient>
           </defs>
@@ -1130,7 +1571,7 @@
           <path d="${d}" fill="none" stroke="#181512" stroke-width="2.6" stroke-linecap="round"/>
           ${pts.map((p, idx) => `
             <g style="cursor:pointer" onclick="selectDay(${idx})">
-              <circle cx="${p.x}" cy="${p.y}" r="${idx === day ? 8 : 4}" fill="${idx === day ? '#7C0A24' : '#FFFFFF'}" stroke="#181512" stroke-width="${idx === day ? 2.5 : 1.8}"/>
+              <circle cx="${p.x}" cy="${p.y}" r="${idx === day ? 7.5 : 4}" fill="${idx === day ? '#7C0A24' : '#FFFFFF'}" stroke="#181512" stroke-width="${idx === day ? 2.5 : 1.8}"/>
               <text x="${p.x}" y="${H - 4}" text-anchor="middle" font-size="10.5" font-weight="${idx === day ? '800' : '600'}" fill="${idx === day ? '#7C0A24' : '#6E655C'}">${p.label}</text>
             </g>
           `).join('')}
@@ -1197,11 +1638,11 @@
       const tasksHtml = D[day][2].map((b, i) => {
         const k = day + '.' + i;
         const isDone = !!S.c[k];
-        if (mode === 'pending' && isDone) return '';
+        if (onlyPending && isDone) return '';
         return `
           <div class="task-item ${isDone ? 'done' : ''} ${i === cur ? 'now' : ''}" data-k="${k}">
             <div class="task-left">
-              <div class="task-icon">${CT[b[2]][0]}</div>
+              <div class="ico-box">${CT[b[2]][0]}</div>
               <div>
                 <div class="task-time">
                   <span>${b[0]}</span>
@@ -1212,7 +1653,9 @@
                 ${(b[4] && b[4].length) ? `
                   <div class="supp-wrap">
                     ${b[4].map((s, j) => `
-                      <span class="supp-chip ${S.c[k + '.' + j] ? 'done' : ''}" data-k="${k + '.' + j}">💊 ${s}</span>
+                      <span class="supp-chip ${S.c[k + '.' + j] ? 'done' : ''}" data-k="${k + '.' + j}">
+                        ${s}
+                      </span>
                     `).join('')}
                   </div>
                 ` : ''}
@@ -1223,48 +1666,81 @@
         `;
       }).join('');
 
-      $('#task-list').innerHTML = tasksHtml || `<p style="text-align:center; color:var(--fg-muted); padding:20px 0;">🎉 ¡Todo completado por hoy!</p>`;
+      $('#task-list').innerHTML = tasksHtml || `<p style="text-align:center; color:var(--fg-muted); padding:20px 0;">Todo completado por hoy.</p>`;
 
-      // Agua
+      // Hidratación
       $('#water-status').textContent = `${waterDone} / 3 L`;
       $('#water-row').innerHTML = [1, 2, 3].map(n => `
         <button class="water-btn ${S.c[day + '.w' + n] ? 'done' : ''}" data-k="${day + '.w' + n}">
-          💧 ${n} Litro${n > 1 ? 's' : ''}
+          <span>${n} Litro${n > 1 ? 's' : ''}</span>
         </button>
       `).join('');
 
       // Gráfico de curva suave
       renderSmoothCurve(dailyPcts);
 
-      // Lista de rachas
+      // Lista de Hábitos Clave con Iconos Minimalistas
       $('#streaks-list').innerHTML = KEY_HABITS.map(h => {
         const st = calcStreak(h);
         return `
           <div class="sol-item">
             <div class="sol-left">
-              <div class="sol-icon">${h.icon}</div>
+              <div class="ico-box">${h.icon}</div>
               <div>
                 <div class="sol-name">${h.name}</div>
                 <div class="sol-desc">${h.desc}</div>
               </div>
             </div>
-            <div class="sol-streak">🔥 ${st} ${st === 1 ? 'día' : 'días'}</div>
+            <div class="sol-streak">
+              ${ICONS.trend.replace('<svg ', '<svg width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.2" ')}
+              <span>${st} ${st === 1 ? 'día' : 'días'}</span>
+            </div>
           </div>
         `;
       }).join('');
 
-      // Matriz 7D
-      const head = `<tr><th>Hábito</th>${D.map(d => `<th>${d[1]}</th>`).join('')}</tr>`;
+      // Matriz 7D Interactiva y Reparada
+      const head = `<tr><th>Hábito</th>${D.map((d, idx) => `<th class="${idx === day ? 'active-col' : ''}" style="cursor:pointer" onclick="selectDay(${idx})">${d[1]}</th>`).join('')}</tr>`;
       const body = KEY_HABITS.map(h => `
         <tr>
-          <td>${h.icon} ${h.name.split(' ')[0]}</td>
+          <td>
+            <div class="m-habit-cell">
+              <span class="ico-box">${h.icon}</span>
+              <span>${h.short}</span>
+            </div>
+          </td>
           ${D.map((_, dIdx) => {
-            const ok = isHabitDone(dIdx, h);
-            return `<td><span class="m-dot ${ok ? 'on' : ''}">${ok ? '✓' : '·'}</span></td>`;
+            const st = getHabitStatus(dIdx, h);
+            if (st === 'na') {
+              return `<td><span class="m-dot na" title="No aplica este día">—</span></td>`;
+            }
+            const cls = st === 'done' ? 'on' : (st === 'part' ? 'part' : '');
+            const sym = st === 'done' ? '✓' : (st === 'part' ? '◐' : '·');
+            return `<td><span class="m-dot ${cls}" onclick="toggleHabitInMatrix(${dIdx}, '${h.id}')" title="Toca para alternar en ${D[dIdx][0]}">${sym}</span></td>`;
           }).join('')}
         </tr>
       `).join('');
       $('#matrix-table').innerHTML = head + body;
+
+      // Tareas y Notas Diarias Personalizadas
+      $('#notes-box-title').textContent = `Tareas Diarias · ${D[day][0]}`;
+      const dayNotes = S.notes[day] || [];
+      const pendingNotes = dayNotes.filter(x => !x.done).length;
+      $('#notes-counter').textContent = `${pendingNotes} pendiente${pendingNotes === 1 ? '' : 's'}`;
+
+      if (dayNotes.length === 0) {
+        $('#custom-tasks-list').innerHTML = `<div style="text-align:center; color:var(--fg-muted); font-size:12.5px; padding:12px 0;">No hay tareas adicionales apuntadas para el ${D[day][0].toLowerCase()}.</div>`;
+      } else {
+        $('#custom-tasks-list').innerHTML = dayNotes.map(item => `
+          <div class="ct-item ${item.done ? 'done' : ''}">
+            <div class="ct-left" onclick="toggleCustomTask(${item.id})">
+              <div class="ct-check">${item.done ? '✓' : ''}</div>
+              <span class="ct-text">${item.text}</span>
+            </div>
+            <button class="ct-del" onclick="deleteCustomTask(${item.id})" title="Eliminar tarea">✕</button>
+          </div>
+        `).join('');
+      }
     }
 
     document.addEventListener('click', e => {
@@ -1275,12 +1751,13 @@
       } else if (t.id === 'rs') {
         if (!confirmRs) {
           confirmRs = true;
-          t.textContent = '¿Confirmas borrar el progreso semanal? Toca de nuevo';
+          t.textContent = '¿Seguro? Toca otra vez para confirmar';
           return;
         }
         S.c = {};
+        S.notes = {};
         confirmRs = false;
-        t.textContent = 'Reiniciar progreso de la semana';
+        t.textContent = 'Reiniciar semana';
       } else {
         const k = t.dataset.k;
         S.c[k] = !S.c[k];
@@ -1290,13 +1767,17 @@
       render();
     });
 
+    initStaticIcons();
     load();
     render();
+
     if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js');
-  });
-}
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
   </script>
 </body>
 </html>
+
+```
