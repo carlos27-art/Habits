@@ -506,9 +506,13 @@
     /* Formularios e Inputs */
     .notes-form { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    @media (max-width: 520px) {
-      .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .form-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    @media (max-width: 600px) {
+      .form-row, .form-row-3, .form-row-4 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 420px) {
+      .form-row, .form-row-3, .form-row-4 { grid-template-columns: 1fr; }
     }
     .notes-input {
       padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-strong);
@@ -540,7 +544,7 @@
     .exam-countdown { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 100px; background: var(--burgundy-soft); color: var(--burgundy); border: 1px solid rgba(124, 10, 36, 0.2); white-space: nowrap; }
 
     /* ====================================================
-       SECCIÓN PROYECTOS PERSONALES (Trading, Clipping, YT, Side Hustles)
+       SECCIÓN PROYECTOS PERSONALES & CAL AI
        ==================================================== */
     .projects-wrap, .calai-wrap {
       display: none;
@@ -649,46 +653,12 @@
       height: 185px;
     }
 
-    /* Previsualizador de Operación (Compra, Venta, RR y PnL) */
-    .trade-preview-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      background: var(--bg-warm);
-      border: 1px solid var(--border-strong);
-      border-radius: 12px;
-      padding: 9px 14px;
-      font-size: 12px;
-    }
-    .rr-tag {
-      font-family: var(--font-display);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
-      background: var(--gold-soft);
-      color: var(--gold-dark);
-      border: 1px solid rgba(212, 155, 75, 0.35);
-    }
-    .side-tag {
-      font-family: var(--font-display);
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 5px;
-      text-transform: uppercase;
-    }
-    .side-tag.long { background: var(--green-soft); color: var(--green); }
-    .side-tag.short { background: var(--red-soft); color: var(--red); }
-
     .trade-log-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 11px 13px;
-      border-radius: 12px;
+      padding: 11px 14px;
+      border-radius: 14px;
       background: var(--bg);
       border: 1px solid var(--border);
       font-size: 13px;
@@ -702,6 +672,82 @@
     }
     .trade-amt.pos { color: var(--green); }
     .trade-amt.neg { color: var(--red); }
+
+    .rr-pill {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: var(--gold-soft);
+      color: var(--gold-dark);
+      border: 1px solid rgba(212, 155, 75, 0.35);
+    }
+    .side-tag {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 5px;
+      text-transform: uppercase;
+    }
+    .side-tag.long { background: var(--green-soft); color: var(--green); }
+    .side-tag.short { background: var(--red-soft); color: var(--red); }
+
+    /* Cal AI Specific Styles */
+    .upload-zone {
+      border: 2px dashed var(--border-strong);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      background: var(--bg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .upload-zone:hover {
+      border-color: var(--burgundy);
+      background: var(--bg-warm);
+    }
+    .macro-bar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .macro-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+    .macro-card b {
+      font-family: var(--font-display);
+      font-size: 18px;
+      display: block;
+    }
+    .macro-card small {
+      font-size: 11px;
+      color: var(--fg-muted);
+      font-weight: 600;
+    }
+    .meal-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border-strong);
+      flex-shrink: 0;
+    }
+    .api-vault-box {
+      background: var(--bg-warm);
+      border: 1px solid var(--gold);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .api-vault-box.open { display: block; }
 
     /* Don Mancuerna YouTube Card */
     .yt-card {
@@ -790,109 +836,6 @@
     .yt-btn:hover { background: rgba(255, 255, 255, 0.2); }
     .yt-btn.red { background: #FF0033; border-color: #FF0033; }
 
-    /* ====================================================
-       SECCIÓN CAL AI · ESCÁNER NUTRICIONAL Y MACROS SEMANALES
-       ==================================================== */
-    .cal-scanner-drop {
-      border: 2px dashed var(--border-strong);
-      border-radius: 20px;
-      background: var(--bg);
-      padding: 24px 18px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .cal-scanner-drop:hover {
-      border-color: var(--burgundy);
-      background: var(--bg-warm);
-    }
-    .cal-preview-img {
-      max-height: 190px;
-      border-radius: 14px;
-      margin: 0 auto 12px;
-      display: none;
-      object-fit: cover;
-      box-shadow: var(--shadow-soft);
-    }
-    .macro-bars-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin: 14px 0;
-    }
-    @media (max-width: 600px) {
-      .macro-bars-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    .macro-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 12px;
-    }
-    .macro-card small {
-      font-size: 11px;
-      color: var(--fg-muted);
-      font-weight: 700;
-      display: block;
-    }
-    .macro-card b {
-      font-family: var(--font-display);
-      font-size: 18px;
-      display: block;
-      margin: 2px 0 6px;
-    }
-    .macro-progress {
-      width: 100%;
-      height: 6px;
-      background: var(--border);
-      border-radius: 100px;
-      overflow: hidden;
-    }
-    .macro-progress-fill {
-      height: 100%;
-      border-radius: 100px;
-      transition: width 0.35s ease;
-    }
-    .meal-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      margin-bottom: 8px;
-    }
-    .meal-thumb {
-      width: 46px;
-      height: 46px;
-      border-radius: 10px;
-      object-fit: cover;
-      background: var(--surface-sand);
-      flex-shrink: 0;
-    }
-    .api-key-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 100px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--fg);
-    }
-    .api-key-pill.ok {
-      background: var(--green-soft);
-      color: var(--green);
-      border-color: rgba(22, 128, 60, 0.3);
-    }
-
     .reset-btn {
       width: 100%; padding: 10px; border-radius: 12px; border: 1px dashed var(--border-strong);
       background: transparent; color: var(--fg-muted); font-family: var(--font-sans); font-size: 12px; font-weight: 600; cursor: pointer;
@@ -926,7 +869,7 @@
 
         <button class="side-btn" id="nav-calai" onclick="setSection('calai')">
           <span class="ico-box" id="ico-nav-calai"></span>
-          <span>Cal AI · Nutrición</span>
+          <span>Nutrición & Cal AI</span>
         </button>
 
         <button class="side-btn" id="nav-metrics" onclick="setSection('metrics')">
@@ -997,7 +940,7 @@
               </p>
               <div class="hero-actions">
                 <button class="cta-pill" onclick="markCurrentBlock()">Completar bloque actual →</button>
-                <button class="btn-outline" onclick="setSection('projects')">Proyectos & Trading</button>
+                <button class="btn-outline" onclick="setSection('projects')">Trading & Proyectos</button>
                 <button class="btn-outline" onclick="setSection('calai')">📸 Cal AI</button>
               </div>
               <div class="hero-features">
@@ -1006,7 +949,7 @@
               </div>
             </div>
 
-            <!-- Rueda Escultórica 3D + Insignia de Productividad EN PRIMER PLANO -->
+            <!-- Rueda Escultórica 3D -->
             <div class="sculpture-wrap">
               <svg class="sculpture-svg" viewBox="0 0 220 220">
                 <defs>
@@ -1166,11 +1109,10 @@
       </div>
 
       <!-- =================================================================
-           VISTA 2: PROYECTOS PERSONALES (Trading con Compra/Venta/RR, Clipping, YT, Side Hustles)
+           VISTA 2: PROYECTOS PERSONALES & TRADING (Compra, Venta, PnL, R:R)
            ================================================================= -->
       <section class="projects-wrap" id="projects-view">
 
-        <!-- Banner Maestro: Patrimonio Total de Proyectos -->
         <div class="wealth-banner">
           <div>
             <small>Capital Total & Ingresos Acumulados</small>
@@ -1205,18 +1147,18 @@
                 <span class="pnl-badge pos" id="trading-pnl-badge">+0,00 € (0%)</span>
               </div>
               <p style="margin:0 0 12px; font-size:13px; color:var(--fg-muted);">
-                Registra cada operación con su <b>precio de compra</b>, <b>precio de venta</b> y <b>Stop Loss</b> para calcular tus ganancias netas y el múltiplo <b>R:R (Riesgo/Beneficio)</b>.
+                Registra cada operación con precio de compra, precio de venta y Stop Loss para calcular automáticamente tus ganancias (€) y el ratio Riesgo/Beneficio (R:R).
               </p>
 
-              <!-- Configuración rápida de Capital Inicial y Estadísticas R:R -->
-              <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; background:var(--bg); padding:10px 14px; border-radius:12px; border:1px solid var(--border);">
-                <div style="display:flex; gap:8px; align-items:center;">
-                  <span style="font-size:12px; font-weight:700; color:var(--fg-muted);">Capital Base (€):</span>
+              <!-- Configuración rápida de Capital Inicial + Estadísticas R:R -->
+              <div style="display:flex; justify-content:space-between; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px; background:var(--bg); padding:10px 14px; border-radius:12px; border:1px solid var(--border);">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:12px; font-weight:700; color:var(--fg-muted);">Capital Inicial (€):</span>
                   <input type="number" step="0.01" id="initial-cap-input" class="notes-input" style="max-width:115px; padding:6px 10px;" onchange="updateInitialCapital(this.value)">
                 </div>
                 <div style="display:flex; gap:12px; font-size:12px; font-weight:700;">
                   <span>Winrate: <b id="trading-winrate" style="color:var(--burgundy);">0%</b></span>
-                  <span>Media R:R: <b id="trading-avg-rr" style="color:var(--gold-dark);">0.00 R</b></span>
+                  <span>Media R:R: <b id="trading-avg-rr" style="color:var(--gold-dark);">0.00R</b></span>
                 </div>
               </div>
 
@@ -1235,33 +1177,29 @@
                 <div class="tc-svg-wrap" id="trading-svg-container"></div>
               </div>
 
-              <!-- Formulario Completo de Trading (Compra, Venta, SL, PnL y RR) -->
+              <!-- Formulario Completo de Trading: Compra, Venta, SL, PnL y R:R -->
               <form class="notes-form" onsubmit="addTradeEntry(event)">
                 <div class="form-row-3">
                   <input type="text" id="trade-label" class="notes-input" placeholder="Activo (Ej: BTC, NVDA, XAUUSD)" required>
-                  <select id="trade-side" class="notes-input" onchange="previewTradeCalc()">
-                    <option value="LONG">📈 LONG (Compra → Venta)</option>
-                    <option value="SHORT">📉 SHORT (Venta → Recompra)</option>
+                  <select id="trade-side" class="notes-input" onchange="autoCalcTradePreview()">
+                    <option value="LONG">LONG (Compra ↗)</option>
+                    <option value="SHORT">SHORT (Venta ↘)</option>
                   </select>
-                  <input type="number" step="any" id="trade-qty" class="notes-input" placeholder="Cantidad / Unidades (Ej: 1.5)" oninput="previewTradeCalc()">
+                  <input type="number" step="any" id="trade-qty" class="notes-input" placeholder="Cantidad / Lotes (Opc.)" oninput="autoCalcTradePreview()">
                 </div>
 
                 <div class="form-row-3">
-                  <input type="number" step="any" id="trade-buy" class="notes-input" placeholder="Precio Compra / Entrada" required oninput="previewTradeCalc()">
-                  <input type="number" step="any" id="trade-sell" class="notes-input" placeholder="Precio Venta / Salida" required oninput="previewTradeCalc()">
-                  <input type="number" step="any" id="trade-sl" class="notes-input" placeholder="Stop Loss (para R:R)" oninput="previewTradeCalc()">
+                  <input type="number" step="any" id="trade-buy" class="notes-input" placeholder="Precio Compra (Entrada)" required oninput="autoCalcTradePreview()">
+                  <input type="number" step="any" id="trade-sell" class="notes-input" placeholder="Precio Venta (Salida)" required oninput="autoCalcTradePreview()">
+                  <input type="number" step="any" id="trade-sl" class="notes-input" placeholder="Stop Loss (Para R:R)" oninput="autoCalcTradePreview()">
                 </div>
 
                 <div class="form-row">
-                  <input type="number" step="0.01" id="trade-profit" class="notes-input" placeholder="Ganancia/Pérdida € (Auto o manual)" required>
-                  <input type="text" id="trade-rr" class="notes-input" placeholder="R:R Múltiplo (Ej: 1:2.5 o 2.5R)">
+                  <input type="number" step="0.01" id="trade-profit" class="notes-input" placeholder="Ganancia / Pérdida Neta € (Auto o Manual)" required>
+                  <input type="number" step="0.01" id="trade-rr" class="notes-input" placeholder="R:R obtenido (Auto, ej: 2.5)">
                 </div>
 
-                <div class="trade-preview-bar" id="trade-live-preview">
-                  <span>Introduce <b>Compra</b> y <b>Venta</b> para calcular ROI y R:R automáticamente.</span>
-                </div>
-
-                <button type="submit" class="notes-add-btn">+ Registrar Operación con R:R</button>
+                <button type="submit" class="notes-add-btn">+ Registrar Operación con Precio Compra/Venta y R:R</button>
               </form>
 
               <div id="trades-history-list" style="margin-top:12px; max-height:280px; overflow-y:auto;"></div>
@@ -1300,7 +1238,7 @@
               </div>
             </div>
 
-            <!-- 2. CLIPPING (Visualizaciones y Dinero Ganado) -->
+            <!-- 2. CLIPPING -->
             <div class="section-card">
               <div class="section-head">
                 <h2>
@@ -1337,7 +1275,7 @@
               <div id="clipping-history-list" style="margin-top:10px; max-height:180px; overflow-y:auto;"></div>
             </div>
 
-            <!-- 3. SIDE HUSTLES (Dinero Total Aparte de Todo) -->
+            <!-- 3. SIDE HUSTLES -->
             <div class="section-card">
               <div class="section-head">
                 <h2>
@@ -1346,10 +1284,6 @@
                 </h2>
                 <span class="pnl-badge pos" id="hustles-total-badge">0,00 € acumulados</span>
               </div>
-              <p style="margin:0 0 10px; font-size:12.5px; color:var(--fg-muted);">
-                Dinero generado por proyectos paralelos, servicios o ventas aparte de inversiones y clipping.
-              </p>
-
               <form class="notes-form" onsubmit="addSideHustleEntry(event)">
                 <div class="form-row">
                   <input type="text" id="hustle-name" class="notes-input" placeholder="Concepto / Proyecto (Ej: Web, Bot, Venta...)" required>
@@ -1368,132 +1302,127 @@
       </section>
 
       <!-- =================================================================
-           VISTA 3: CAL AI · ESCÁNER NUTRICIONAL POR FOTO Y CONTROL SEMANAL
+           VISTA 3: NUTRICIÓN & CAL AI (Escáner de Fotos + Registro Semanal)
            ================================================================= -->
       <section class="calai-wrap" id="calai-view">
 
         <div class="wealth-banner" style="background: linear-gradient(135deg, #181512 0%, #3A2E25 100%);">
           <div>
-            <small id="cal-week-banner-label">Registro Nutricional Semanal (Reinicio automático cada Lunes)</small>
-            <div class="wealth-total" id="cal-today-big">0 / 2.600 kcal</div>
+            <small id="calai-week-label">Registro Nutricional Semanal (Reinicio automático cada Lunes)</small>
+            <div class="wealth-total" id="calai-week-kcal">0 kcal</div>
+            <span style="font-size:12px; opacity:0.8;" id="calai-week-sub">Acumulado de Lunes a Domingo</span>
           </div>
           <div class="wealth-breakdown">
             <div class="wb-pill">
+              <span>Hoy (Día seleccionado)</span>
+              <b id="calai-day-kcal">0 kcal</b>
+            </div>
+            <div class="wb-pill">
               <span>Proteína Hoy</span>
-              <b id="cal-banner-p">0g</b>
+              <b id="calai-day-prot">0 g</b>
             </div>
             <div class="wb-pill">
-              <span>Carbos Hoy</span>
-              <b id="cal-banner-c">0g</b>
-            </div>
-            <div class="wb-pill">
-              <span>Grasas Hoy</span>
-              <b id="cal-banner-f">0g</b>
-            </div>
-            <div class="wb-pill">
-              <span>Total Semana</span>
-              <b id="cal-banner-wk">0 kcal</b>
+              <span>Carbos / Grasas Hoy</span>
+              <b id="calai-day-cg">0g / 0g</b>
             </div>
           </div>
         </div>
 
-        <!-- Selector de día de la semana para ver/añadir comidas -->
-        <nav class="days-bar" id="cal-days-bar" style="margin-bottom:0;"></nav>
+        <!-- Selector de día también en Cal AI -->
+        <nav class="days-bar" id="calai-days-bar"></nav>
 
         <div class="projects-grid">
 
-          <!-- COLUMNA IZQUIERDA CAL AI: Escáner por Foto IA + Formulario -->
+          <!-- COLUMNA IZQUIERDA: Cámara Cal AI + Configuración Privada de API -->
           <div>
             <div class="section-card">
               <div class="section-head">
                 <h2>
-                  <span class="ico-box" id="ico-cal-cam"></span>
+                  <span class="ico-box" id="ico-calai-cam"></span>
                   <span>Cal AI · Escáner de Comidas por Foto</span>
                 </h2>
-                <button class="api-key-pill" id="api-key-btn" onclick="configurePersonalApiKey()">
-                  🔑 Configurar API Key (Privada)
+                <button class="btn-outline" style="padding:6px 12px; font-size:11.5px;" onclick="toggleApiVault()">
+                  🔑 <span id="api-status-btn">Configurar API Key</span>
                 </button>
               </div>
-              <p style="margin:0 0 14px; font-size:12.8px; color:var(--fg-muted);">
-                Sube o haz una foto a tu plato. La IA analiza los ingredientes y rellena las calorías y macros automáticamente. Tu API Key se guarda <b>solo en el almacenamiento local de tu dispositivo</b> (nunca se sube a GitHub).
-              </p>
 
-              <!-- Zona de captura de foto -->
-              <label class="cal-scanner-drop" for="cal-photo-input">
-                <img id="cal-preview-img" class="cal-preview-img" alt="Vista previa del plato">
-                <div id="cal-drop-prompt">
-                  <div style="font-size:28px; margin-bottom:6px;">📸</div>
-                  <b style="font-size:14px; display:block;">Toca para hacer foto o subir imagen del plato</b>
-                  <span style="font-size:12px; color:var(--fg-muted);">Análisis instantáneo de Kcal, Proteína, Carbohidratos y Grasas</span>
+              <!-- Bóveda Privada de API Key (Solo LocalStorage, invisible en GitHub) -->
+              <div class="api-vault-box" id="api-vault">
+                <b style="font-size:13px; display:block; margin-bottom:4px;">🔒 Configuración Privada de API (100% Oculta de GitHub)</b>
+                <p style="font-size:11.5px; color:var(--fg-muted); margin:0 0 10px;">
+                  Tu clave se guarda <b>únicamente en el almacenamiento local de tu navegador/móvil (`localStorage`)</b>. Nunca se escribe en el código fuente ni se sube a tu repositorio de GitHub.
+                </p>
+                <div class="form-row" style="margin-bottom:8px;">
+                  <select id="ai-provider-select" class="notes-input">
+                    <option value="gemini">Google Gemini (gemini-2.5-flash · Recomendado)</option>
+                    <option value="openai">OpenAI (gpt-4o-mini)</option>
+                  </select>
+                  <input type="password" id="ai-api-key-input" class="notes-input" placeholder="Pega aquí tu API Key (AIzaSy... o sk-...)">
                 </div>
-                <input type="file" id="cal-photo-input" accept="image/*" capture="environment" style="display:none;" onchange="handleFoodPhoto(event)">
-              </label>
-
-              <div id="cal-ai-status" style="display:none; margin-top:10px; padding:10px 14px; border-radius:12px; background:var(--gold-soft); color:var(--gold-dark); font-size:12.5px; font-weight:700; text-align:center;">
-                ✨ Analizando plato con IA Vision...
+                <div class="form-row" style="margin-bottom:8px;">
+                  <input type="number" id="calai-goal-kcal" class="notes-input" placeholder="Objetivo Diario Kcal (Ej: 2600)">
+                  <input type="number" id="calai-goal-prot" class="notes-input" placeholder="Objetivo Diario Proteína g (Ej: 170)">
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button type="button" class="notes-add-btn" onclick="saveApiConfig()">Guardar Clave en este Dispositivo</button>
+                  <button type="button" class="btn-outline" onclick="clearApiConfig()">Borrar Clave</button>
+                </div>
               </div>
 
-              <!-- Formulario de comida (se autocompleta con la IA o se usa manual) -->
-              <form class="notes-form" onsubmit="addFoodEntry(event)" style="margin-top:14px;">
-                <input type="text" id="food-name" class="notes-input" placeholder="Plato / Comida (Ej: Pechuga de pollo con arroz y aguacate)" required>
-                <div class="form-row">
-                  <input type="number" id="food-kcal" class="notes-input" placeholder="Calorías (kcal)" required>
-                  <input type="number" id="food-protein" class="notes-input" placeholder="Proteínas (g)" required>
+              <!-- Zona para hacer foto o subir imagen -->
+              <label class="upload-zone" style="display:block; margin-bottom:14px;">
+                <input type="file" id="meal-photo-input" accept="image/*" capture="environment" style="display:none;" onchange="handleMealPhoto(event)">
+                <div id="upload-preview-wrap">
+                  <div style="font-size:28px; margin-bottom:6px;">📸</div>
+                  <b style="font-size:14.5px; display:block;">Toca para hacer foto al plato o elegir de la galería</b>
+                  <span style="font-size:12px; color:var(--fg-muted);" id="ai-scan-status">La IA analizará calorías, proteínas, carbohidratos y grasas al instante</span>
                 </div>
-                <div class="form-row">
-                  <input type="number" id="food-carbs" class="notes-input" placeholder="Carbohidratos (g)" required>
-                  <input type="number" id="food-fats" class="notes-input" placeholder="Grasas (g)" required>
+              </label>
+
+              <!-- Formulario de resultados (se rellena solo con la IA o manualmente) -->
+              <form class="notes-form" onsubmit="addMealEntry(event)">
+                <input type="text" id="meal-name" class="notes-input" placeholder="Plato detectado (Ej: Pechuga de pollo con arroz y aguacate)" required>
+                <div class="form-row-4">
+                  <input type="number" id="meal-kcal" class="notes-input" placeholder="Calorías (kcal)" required>
+                  <input type="number" id="meal-prot" class="notes-input" placeholder="Proteína (g)" required>
+                  <input type="number" id="meal-carbs" class="notes-input" placeholder="Carbos (g)" required>
+                  <input type="number" id="meal-fat" class="notes-input" placeholder="Grasas (g)" required>
                 </div>
-                <button type="submit" class="notes-add-btn">+ Guardar Comida en el Registro del Día</button>
+                <button type="submit" class="notes-add-btn" id="save-meal-btn">+ Guardar Comida en el Día Seleccionado</button>
               </form>
 
-              <h3 style="font-size:15px; font-weight:800; margin:18px 0 8px;">Comidas registradas (<span id="cal-meals-day-name">Hoy</span>)</h3>
-              <div id="cal-meals-list" style="max-height:280px; overflow-y:auto;"></div>
+              <div id="meals-day-list" style="margin-top:14px;"></div>
             </div>
           </div>
 
-          <!-- COLUMNA DERECHA CAL AI: Objetivos Diarios y Gráfico Semanal -->
+          <!-- COLUMNA DERECHA: Resumen Semanal de Calorías (Lunes a Domingo) -->
           <div>
             <div class="section-card">
               <div class="section-head">
                 <h2>
-                  <span class="ico-box" id="ico-cal-macros"></span>
-                  <span>Objetivos y Macros del Día</span>
+                  <span class="ico-box" id="ico-calai-chart"></span>
+                  <span>Balance Semanal de Calorías & Macros</span>
                 </h2>
-                <button class="bb-sync-btn" onclick="promptNutritionGoals()">⚙️ Ajustar metas</button>
+                <span class="badge-pill" style="margin:0;" id="calai-goal-badge">Meta: 2500 kcal/día</span>
               </div>
 
-              <div class="macro-bars-grid">
+              <div class="macro-bar-grid">
                 <div class="macro-card">
-                  <small>CALORÍAS</small>
-                  <b id="mc-kcal">0 / 2600</b>
-                  <div class="macro-progress"><div class="macro-progress-fill" id="mp-kcal" style="width:0%; background:var(--burgundy);"></div></div>
+                  <b id="wk-prot-tot" style="color:var(--burgundy);">0g</b>
+                  <small>Proteína Semanal</small>
                 </div>
                 <div class="macro-card">
-                  <small>PROTEÍNA</small>
-                  <b id="mc-prot">0 / 180g</b>
-                  <div class="macro-progress"><div class="macro-progress-fill" id="mp-prot" style="width:0%; background:#16803C;"></div></div>
+                  <b id="wk-carbs-tot" style="color:var(--gold-dark);">0g</b>
+                  <small>Carbos Semanales</small>
                 </div>
                 <div class="macro-card">
-                  <small>CARBOS</small>
-                  <b id="mc-carb">0 / 280g</b>
-                  <div class="macro-progress"><div class="macro-progress-fill" id="mp-carb" style="width:0%; background:var(--gold-dark);"></div></div>
-                </div>
-                <div class="macro-card">
-                  <small>GRASAS</small>
-                  <b id="mc-fat">0 / 80g</b>
-                  <div class="macro-progress"><div class="macro-progress-fill" id="mp-fat" style="width:0%; background:#2563EB;"></div></div>
+                  <b id="wk-fat-tot" style="color:var(--green);">0g</b>
+                  <small>Grasas Semanales</small>
                 </div>
               </div>
 
-              <!-- Gráfico de evolución calórica semanal (Lunes a Domingo) -->
-              <div class="floating-chart-card" style="margin-top:18px; margin-bottom:0;">
-                <div class="fc-head">
-                  <b>Evolución Calórica Semanal</b>
-                  <span class="fc-pill">Se reinicia cada Lunes</span>
-                </div>
-                <div id="cal-weekly-chart" style="width:100%; height:175px; margin-top:10px;"></div>
-              </div>
+              <!-- Tabla desglose Lunes a Domingo -->
+              <div id="calai-weekly-breakdown" style="display:flex; flex-direction:column; gap:8px; margin-top:12px;"></div>
             </div>
           </div>
 
@@ -1506,40 +1435,7 @@
   </div>
 
   <script>
-    // Enlace oficial de tu calendario de Blackboard (Universidad de Sevilla)
     const BLACKBOARD_ICS_URL = "https://ev.us.es/webapps/calendar/calendarFeed/b9711c0cbad84ef7b37f9addb1de62f4/learn.ics";
-
-    // =========================================================================
-    // GESTIÓN SEGURA DE API KEY PERSONAL (PRIVADA EN LOCALSTORAGE, NUNCA EN GITHUB)
-    // =========================================================================
-    // Tu clave jamás se escribe en el código fuente. Se lee desde el navegador local:
-    const API_STORAGE_KEY = 'nexora_personal_ai_key';
-
-    function getPersonalApiKey() {
-      return localStorage.getItem(API_STORAGE_KEY) || '';
-    }
-
-    function configurePersonalApiKey() {
-      const current = getPersonalApiKey();
-      const masked = current ? `${current.slice(0, 6)}...${current.slice(-4)}` : 'Ninguna configurada';
-      const input = prompt(
-        `🔒 CONFIGURACIÓN PRIVADA DE API KEY (Google Gemini)\n\n` +
-        `Estado actual: ${masked}\n\n` +
-        `Pega tu API Key de Google AI Studio (empieza por "AIza...").\n` +
-        `Se guardará ÚNICAMENTE en el localStorage de este navegador/dispositivo para que tu repositorio de GitHub sea 100% seguro.\n` +
-        `(Déjalo vacío si deseas borrarla):`,
-        current
-      );
-      if (input !== null) {
-        const clean = input.trim();
-        if (clean) {
-          localStorage.setItem(API_STORAGE_KEY, clean);
-        } else {
-          localStorage.removeItem(API_STORAGE_KEY);
-        }
-        renderCalAI();
-      }
-    }
 
     const ICONS = {
       trend: `<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
@@ -1587,4 +1483,1320 @@
     const G = x => ['21:15','Entrenamiento: '+x,'s','Gimnasio'];
     const POST = (t,x) => [
       [t, x||'Llegada y estiramientos nocturnos','n','Casa',['Creatina','Magnesio']],
-      ['23:30','Desconexión:
+      ['23:30','Desconexión: pantallas fuera, luz baja','n','Casa'],
+      ['00:00','Dormir','d','Cama']
+    ];
+    const WE = [
+      ['11:00','Despertar, estiramientos (YT) y ducha','m','Casa',['Spray nasal','Calcio']],
+      ['11:30','Entrenamiento de cuello','s','Casa'],
+      ['11:45','Desayuno / almuerzo unificado','c','Casa'],
+      ['13:00','Estudio / proyectos · sesiones 50/10','p','Casa'],
+      ['16:00','Ocio y ordenar cuarto','p','Casa'],
+      ['17:30','Merienda','c','Casa',['Calcio']],
+      ['20:00','Cena','c','Casa']
+    ];
+
+    const D = [
+      ['Lunes','L',[...W,C('15:30','CIN (Cálculo infinitesimal)','H.012',['Calcio']),C('17:40','MD1 (Matemática discreta 1)','H.012'),N,CE,G('Pierna'),...POST('23:15')]],
+      ['Martes','M',[...W,C('15:30','AE (Administración de empresas)','H.012',['Calcio']),C('17:40','FP1 (Fundamentos de prog. 1)','H.012'),CE,G('Torso'),...POST('23:15')]],
+      ['Miércoles','X',[...W,C('15:30','CED (Circuitos electrónicos)','H.012 - G1.35',['Calcio']),C('17:40','MD1 (Matemática discreta 1)','H.012 - B1.35'),N,['20:00','Cena','c','Casa'],['21:00','Proyectos personales (día sin gym)','p','Escritorio'],...POST('22:45','Estiramientos nocturnos')]],
+      ['Jueves','J',[...W,C('15:30','FP1 (Fundamentos de prog. 1)','I2.31',['Calcio']),C('17:40','CIN (Cálculo infinitesimal)','H.012 - B1.32'),CE,G('Pierna'),...POST('23:15')]],
+      ['Viernes','V',[...W,C('15:30','CED (Circuitos electrónicos)','H0.12',['Calcio']),C('17:40','AE (Administración de empresas)','H.012'),CE,G('Pull'),['23:15','Llegada a casa y fiesta','o','—',['Creatina','Magnesio']]]],
+      ['Sábado','S',[...WE,G('Push'),['23:15','Fiesta o descanso en casa','o','—',['Creatina','Magnesio']]]],
+      ['Domingo','D',[...WE,['21:00','Relax de domingo','d','Casa',['Creatina','Magnesio']],['22:30','Planificación semanal (20 min)','p','Escritorio'],...POST('23:30').slice(1)]]
+    ];
+
+    const KEY_HABITS = [
+      { id: 'morning', icon: ICONS.sun, short: 'Mañana', name: 'Rutina de Mañana', desc: 'Estiramientos, ducha y activación', match: b => b[2]==='m' },
+      { id: 'study', icon: ICONS.timer, short: 'Estudio', name: 'Estudio Profundo 50/10', desc: 'Sesiones de alta concentración', match: b => b[1].includes('Estudio') },
+      { id: 'uni', icon: ICONS.cap, short: 'Clases Uni', name: 'Clases Universidad', desc: 'Asistencia a bloques lectivos', match: b => b[3].includes('H.') || b[3].includes('I2.') || b[3].includes('H0.') },
+      { id: 'gym', icon: ICONS.dumbbell, short: 'Gimnasio', name: 'Entrenamiento Fuerza', desc: 'Pierna, Torso, Pull & Push', match: b => b[3]==='Gimnasio' },
+      { id: 'neck', icon: ICONS.shield, short: 'Cuello', name: 'Entreno de Cuello', desc: 'Fuerza cervical específica', match: b => b[1].includes('cuello') },
+      { id: 'supps', icon: ICONS.pill, short: 'Suplem.', name: 'Suplementación', desc: 'Creatina, Magnesio y Calcio', isSupps: true },
+      { id: 'water', icon: ICONS.drop, short: 'Agua 3L', name: 'Hidratación 3 L', desc: 'Objetivo hídrico completado', isWater: true }
+    ];
+
+    const $ = s => document.querySelector(s);
+    const mon = () => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - (d.getDay()+6)%7); return d; };
+    const wkKey = () => mon().toISOString().slice(0,10) + '|' + mon().getDate();
+    const mm = t => { const [h,m] = t.split(':').map(Number); const v = h*60+m; return v<300 ? v+1440 : v; };
+    const nowv = () => { const d = new Date(); const v = d.getHours()*60+d.getMinutes(); return v<300 ? v+1440 : v; };
+    const td = (new Date().getDay()+6)%7;
+    const fmtMoney = n => Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+
+    let S, day = td, onlyPending = false, currentSection = 'all', confirmRs = false;
+    let currentMealThumbBase64 = null;
+
+    function initStaticIcons() {
+      $('#ico-nav-all').innerHTML = ICONS.grid;
+      $('#ico-nav-projects').innerHTML = ICONS.briefcase;
+      $('#ico-nav-calai').innerHTML = ICONS.utensils;
+      $('#ico-nav-metrics').innerHTML = ICONS.trend;
+      $('#ico-nav-matrix').innerHTML = ICONS.calendar;
+      $('#ico-nav-exams').innerHTML = ICONS.cap;
+      $('#ico-nav-notes').innerHTML = ICONS.checkList;
+      $('#ico-nav-filter').innerHTML = ICONS.target;
+      $('#hero-prod-ico').innerHTML = ICONS.bolt;
+      $('#ico-schedule-title').innerHTML = ICONS.calendar;
+      $('#ico-water-title').innerHTML = ICONS.drop;
+      $('#kpi-ico-1').innerHTML = ICONS.target;
+      $('#kpi-ico-2').innerHTML = ICONS.trend;
+      $('#kpi-ico-3').innerHTML = ICONS.bolt;
+      $('#ico-proj-trading').innerHTML = ICONS.trend;
+      $('#ico-proj-clipping').innerHTML = ICONS.video;
+      $('#ico-proj-hustles').innerHTML = ICONS.wallet;
+      $('#ico-calai-cam').innerHTML = ICONS.camera;
+      $('#ico-calai-chart').innerHTML = ICONS.utensils;
+      $('#feat-focus').innerHTML = `${ICONS.timer.replace('<svg ', '<svg width="15" height="15" stroke="#7C0A24" fill="none" stroke-width="2" ')} Bloques 50/10`;
+      $('#feat-streak').innerHTML = `${ICONS.trend.replace('<svg ', '<svg width="15" height="15" stroke="#7C0A24" fill="none" stroke-width="2" ')} Blackboard Sync`;
+    }
+
+    function load() {
+      let r = {};
+      try { r = JSON.parse(localStorage.getItem('vida3') || '{}') || {}; } catch(e){}
+      const defaultProjects = {
+        initialCapital: 500,
+        trades: [],
+        clipping: [],
+        ytSubs: 0,
+        sideHustles: []
+      };
+      const defaultCalAiGoals = { dailyKcal: 2600, dailyProt: 170 };
+
+      // Reinicio automático semanal tanto para hábitos, notas como para las calorías semanales de Cal AI
+      const isSameWeek = r.wk === wkKey();
+
+      S = {
+        wk: wkKey(),
+        c: isSameWeek ? (r.c || {}) : {},
+        notes: isSameWeek ? (r.notes || {}) : {},
+        calaiMeals: isSameWeek ? (r.calaiMeals || {}) : {}, // Se reinicia cada Lunes automáticamente
+        calaiGoals: Object.assign({}, defaultCalAiGoals, r.calaiGoals || {}),
+        exams: r.exams || [],
+        bbSyncedUids: r.bbSyncedUids || {},
+        projects: Object.assign({}, defaultProjects, r.projects || {})
+      };
+    }
+
+    function save() {
+      try { localStorage.setItem('vida3', JSON.stringify(S)); } catch(e){}
+    }
+
+    const tot = d => D[d][2].reduce((a,b) => a + 1 + (b[4]||[]).length, 0) + 3;
+    const keys = d => Object.keys(S.c).filter(k => S.c[k] && k.split('.')[0] == d);
+    const done = d => keys(d).length;
+
+    // =========================================================================
+    // SINCRONIZACIÓN AUTOMÁTICA CON BLACKBOARD (.ICS)
+    // =========================================================================
+    function parseIcsDate(val) {
+      if (!val) return null;
+      const clean = val.replace(/^.*:/, '').trim();
+      const m = clean.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/);
+      if (!m) return null;
+      const year = +m[1], month = +m[2] - 1, dayNum = +m[3];
+      const hr = +(m[4] || 0), min = +(m[5] || 0), sec = +(m[6] || 0);
+      if (m[7] === 'Z') return new Date(Date.UTC(year, month, dayNum, hr, min, sec));
+      return new Date(year, month, dayNum, hr, min, sec);
+    }
+
+    function parseIcsEvents(rawIcs) {
+      const unfolded = rawIcs.replace(/\r?\n[ \t]/g, '');
+      const blocks = unfolded.split('BEGIN:VEVENT').slice(1);
+      const events = [];
+
+      blocks.forEach(block => {
+        const endIdx = block.indexOf('END:VEVENT');
+        const body = endIdx !== -1 ? block.slice(0, endIdx) : block;
+        const lines = body.split(/\r?\n/);
+        let uid = '', summary = '', dtstart = null, dtend = null;
+
+        lines.forEach(line => {
+          if (line.startsWith('UID')) uid = line.split(':').slice(1).join(':').trim();
+          else if (line.startsWith('SUMMARY')) {
+            summary = line.split(':').slice(1).join(':').trim()
+              .replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, ' ');
+          }
+          else if (line.startsWith('DTSTART')) dtstart = parseIcsDate(line);
+          else if (line.startsWith('DTEND')) dtend = parseIcsDate(line);
+        });
+
+        const refDate = dtstart || dtend;
+        if (summary && refDate && !isNaN(refDate.getTime())) {
+          events.push({ uid: uid || (summary + '_' + refDate.toISOString()), summary, date: refDate });
+        }
+      });
+      return events;
+    }
+
+    async function fetchTextWithFallbackProxies(targetUrl) {
+      const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+      ];
+      for (const pUrl of proxies) {
+        try {
+          const res = await fetch(pUrl, { cache: 'no-store' });
+          if (res.ok) {
+            const txt = await res.text();
+            if (txt && txt.includes('BEGIN:VCALENDAR')) return txt;
+          }
+        } catch (err) {}
+      }
+      throw new Error('No se pudo conectar al feed ICS.');
+    }
+
+    async function syncBlackboardCalendar() {
+      const statusTxt = $('#bb-status-text');
+      const dot = $('#bb-dot');
+      if (statusTxt) statusTxt.textContent = 'Sincronizando Blackboard...';
+
+      try {
+        const icsText = await fetchTextWithFallbackProxies(BLACKBOARD_ICS_URL);
+        const events = parseIcsEvents(icsText);
+
+        const weekMon = mon();
+        const weekSun = new Date(weekMon);
+        weekSun.setDate(weekSun.getDate() + 6);
+        weekSun.setHours(23, 59, 59, 999);
+
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        let addedCount = 0;
+
+        events.forEach(ev => {
+          if (S.bbSyncedUids[ev.uid]) return;
+          const dateStr = ev.date.toISOString().slice(0, 10);
+          const isExamLike = /examen|parcial|control|prueba|convocatoria|test|final/i.test(ev.summary);
+
+          if (ev.date >= weekMon && ev.date <= weekSun) {
+            const dIdx = (ev.date.getDay() + 6) % 7;
+            if (!S.notes[dIdx]) S.notes[dIdx] = [];
+            const exists = S.notes[dIdx].some(n => n.bbUid === ev.uid || n.text === ev.summary);
+            if (!exists) {
+              const hr = ev.date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+              S.notes[dIdx].push({
+                id: Date.now() + Math.floor(Math.random() * 100000),
+                text: `${ev.summary} (${hr})`,
+                done: false,
+                fromBB: true,
+                bbUid: ev.uid
+              });
+              addedCount++;
+            }
+          }
+
+          if (ev.date >= todayStart && (isExamLike || ev.date > weekSun)) {
+            if (!S.exams) S.exams = [];
+            const existsEx = S.exams.some(x => x.bbUid === ev.uid || (x.name === ev.summary && x.date === dateStr));
+            if (!existsEx) {
+              S.exams.push({
+                id: Date.now() + Math.floor(Math.random() * 100000),
+                name: ev.summary,
+                date: dateStr,
+                fromBB: true,
+                bbUid: ev.uid
+              });
+              addedCount++;
+            }
+          }
+
+          S.bbSyncedUids[ev.uid] = true;
+        });
+
+        if (S.exams) S.exams.sort((a, b) => new Date(a.date) - new Date(b.date));
+        save();
+        render();
+
+        if (dot) dot.classList.add('ok');
+        if (statusTxt) {
+          statusTxt.textContent = addedCount > 0
+            ? `BB: +${addedCount} nuevas tareas`
+            : `Blackboard al día (${events.length} ev.)`;
+        }
+      } catch (e) {
+        if (statusTxt) statusTxt.textContent = 'BB en caché local';
+      }
+    }
+
+    // =========================================================================
+    // NAVEGACIÓN ENTRE VISTAS
+    // =========================================================================
+    function setSection(sec) {
+      currentSection = sec;
+      ['all','projects','calai','metrics','matrix','exams','notes'].forEach(id => {
+        const btn = $('#nav-' + id);
+        if (btn) btn.classList.toggle('active', id === sec);
+      });
+
+      const mainGrid = $('#main-grid');
+      const projView = $('#projects-view');
+      const calaiView = $('#calai-view');
+      const colL = $('#col-left');
+      const colR = $('#col-right');
+      const bMetrics = $('#sec-metrics-block');
+      const bMatrix = $('#sec-matrix-block');
+      const bExams = $('#sec-exams-block');
+      const bNotes = $('#sec-notes-block');
+
+      projView.classList.remove('active');
+      calaiView.classList.remove('active');
+
+      if (sec === 'projects') {
+        mainGrid.style.display = 'none';
+        projView.classList.add('active');
+        render();
+        return;
+      }
+
+      if (sec === 'calai') {
+        mainGrid.style.display = 'none';
+        calaiView.classList.add('active');
+        render();
+        return;
+      }
+
+      mainGrid.style.display = 'grid';
+
+      if (sec === 'all') {
+        mainGrid.classList.remove('single-col');
+        colL.style.display = 'block'; colR.style.display = 'block';
+        bMetrics.style.display = 'block'; bMatrix.style.display = 'block'; bExams.style.display = 'block'; bNotes.style.display = 'block';
+      } else if (sec === 'metrics') {
+        mainGrid.classList.add('single-col');
+        colL.style.display = 'none'; colR.style.display = 'block';
+        bMetrics.style.display = 'block'; bMatrix.style.display = 'none'; bExams.style.display = 'none'; bNotes.style.display = 'none';
+      } else if (sec === 'matrix') {
+        mainGrid.classList.add('single-col');
+        colL.style.display = 'none'; colR.style.display = 'block';
+        bMetrics.style.display = 'none'; bMatrix.style.display = 'block'; bExams.style.display = 'none'; bNotes.style.display = 'none';
+      } else if (sec === 'exams') {
+        mainGrid.classList.add('single-col');
+        colL.style.display = 'none'; colR.style.display = 'block';
+        bMetrics.style.display = 'none'; bMatrix.style.display = 'none'; bExams.style.display = 'block'; bNotes.style.display = 'none';
+      } else if (sec === 'notes') {
+        mainGrid.classList.add('single-col');
+        colL.style.display = 'none'; colR.style.display = 'block';
+        bMetrics.style.display = 'none'; bMatrix.style.display = 'none'; bExams.style.display = 'none'; bNotes.style.display = 'block';
+      }
+      render();
+    }
+
+    function togglePendingFilter() {
+      onlyPending = !onlyPending;
+      $('#nav-pending').classList.toggle('active', onlyPending);
+      if (currentSection !== 'all') setSection('all');
+      else render();
+    }
+
+    function jumpToday() {
+      day = td;
+      setSection('all');
+    }
+
+    function markCurrentBlock() {
+      let cur = 0;
+      D[day][2].forEach((b, i) => { if (mm(b[0]) <= nowv()) cur = i; });
+      const k = day + '.' + cur;
+      S.c[k] = true;
+      save();
+      render();
+    }
+
+    // =========================================================================
+    // HÁBITOS, MATRIZ Y EXÁMENES
+    // =========================================================================
+    function getHabitKeysForDay(dIdx, h) {
+      if (h.isWater) return [1, 2, 3].map(n => `${dIdx}.w${n}`);
+      if (h.isSupps) {
+        const list = [];
+        D[dIdx][2].forEach((b, i) => { (b[4] || []).forEach((_, sIdx) => list.push(`${dIdx}.${i}.${sIdx}`)); });
+        return list;
+      }
+      const list = [];
+      D[dIdx][2].forEach((b, i) => { if (h.match(b)) list.push(`${dIdx}.${i}`); });
+      return list;
+    }
+
+    function getHabitStatus(dIdx, h) {
+      const hKeys = getHabitKeysForDay(dIdx, h);
+      if (hKeys.length === 0) return 'na';
+      const doneCount = hKeys.filter(k => !!S.c[k]).length;
+      if (doneCount === 0) return 'none';
+      if (doneCount === hKeys.length) return 'done';
+      return 'part';
+    }
+
+    function toggleHabitInMatrix(dIdx, habitId) {
+      const h = KEY_HABITS.find(x => x.id === habitId);
+      if (!h) return;
+      const hKeys = getHabitKeysForDay(dIdx, h);
+      if (hKeys.length === 0) return;
+      const allDone = hKeys.every(k => !!S.c[k]);
+      hKeys.forEach(k => {
+        if (allDone) delete S.c[k];
+        else S.c[k] = true;
+      });
+      save();
+      render();
+    }
+
+    function calcStreak(h) {
+      let s = 0;
+      for (let i = td; i >= 0; i--) {
+        const st = getHabitStatus(i, h);
+        if (st === 'na') continue;
+        if (st === 'done') s++;
+        else break;
+      }
+      return s;
+    }
+
+    function addCustomExam(e) {
+      e.preventDefault();
+      const nameInput = $('#exam-name-input');
+      const dateInput = $('#exam-date-input');
+      const name = nameInput.value.trim();
+      const date = dateInput.value;
+      if (!name || !date) return;
+
+      if (!S.exams) S.exams = [];
+      S.exams.push({ id: Date.now(), name, date });
+      S.exams.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      nameInput.value = '';
+      dateInput.value = '';
+      save();
+      render();
+    }
+
+    function deleteExam(id) {
+      if (!S.exams) return;
+      S.exams = S.exams.filter(x => x.id !== id);
+      save();
+      render();
+    }
+
+    function addCustomTask(e) {
+      e.preventDefault();
+      const input = $('#custom-task-input');
+      const text = input.value.trim();
+      if (!text) return;
+      if (!S.notes[day]) S.notes[day] = [];
+      S.notes[day].push({ id: Date.now(), text, done: false });
+      input.value = '';
+      save();
+      render();
+    }
+
+    function toggleCustomTask(id) {
+      const list = S.notes[day] || [];
+      const item = list.find(x => x.id === id);
+      if (item) item.done = !item.done;
+      save();
+      render();
+    }
+
+    function deleteCustomTask(id) {
+      if (!S.notes[day]) return;
+      S.notes[day] = S.notes[day].filter(x => x.id !== id);
+      save();
+      render();
+    }
+
+    // =========================================================================
+    // TRADING CON PRECIO COMPRA, PRECIO VENTA, GANANCIAS Y R:R
+    // =========================================================================
+    function updateInitialCapital(val) {
+      const num = parseFloat(val);
+      S.projects.initialCapital = isNaN(num) ? 0 : num;
+      save();
+      renderProjects();
+    }
+
+    function autoCalcTradePreview() {
+      const side = $('#trade-side').value;
+      const buy = parseFloat($('#trade-buy').value);
+      const sell = parseFloat($('#trade-sell').value);
+      const sl = parseFloat($('#trade-sl').value);
+      const qty = parseFloat($('#trade-qty').value);
+
+      if (!isNaN(buy) && !isNaN(sell)) {
+        const priceDiff = side === 'LONG' ? (sell - buy) : (buy - sell);
+
+        // Si el usuario indicó cantidad, autocalcular beneficio en €
+        if (!isNaN(qty) && qty > 0) {
+          $('#trade-profit').value = (priceDiff * qty).toFixed(2);
+        }
+
+        // Si el usuario indicó Stop Loss, autocalcular R:R
+        if (!isNaN(sl) && sl !== buy) {
+          const riskPerUnit = Math.abs(buy - sl);
+          if (riskPerUnit > 0) {
+            const rr = priceDiff / riskPerUnit;
+            $('#trade-rr').value = rr.toFixed(2);
+          }
+        }
+      }
+    }
+
+    function addTradeEntry(e) {
+      e.preventDefault();
+      const label = $('#trade-label').value.trim().toUpperCase();
+      const side = $('#trade-side').value;
+      const buyPrice = parseFloat($('#trade-buy').value);
+      const sellPrice = parseFloat($('#trade-sell').value);
+      const slPrice = parseFloat($('#trade-sl').value);
+      const qty = parseFloat($('#trade-qty').value);
+      const profit = parseFloat($('#trade-profit').value);
+      let rr = parseFloat($('#trade-rr').value);
+
+      if (!label || isNaN(buyPrice) || isNaN(sellPrice) || isNaN(profit)) return;
+
+      if (isNaN(rr) && !isNaN(slPrice) && slPrice !== buyPrice) {
+        const diff = side === 'LONG' ? (sellPrice - buyPrice) : (buyPrice - sellPrice);
+        rr = Number((diff / Math.abs(buyPrice - slPrice)).toFixed(2));
+      }
+
+      S.projects.trades.push({
+        id: Date.now(),
+        label,
+        side,
+        buyPrice,
+        sellPrice,
+        slPrice: isNaN(slPrice) ? null : slPrice,
+        qty: isNaN(qty) ? null : qty,
+        profit,
+        rr: isNaN(rr) ? null : rr,
+        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      });
+
+      $('#trade-label').value = '';
+      $('#trade-buy').value = '';
+      $('#trade-sell').value = '';
+      $('#trade-sl').value = '';
+      $('#trade-qty').value = '';
+      $('#trade-profit').value = '';
+      $('#trade-rr').value = '';
+
+      save();
+      renderProjects();
+    }
+
+    function deleteTradeEntry(id) {
+      S.projects.trades = S.projects.trades.filter(t => t.id !== id);
+      save();
+      renderProjects();
+    }
+
+    function addClippingEntry(e) {
+      e.preventDefault();
+      const title = $('#clip-title').value.trim();
+      const views = parseInt($('#clip-views').value, 10) || 0;
+      const money = parseFloat($('#clip-money').value) || 0;
+      if (!title) return;
+
+      S.projects.clipping.push({
+        id: Date.now(),
+        title,
+        views,
+        money,
+        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      });
+      $('#clip-title').value = '';
+      $('#clip-views').value = '';
+      $('#clip-money').value = '';
+      save();
+      renderProjects();
+    }
+
+    function deleteClippingEntry(id) {
+      S.projects.clipping = S.projects.clipping.filter(c => c.id !== id);
+      save();
+      renderProjects();
+    }
+
+    function addSideHustleEntry(e) {
+      e.preventDefault();
+      const name = $('#hustle-name').value.trim();
+      const amount = parseFloat($('#hustle-amount').value) || 0;
+      if (!name) return;
+
+      S.projects.sideHustles.push({
+        id: Date.now(),
+        name,
+        amount,
+        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      });
+      $('#hustle-name').value = '';
+      $('#hustle-amount').value = '';
+      save();
+      renderProjects();
+    }
+
+    function deleteSideHustleEntry(id) {
+      S.projects.sideHustles = S.projects.sideHustles.filter(h => h.id !== id);
+      save();
+      renderProjects();
+    }
+
+    function adjustYtSubs(delta) {
+      S.projects.ytSubs = Math.max(0, (S.projects.ytSubs || 0) + delta);
+      save();
+      renderProjects();
+    }
+
+    function promptExactSubs() {
+      const val = prompt('Introduce el número actual de suscriptores de Don Mancuerna:', S.projects.ytSubs || 0);
+      if (val !== null) {
+        const n = parseInt(val.replace(/\D/g, ''), 10);
+        if (!isNaN(n)) {
+          S.projects.ytSubs = n;
+          save();
+          renderProjects();
+        }
+      }
+    }
+
+    async function fetchDonMancuernaSubs(manual = false) {
+      const noteEl = $('#yt-sync-note');
+      if (manual && noteEl) noteEl.textContent = 'Consultando YouTube en vivo...';
+      try {
+        const searchUrl = 'https://www.youtube.com/@DonMancuerna';
+        const html = await fetchTextWithFallbackProxies(searchUrl);
+        const m = html.match(/"subscriberCountText":\{"accessibility":\{"accessibilityData":\{"label":"([^"]+)"/);
+        if (m && m[1]) {
+          const digits = parseInt(m[1].replace(/\D/g, ''), 10);
+          if (!isNaN(digits) && digits > 0) {
+            S.projects.ytSubs = digits;
+            save();
+            renderProjects();
+          }
+          if (noteEl) noteEl.textContent = `YouTube Live: ${m[1]}`;
+          return;
+        }
+      } catch (e) {}
+      if (noteEl) noteEl.textContent = 'Contador en vivo activo · Actualización instantánea';
+    }
+
+    function renderTradingChart() {
+      const base = Number(S.projects.initialCapital || 0);
+      const trades = S.projects.trades || [];
+      const pointsData = [{ label: 'Inicio', val: base, diff: 0 }];
+      let running = base;
+
+      trades.forEach(t => {
+        running += Number(t.profit || 0);
+        pointsData.push({ label: t.label, val: running, diff: Number(t.profit || 0) });
+      });
+
+      const W = 520, H = 180, padL = 18, padR = 18, padT = 20, padB = 26;
+      const gw = W - padL - padR, gh = H - padT - padB;
+
+      const vals = pointsData.map(p => p.val);
+      const minV = Math.min(...vals, base * 0.95);
+      const maxV = Math.max(...vals, base * 1.05, minV + 10);
+      const range = Math.max(maxV - minV, 1);
+
+      const step = pointsData.length > 1 ? gw / (pointsData.length - 1) : gw;
+      const pts = pointsData.map((p, i) => ({
+        x: padL + (pointsData.length > 1 ? i * step : gw / 2),
+        y: padT + gh - ((p.val - minV) / range) * gh,
+        ...p
+      }));
+
+      const isUp = running >= base;
+      const strokeCol = isUp ? '#22C55E' : '#EF4444';
+      const gradId = isUp ? 'tradeGreenGrad' : 'tradeRedGrad';
+
+      let dPath = '';
+      if (pts.length === 1) {
+        dPath = `M ${padL},${pts[0].y.toFixed(1)} L ${W - padR},${pts[0].y.toFixed(1)}`;
+      } else {
+        dPath = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const p0 = pts[i], p1 = pts[i + 1];
+          const cx1 = p0.x + step * 0.4, cy1 = p0.y;
+          const cx2 = p1.x - step * 0.4, cy2 = p1.y;
+          dPath += ` C ${cx1.toFixed(1)},${cy1.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${p1.x.toFixed(1)},${p1.y.toFixed(1)}`;
+        }
+      }
+
+      const firstX = pts.length === 1 ? padL : pts[0].x;
+      const lastX = pts.length === 1 ? W - padR : pts[pts.length - 1].x;
+      const areaPath = `${dPath} L ${lastX.toFixed(1)},${(padT + gh).toFixed(1)} L ${firstX.toFixed(1)},${(padT + gh).toFixed(1)} Z`;
+      const baseLineY = padT + gh - ((base - minV) / range) * gh;
+
+      $('#trading-svg-container').innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;">
+          <defs>
+            <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${strokeCol}" stop-opacity="0.38"/>
+              <stop offset="100%" stop-color="${strokeCol}" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          <line x1="${padL}" y1="${baseLineY.toFixed(1)}" x2="${W - padR}" y2="${baseLineY.toFixed(1)}" stroke="#4B423B" stroke-width="1" stroke-dasharray="4 4"/>
+          <path d="${areaPath}" fill="url(#${gradId})"/>
+          <path d="${dPath}" fill="none" stroke="${strokeCol}" stroke-width="2.8" stroke-linecap="round"/>
+          ${pts.map((p, i) => `
+            <g>
+              <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === pts.length - 1 ? 5.5 : 3.5}" fill="${p.diff >= 0 ? '#22C55E' : '#EF4444'}" stroke="#141210" stroke-width="1.8"/>
+              ${(i === 0 || i === pts.length - 1 || pts.length <= 6) ? `
+                <text x="${p.x.toFixed(1)}" y="${H - 5}" text-anchor="middle" font-size="9.5" fill="#9E9488" font-family="Space Grotesk">${p.label.slice(0, 8)}</text>
+              ` : ''}
+            </g>
+          `).join('')}
+        </svg>
+      `;
+    }
+
+    function renderProjects() {
+      const baseCap = Number(S.projects.initialCapital || 0);
+      const trades = S.projects.trades || [];
+      const tradesPnl = trades.reduce((acc, t) => acc + Number(t.profit || 0), 0);
+      const portfolioTotal = baseCap + tradesPnl;
+      const pnlPct = baseCap > 0 ? ((tradesPnl / baseCap) * 100).toFixed(1) : '0.0';
+
+      // Estadísticas Winrate y R:R medio
+      const wins = trades.filter(t => Number(t.profit) > 0).length;
+      const winrate = trades.length > 0 ? Math.round((wins / trades.length) * 100) : 0;
+      const rrTrades = trades.filter(t => t.rr !== null && t.rr !== undefined && !isNaN(t.rr));
+      const avgRr = rrTrades.length > 0
+        ? (rrTrades.reduce((a, b) => a + Number(b.rr), 0) / rrTrades.length).toFixed(2)
+        : '0.00';
+
+      $('#trading-winrate').textContent = `${winrate}%`;
+      $('#trading-avg-rr').textContent = `${avgRr}R`;
+
+      const clips = S.projects.clipping || [];
+      const totalViews = clips.reduce((acc, c) => acc + Number(c.views || 0), 0);
+      const totalClipMoney = clips.reduce((acc, c) => acc + Number(c.money || 0), 0);
+      const rpm = totalViews > 0 ? (totalClipMoney / (totalViews / 1000)) : 0;
+
+      const hustles = S.projects.sideHustles || [];
+      const totalHustlesMoney = hustles.reduce((acc, h) => acc + Number(h.amount || 0), 0);
+
+      const grandTotal = portfolioTotal + totalClipMoney + totalHustlesMoney;
+
+      $('#total-empire-money').textContent = fmtMoney(grandTotal);
+      $('#wb-trading').textContent = fmtMoney(portfolioTotal);
+      $('#wb-clipping').textContent = fmtMoney(totalClipMoney);
+      $('#wb-hustles').textContent = fmtMoney(totalHustlesMoney);
+
+      const capInput = $('#initial-cap-input');
+      if (document.activeElement !== capInput) capInput.value = baseCap;
+      $('#trading-total-val').textContent = fmtMoney(portfolioTotal);
+      $('#trading-ops-count').textContent = `${trades.length} trade${trades.length === 1 ? '' : 's'}`;
+
+      const pnlBadge = $('#trading-pnl-badge');
+      pnlBadge.className = `pnl-badge ${tradesPnl >= 0 ? 'pos' : 'neg'}`;
+      pnlBadge.textContent = `${tradesPnl >= 0 ? '+' : ''}${fmtMoney(tradesPnl)} (${tradesPnl >= 0 ? '+' : ''}${pnlPct}%)`;
+
+      renderTradingChart();
+
+      $('#trades-history-list').innerHTML = trades.length === 0
+        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12px; padding:8px;">Aún no has registrado operaciones. Añade tu primer trade con precio de compra y venta arriba.</div>`
+        : [...trades].reverse().map(t => {
+            const side = t.side || 'LONG';
+            const hasPrices = t.buyPrice !== undefined && t.sellPrice !== undefined;
+            const rrVal = (t.rr !== null && t.rr !== undefined && !isNaN(t.rr)) ? Number(t.rr) : null;
+            return `
+              <div class="trade-log-item">
+                <div>
+                  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    <span class="side-tag ${side === 'SHORT' ? 'short' : 'long'}">${side}</span>
+                    <b>${t.label}</b>
+                    ${rrVal !== null ? `<span class="rr-pill">${rrVal >= 0 ? '+' : ''}${rrVal}R</span>` : ''}
+                    <small style="color:var(--fg-muted);">${t.date}</small>
+                  </div>
+                  ${hasPrices ? `
+                    <div style="font-size:11.5px; color:var(--fg-muted); margin-top:3px; font-family:var(--font-display);">
+                      Compra: <b>${t.buyPrice}</b> → Venta: <b>${t.sellPrice}</b>
+                      ${t.slPrice ? ` · SL: ${t.slPrice}` : ''}
+                      ${t.qty ? ` · Cant: ${t.qty}` : ''}
+                    </div>
+                  ` : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="trade-amt ${t.profit >= 0 ? 'pos' : 'neg'}">${t.profit >= 0 ? '+' : ''}${fmtMoney(t.profit)}</span>
+                  <button class="ct-del" onclick="deleteTradeEntry(${t.id})">✕</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+      $('#yt-subs-display').textContent = Number(S.projects.ytSubs || 0).toLocaleString('es-ES');
+
+      $('#clip-total-views').textContent = totalViews.toLocaleString('es-ES');
+      $('#clip-total-money').textContent = fmtMoney(totalClipMoney);
+      $('#clip-count').textContent = clips.length;
+      $('#clipping-rpm-badge').textContent = `RPM: ${fmtMoney(rpm)}`;
+
+      $('#clipping-history-list').innerHTML = clips.length === 0
+        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12px; padding:8px;">Sin lotes de clipping registrados todavía.</div>`
+        : [...clips].reverse().map(c => `
+            <div class="trade-log-item">
+              <div>
+                <b>${c.title}</b>
+                <small style="color:var(--fg-muted); display:block;">${Number(c.views).toLocaleString('es-ES')} views · ${c.date}</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="trade-amt pos">+${fmtMoney(c.money)}</span>
+                <button class="ct-del" onclick="deleteClippingEntry(${c.id})">✕</button>
+              </div>
+            </div>
+          `).join('');
+
+      $('#hustles-total-badge').textContent = `${fmtMoney(totalHustlesMoney)} extra`;
+      $('#hustles-history-list').innerHTML = hustles.length === 0
+        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12px; padding:8px;">Sin ingresos de side hustles apuntados.</div>`
+        : [...hustles].reverse().map(h => `
+            <div class="trade-log-item">
+              <div>
+                <b>${h.name}</b>
+                <small style="color:var(--fg-muted); margin-left:6px;">${h.date}</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="trade-amt pos">+${fmtMoney(h.amount)}</span>
+                <button class="ct-del" onclick="deleteSideHustleEntry(${h.id})">✕</button>
+              </div>
+            </div>
+          `).join('');
+    }
+
+    // =========================================================================
+    // LÓGICA DE CAL AI (API KEY PRIVADA EN LOCALSTORAGE + VISIÓN POR FOTO)
+    // =========================================================================
+    function toggleApiVault() {
+      const box = $('#api-vault');
+      box.classList.toggle('open');
+      const savedKey = localStorage.getItem('nexora_ai_key') || '';
+      const savedProv = localStorage.getItem('nexora_ai_provider') || 'gemini';
+      $('#ai-api-key-input').value = savedKey;
+      $('#ai-provider-select').value = savedProv;
+      $('#calai-goal-kcal').value = S.calaiGoals?.dailyKcal || 2600;
+      $('#calai-goal-prot').value = S.calaiGoals?.dailyProt || 170;
+    }
+
+    function saveApiConfig() {
+      const key = $('#ai-api-key-input').value.trim();
+      const prov = $('#ai-provider-select').value;
+      const gKcal = parseInt($('#calai-goal-kcal').value, 10) || 2600;
+      const gProt = parseInt($('#calai-goal-prot').value, 10) || 170;
+
+      if (key) localStorage.setItem('nexora_ai_key', key);
+      localStorage.setItem('nexora_ai_provider', prov);
+
+      S.calaiGoals = { dailyKcal: gKcal, dailyProt: gProt };
+      save();
+      $('#api-vault').classList.remove('open');
+      renderCalAI();
+    }
+
+    function clearApiConfig() {
+      localStorage.removeItem('nexora_ai_key');
+      $('#ai-api-key-input').value = '';
+      renderCalAI();
+    }
+
+    // Comprimir foto en Canvas antes de enviarla a la IA o guardarla
+    function compressImageFile(file, maxWidth = 800, quality = 0.78) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = new Image();
+          img.onload = () => {
+            const scale = Math.min(1, maxWidth / img.width);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleMealPhoto(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const statusEl = $('#ai-scan-status');
+      statusEl.textContent = 'Procesando foto...';
+
+      try {
+        const dataUrl = await compressImageFile(file, 760, 0.75);
+        currentMealThumbBase64 = await compressImageFile(file, 140, 0.6); // Miniatura ligera para historial
+
+        $('#upload-preview-wrap').innerHTML = `
+          <img src="${dataUrl}" style="max-height:150px; border-radius:14px; margin-bottom:8px; box-shadow:0 6px 16px rgba(0,0,0,0.12);">
+          <b style="display:block; font-size:13.5px;" id="ai-scan-status">Analizando macronutrientes con IA...</b>
+        `;
+
+        const apiKey = localStorage.getItem('nexora_ai_key');
+        const provider = localStorage.getItem('nexora_ai_provider') || 'gemini';
+
+        if (!apiKey) {
+          $('#ai-scan-status').innerHTML = `<span style="color:var(--burgundy);">⚠️ Configura tu API Key arriba (🔑) para el análisis automático, o rellena los datos debajo.</span>`;
+          $('#api-vault').classList.add('open');
+          return;
+        }
+
+        const base64Clean = dataUrl.split(',')[1];
+        const promptText = `Analiza esta foto de comida como un nutricionista experto (estilo Cal AI). Estima las calorías y macronutrientes totales del plato. Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto: {"name":"Nombre breve del plato en español","kcal":550,"protein":38,"carbs":45,"fat":18}`;
+
+        let resultJson = null;
+
+        if (provider === 'gemini') {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { text: promptText },
+                  { inline_data: { mime_type: 'image/jpeg', data: base64Clean } }
+                ]
+              }],
+              generationConfig: { responseMimeType: 'application/json' }
+            })
+          });
+          if (!res.ok) throw new Error('Error en la llamada a Gemini API');
+          const data = await res.json();
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+          resultJson = JSON.parse(rawText.replace(/```json|```/g, '').trim());
+        } else {
+          const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              response_format: { type: 'json_object' },
+              messages: [{
+                role: 'user',
+                content: [
+                  { type: 'text', text: promptText },
+                  { type: 'image_url', image_url: { url: dataUrl } }
+                ]
+              }]
+            })
+          });
+          if (!res.ok) throw new Error('Error en la llamada a OpenAI API');
+          const data = await res.json();
+          resultJson = JSON.parse(data.choices?.[0]?.message?.content || '{}');
+        }
+
+        if (resultJson) {
+          $('#meal-name').value = resultJson.name || 'Comida escaneada';
+          $('#meal-kcal').value = Math.round(Number(resultJson.kcal || 0));
+          $('#meal-prot').value = Math.round(Number(resultJson.protein || 0));
+          $('#meal-carbs').value = Math.round(Number(resultJson.carbs || 0));
+          $('#meal-fat').value = Math.round(Number(resultJson.fat || 0));
+          $('#ai-scan-status').innerHTML = `<span style="color:var(--green);">✓ ¡Análisis completado! Revisa y pulsa Guardar.</span>`;
+        }
+      } catch (err) {
+        const st = $('#ai-scan-status');
+        if (st) st.innerHTML = `<span style="color:var(--red);">No se pudo conectar con la API. Verifica tu clave o introduce los valores manualmente.</span>`;
+      }
+    }
+
+    function addMealEntry(e) {
+      e.preventDefault();
+      const name = $('#meal-name').value.trim();
+      const kcal = parseInt($('#meal-kcal').value, 10) || 0;
+      const prot = parseInt($('#meal-prot').value, 10) || 0;
+      const carbs = parseInt($('#meal-carbs').value, 10) || 0;
+      const fat = parseInt($('#meal-fat').value, 10) || 0;
+      if (!name) return;
+
+      if (!S.calaiMeals[day]) S.calaiMeals[day] = [];
+      S.calaiMeals[day].push({
+        id: Date.now(),
+        name,
+        kcal,
+        prot,
+        carbs,
+        fat,
+        thumb: currentMealThumbBase64,
+        time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+      });
+
+      $('#meal-name').value = '';
+      $('#meal-kcal').value = '';
+      $('#meal-prot').value = '';
+      $('#meal-carbs').value = '';
+      $('#meal-fat').value = '';
+      currentMealThumbBase64 = null;
+      $('#upload-preview-wrap').innerHTML = `
+        <div style="font-size:28px; margin-bottom:6px;">📸</div>
+        <b style="font-size:14.5px; display:block;">Toca para hacer foto al plato o elegir de la galería</b>
+        <span style="font-size:12px; color:var(--fg-muted);" id="ai-scan-status">La IA analizará calorías, proteínas, carbohidratos y grasas al instante</span>
+      `;
+
+      save();
+      renderCalAI();
+    }
+
+    function deleteMealEntry(dIdx, id) {
+      if (!S.calaiMeals[dIdx]) return;
+      S.calaiMeals[dIdx] = S.calaiMeals[dIdx].filter(m => m.id !== id);
+      save();
+      renderCalAI();
+    }
+
+    function renderCalAI() {
+      const hasKey = !!localStorage.getItem('nexora_ai_key');
+      const prov = localStorage.getItem('nexora_ai_provider') || 'gemini';
+      $('#api-status-btn').textContent = hasKey ? `API Activa (${prov.toUpperCase()})` : 'Configurar API Key';
+
+      const goalKcal = S.calaiGoals?.dailyKcal || 2600;
+      const goalProt = S.calaiGoals?.dailyProt || 170;
+      $('#calai-goal-badge').textContent = `Meta: ${goalKcal} kcal · ${goalProt}g Prot`;
+
+      let weekKcal = 0, weekProt = 0, weekCarbs = 0, weekFat = 0;
+      const dayTotals = D.map((_, i) => {
+        const list = S.calaiMeals?.[i] || [];
+        const k = list.reduce((a, m) => a + Number(m.kcal || 0), 0);
+        const p = list.reduce((a, m) => a + Number(m.prot || 0), 0);
+        const c = list.reduce((a, m) => a + Number(m.carbs || 0), 0);
+        const f = list.reduce((a, m) => a + Number(m.fat || 0), 0);
+        weekKcal += k; weekProt += p; weekCarbs += c; weekFat += f;
+        return { k, p, c, f, count: list.length };
+      });
+
+      const curDay = dayTotals[day];
+      $('#calai-week-kcal').textContent = `${weekKcal.toLocaleString('es-ES')} kcal`;
+      $('#calai-week-sub').textContent = `Objetivo semanal: ${(goalKcal * 7).toLocaleString('es-ES')} kcal · Se reinicia el lunes`;
+      $('#calai-day-kcal').textContent = `${curDay.k} / ${goalKcal} kcal`;
+      $('#calai-day-prot').textContent = `${curDay.p} / ${goalProt} g`;
+      $('#calai-day-cg').textContent = `${curDay.c}g C · ${curDay.f}g G`;
+
+      $('#wk-prot-tot').textContent = `${weekProt}g`;
+      $('#wk-carbs-tot').textContent = `${weekCarbs}g`;
+      $('#wk-fat-tot').textContent = `${weekFat}g`;
+
+      // Barra de días en Cal AI
+      $('#calai-days-bar').innerHTML = D.map((d, i) => `
+        <div class="day-pill ${i === day ? 'on' : ''}" data-d="${i}">
+          <b>${d[1]}</b>
+          <small>${dayTotals[i].k} kcal</small>
+        </div>
+      `).join('');
+
+      // Lista de comidas del día seleccionado
+      const mealsToday = S.calaiMeals?.[day] || [];
+      $('#meals-day-list').innerHTML = mealsToday.length === 0
+        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12.5px; padding:12px;">No hay comidas registradas el ${D[day][0].toLowerCase()}. Haz una foto arriba para empezar.</div>`
+        : [...mealsToday].reverse().map(m => `
+            <div class="trade-log-item">
+              <div style="display:flex; align-items:center; gap:10px;">
+                ${m.thumb ? `<img src="${m.thumb}" class="meal-thumb">` : `<div class="ico-box">${ICONS.utensils}</div>`}
+                <div>
+                  <b>${m.name}</b>
+                  <small style="color:var(--fg-muted); display:block;">
+                    ${m.time} · <b style="color:var(--burgundy)">${m.prot}g P</b> · ${m.carbs}g C · ${m.fat}g G
+                  </small>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="trade-amt" style="color:var(--fg);">${m.kcal} kcal</span>
+                <button class="ct-del" onclick="deleteMealEntry(${day}, ${m.id})">✕</button>
+              </div>
+            </div>
+          `).join('');
+
+      // Desglose semanal Lunes a Domingo
+      $('#calai-weekly-breakdown').innerHTML = D.map((d, i) => {
+        const dt = dayTotals[i];
+        const pct = Math.min(100, Math.round((dt.k / goalKcal) * 100));
+        return `
+          <div style="padding:10px 12px; border-radius:12px; background:var(--bg); border:1px solid ${i === day ? 'var(--burgundy)' : 'var(--border)'}; cursor:pointer;" onclick="selectDay(${i})">
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:4px;">
+              <b>${d[0]} (${dt.count} comidas)</b>
+              <span style="font-family:var(--font-display); font-weight:700;">${dt.k} kcal · ${dt.p}g P</span>
+            </div>
+            <div style="height:6px; background:var(--border); border-radius:10px; overflow:hidden;">
+              <div style="width:${pct}%; height:100%; background:var(--burgundy);"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // GRÁFICO DE CURVA SEMANAL Y RENDER PRINCIPAL
+    // =========================================================================
+    function renderSmoothCurve(pcts) {
+      const W = 380, H = 145, padL = 16, padR = 24, padT = 18, padB = 26;
+      const gw = W - padL - padR, gh = H - padT - padB;
+      const step = gw / 6;
+
+      const pts = pcts.map((v, i) => ({
+        x: padL + i * step,
+        y: padT + gh - (v / 100) * gh,
+        v,
+        label: D[i][1]
+      }));
+
+      let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[i], p1 = pts[i + 1];
+        const cx1 = p0.x + step * 0.45, cy1 = p0.y;
+        const cx2 = p1.x - step * 0.45, cy2 = p1.y;
+        d += ` C ${cx1.toFixed(1)},${cy1.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${p1.x.toFixed(1)},${p1.y.toFixed(1)}`;
+      }
+
+      const areaD = `${d} L ${pts[6].x.toFixed(1)},${(padT + gh).toFixed(1)} L ${pts[0].x.toFixed(1)},${(padT + gh).toFixed(1)} Z`;
+
+      $('#curve-chart').innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;">
+          <defs>
+            <linearGradient id="curveArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#D49B4B" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#D49B4B" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          <line x1="${padL}" y1="${padT + gh}" x2="${W - padR}" y2="${padT + gh}" stroke="#EAE0D0" stroke-width="1"/>
+          <path d="${areaD}" fill="url(#curveArea)"/>
+          <path d="${d}" fill="none" stroke="#181512" stroke-width="2.6" stroke-linecap="round"/>
+          ${pts.map((p, idx) => `
+            <g style="cursor:pointer" onclick="selectDay(${idx})">
+              <circle cx="${p.x}" cy="${p.y}" r="${idx === day ? 7.5 : 4}" fill="${idx === day ? '#7C0A24' : '#FFFFFF'}" stroke="#181512" stroke-width="${idx === day ? 2.5 : 1.8}"/>
+              <text x="${p.x}" y="${H - 4}" text-anchor="middle" font-size="10.5" font-weight="${idx === day ? '800' : '600'}" fill="${idx === day ? '#7C0A24' : '#6E655C'}">${p.label}</text>
+            </g>
+          `).join('')}
+        </svg>
+      `;
+    }
+
+    function selectDay(dIdx) {
+      day = dIdx;
+      render();
+    }
+
+    function render() {
+      const m = mon();
+      const e = new Date(m);
+      e.setDate(e.getDate() + 6);
+      const f = x => x.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+      $('#wk-label').textContent = `Semana ${f(m)} – ${f(e)}`;
+
+      let totalWeek = 0, doneWeek = 0;
+      const dailyPcts = D.map((_, i) => {
+        const t = tot(i), dn = done(i);
+        totalWeek += t; doneWeek += dn;
+        return Math.round((dn / t) * 100);
+      });
+
+      const globalPct = Math.round((doneWeek / totalWeek) * 100);
+      $('#global-pct').textContent = `${globalPct}%`;
+      $('#ring-3d').setAttribute('stroke-dasharray', `${(globalPct * 490) / 100} 490`);
+
+      const ks = keys(day);
+      const supTotal = D[day][2].reduce((a, b) => a + (b[4] || []).length, 0);
+      const supDone = ks.filter(k => k.split('.').length === 3).length;
+      const waterDone = ks.filter(k => k.includes('.w')).length;
+      const dayPct = dailyPcts[day];
+
+      $('#hero-prod-sub').textContent = `${dayPct}% hoy · En foco`;
+      $('#kpi-done').textContent = `+${doneWeek}`;
+      $('#kpi-day-pct').textContent = `${dayPct}%`;
+      $('#kpi-supps').textContent = `${supDone + waterDone}/${supTotal + 3}`;
+
+      $('#fc-badge-val').textContent = `${globalPct}%`;
+      $('#fc-badge-sub').textContent = `progreso semanal`;
+
+      $('#days-bar').innerHTML = D.map((d, i) => `
+        <div class="day-pill ${i === day ? 'on' : ''}" data-d="${i}">
+          <b>${d[1]}</b>
+          <small>${dailyPcts[i]}%</small>
+        </div>
+      `).join('');
+
+      $('#day-title').textContent = `${D[day][0]} · Objetivos`;
+      $('#day-counter').textContent = `${ks.length} / ${tot(day)} completados`;
+
+      let cur = -1;
+      if (day === td) {
+        D[day][2].forEach((b, i) => { if (mm(b[0]) <= nowv()) cur = i; });
+      }
+
+      const tasksHtml = D[day][2].map((b, i) => {
+        const k = day + '.' + i;
+        const isDone = !!S.c[k];
+        if (onlyPending && isDone) return '';
+        return `
+          <div class="task-item ${isDone ? 'done' : ''} ${i === cur ? 'now' : ''}" data-k="${k}">
+            <div class="task-left">
+              <div class="ico-box">${CT[b[2]][0]}</div>
+              <div>
+                <div class="task-time">
+                  <span>${b[0]}</span>
+                  ${i === cur ? '<span class="now-badge">AHORA</span>' : ''}
+                </div>
+                <div class="task-title">${b[1]}</div>
+                <div class="task-loc">${CT[b[2]][1]} · ${b[3]}</div>
+                ${(b[4] && b[4].length) ? `
+                  <div class="supp-wrap">
+                    ${b[4].map((s, j) => `
+                      <span class="supp-chip ${S.c[k + '.' + j] ? 'done' : ''}" data-k="${k + '.' + j}">${s}</span>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+            <div class="check-circle">${isDone ? '✓' : ''}</div>
+          </div>
+        `;
+      }).join('');
+
+      $('#task-list').innerHTML = tasksHtml || `<p style="text-align:center; color:var(--fg-muted); padding:20px 0;">Todo completado por hoy.</p>`;
+
+      $('#water-status').textContent = `${waterDone} / 3 L`;
+      $('#water-row').innerHTML = [1, 2, 3].map(n => `
+        <button class="water-btn ${S.c[day + '.w' + n] ? 'done' : ''}" data-k="${day + '.w' + n}">
+          <span>${n} Litro${n > 1 ? 's' : ''}</span>
+        </button>
+      `).join('');
+
+      renderSmoothCurve(dailyPcts);
+
+      $('#streaks-list').innerHTML = KEY_HABITS.map(h => {
+        const st = calcStreak(h);
+        return `
+          <div class="sol-item">
+            <div class="sol-left">
+              <div class="ico-box">${h.icon}</div>
+              <div>
+                <div class="sol-name">${h.name}</div>
+                <div class="sol-desc">${h.desc}</div>
+              </div>
+            </div>
+            <div class="sol-streak">
+              ${ICONS.trend.replace('<svg ', '<svg width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.2" ')}
+              <span>${st} ${st === 1 ? 'día' : 'días'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const head = `<tr><th>Hábito</th>${D.map((d, idx) => `<th class="${idx === day ? 'active-col' : ''}" style="cursor:pointer" onclick="selectDay(${idx})">${d[1]}</th>`).join('')}</tr>`;
+      const body = KEY_HABITS.map(h => `
+        <tr>
+          <td>
+            <div class="m-habit-cell">
+              <span class="ico-box">${h.icon}</span>
+              <span>${h.short}</span>
+            </div>
+          </td>
+          ${D.map((_, dIdx) => {
+            const st = getHabitStatus(dIdx, h);
+            if (st === 'na') return `<td><span class="m-dot na">—</span></td>`;
+            const cls = st === 'done' ? 'on' : (st === 'part' ? 'part' : '');
+            const sym = st === 'done' ? '✓' : (st === 'part' ? '◐' : '·');
+            return `<td><span class="m-dot ${cls}" onclick="toggleHabitInMatrix(${dIdx}, '${h.id}')">${sym}</span></td>`;
+          }).join('')}
+        </tr>
+      `).join('');
+      $('#matrix-table').innerHTML = head + body;
+
+      const exams = S.exams || [];
+      $('#exams-counter').textContent = `${exams.length} programado${exams.length === 1 ? '' : 's'}`;
+      if (exams.length === 0) {
+        $('#exams-list-container').innerHTML = `<div style="text-align:center; color:var(--fg-muted); font-size:12.5px; padding:12px 0;">No hay exámenes próximos registrados.</div>`;
+      } else {
+        const todayObj = new Date(); todayObj.setHours(0,0,0,0);
+        $('#exams-list-container').innerHTML = exams.map(ex => {
+          const exDate = new Date(ex.date + 'T00:00:00');
+          const diffDays = Math.ceil((exDate - todayObj) / (1000 * 60 * 60 * 24));
+          let countText = diffDays === 0 ? '¡Es hoy!' : (diffDays === 1 ? 'Falta 1 día' : (diffDays > 0 ? `Faltan ${diffDays} días` : 'Finalizado'));
+          const formattedDate = exDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+          return `
+            <div class="exam-card">
+              <div class="exam-info">
+                <b>${ex.name} ${ex.fromBB ? '<span class="bb-tag">BB</span>' : ''}</b>
+                <small>${formattedDate}</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="exam-countdown">${countText}</span>
+                <button class="ct-del" onclick="deleteExam(${ex.id})" title="Eliminar">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      $('#notes-box-title').textContent = `Tareas Diarias · ${D[day][0]}`;
+      const dayNotes = S.notes[day] || [];
+      const pendingNotes = dayNotes.filter(x => !x.done).length;
+      $('#notes-counter').textContent = `${pendingNotes} pendiente${pendingNotes === 1 ? '' : 's'}`;
+
+      if (dayNotes.length === 0) {
+        $('#custom-tasks-list').innerHTML = `<div style="text-align:center; color:var(--fg-muted); font-size:12.5px; padding:12px 0;">No hay tareas adicionales para el ${D[day][0].toLowerCase()}.</div>`;
+      } else {
+        $('#custom-tasks-list').innerHTML = dayNotes.map(item => `
+          <div class="ct-item ${item.done ? 'done' : ''}">
+            <div class="ct-left" onclick="toggleCustomTask(${item.id})">
+              <div class="ct-check">${item.done ? '✓' : ''}</div>
+              <span class="ct-text">${item.text} ${item.fromBB ? '<span class="bb-tag">Blackboard</span>' : ''}</span>
+                        </div>
+            <button class="ct-del" onclick="deleteCustomTask(${item.id})" title="Eliminar tarea">✕</button>
+          </div>
+        `).join('');
+      }
+
+      renderProjects();
+      renderCalAI();
+    }
+
+    document.addEventListener('click', e => {
+      const t = e.target.closest('[data-k],[data-d],#rs');
+      if (!t) return;
+      if (t.dataset.d != null) {
+        day = +t.dataset.d;
+      } else if (t.id === 'rs') {
+        if (!confirmRs) {
+          confirmRs = true;
+          t.textContent = '¿Confirmas reiniciar semana (hábitos y kcal)?';
+          return;
+        }
+        S.c = {};
+        S.calaiMeals = {};
+        confirmRs = false;
+        t.textContent = 'Reiniciar semana';
+      } else {
+        const k = t.dataset.k;
+        S.c[k] = !S.c[k];
+        if (!S.c[k]) delete S.c[k];
+      }
+      save();
+      render();
+    });
+
+    initStaticIcons();
+    load();
+    render();
+
+    syncBlackboardCalendar();
+    fetchDonMancuernaSubs(false);
+    setInterval(() => syncBlackboardCalendar(), 15 * 60 * 1000);
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
