@@ -2064,7 +2064,7 @@
       const noteEl = $('#yt-sync-note');
       if (manual && noteEl) noteEl.textContent = 'Consultando YouTube en vivo...';
       try {
-        const searchUrl = 'https://www.youtube.com/@DonMancuerna';
+        const searchUrl = 'https://youtube.com/@donmancuerna?si=Oy0FKVdqlNgHTE3O';
         const html = await fetchTextWithFallbackProxies(searchUrl);
         const m = html.match(/"subscriberCountText":\{"accessibility":\{"accessibilityData":\{"label":"([^"]+)"/);
         if (m && m[1]) {
