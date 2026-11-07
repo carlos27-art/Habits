@@ -3,187 +3,176 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>NexoraOS · Rendimiento, Trading & Cal AI</title>
+  <title>Habits · Panel de Rendimiento, Hábitos y Proyectos</title>
 
+  <!-- PWA & Mobile Web App Meta -->
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="NexoraOS">
-  <meta name="theme-color" content="#F8F7F4">
+  <meta name="apple-mobile-web-app-title" content="Nexora">
+  <meta name="theme-color" content="#FDFBF7">
 
+  <!-- Tipografías Modernas -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Carga opcional de claves locales (ignorado en GitHub mediante .gitignore) -->
-  <script src="config.local.js" onerror="window.NEXORA_ENV = window.NEXORA_ENV || {}"></script>
+  <!-- Carga opcional de config.js local (añádelo a tu .gitignore para que no suba a GitHub) -->
+  <script src="config.js" onerror="window.NEXORA_KEYS = window.NEXORA_KEYS || {};"></script>
 
   <style>
     :root {
-      --bg: #F8F7F4;
-      --bg-subtle: #F1EFEA;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+
+      --bg: #FDFBF7;
+      --bg-warm: #F6EFE2;
       --surface: #FFFFFF;
-      --surface-dark: #121211;
-      --fg: #141413;
-      --fg-secondary: #52514E;
-      --fg-muted: #85837E;
-      --border: #E5E3DC;
-      --border-strong: #D0CEC4;
+      --surface-sand: #EFE6D5;
+      --fg: #181512;
+      --fg-muted: #6E655C;
+      --border: #EAE0D0;
+      --border-strong: #DFD2BE;
 
-      --accent: #7C0A24;
-      --accent-hover: #5E071B;
-      --accent-soft: #F9EBEE;
+      --burgundy: #7C0A24;
+      --burgundy-dark: #4A0514;
+      --burgundy-soft: #FBE9ED;
 
-      --amber: #B45309;
-      --amber-soft: #FEF3C7;
-      --green: #15803D;
-      --green-soft: #DCFCE7;
+      --gold: #D49B4B;
+      --gold-dark: #B57D2E;
+      --gold-soft: #FDF3E1;
+
+      --green: #16803C;
+      --green-soft: #E8F5EE;
       --red: #B91C1C;
       --red-soft: #FEE2E2;
       --blue: #1D4ED8;
       --blue-soft: #DBEAFE;
 
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
 
-      --radius-sm: 6px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
 
-      --shadow-xs: 0 1px 2px rgba(20, 20, 19, 0.04);
-      --shadow-sm: 0 2px 6px rgba(20, 20, 19, 0.05);
+      --shadow-soft: 0 12px 32px -8px rgba(24, 21, 18, 0.06);
+      --shadow-float: 0 20px 45px -12px rgba(24, 21, 18, 0.12);
     }
 
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
     body {
-      background: var(--bg);
+      background: radial-gradient(circle at 85% 10%, var(--bg-warm) 0%, var(--bg) 55%);
       color: var(--fg);
       font-family: var(--font-sans);
-      font-size: 14px;
-      line-height: 1.45;
+      font-size: 15px;
+      line-height: 1.5;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
 
-    .mono {
-      font-family: var(--font-mono);
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Layout Principal */
+    /* Estructura General con Menú Lateral */
     .app-shell {
       display: grid;
-      grid-template-columns: 240px 1fr;
-      max-width: 1440px;
+      grid-template-columns: 260px 1fr;
+      max-width: 1420px;
       margin: 0 auto;
-      min-height: 100vh;
+      gap: 24px;
+      padding: 20px 20px 48px;
+      align-items: start;
     }
 
-    /* Sidebar Disciplinado */
+    /* Menú Lateral (Sidebar) */
     .sidebar {
       position: sticky;
-      top: 0;
-      height: 100vh;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      padding: 20px 16px;
+      top: 20px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 24px 18px;
+      box-shadow: var(--shadow-soft);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 20px;
       z-index: 30;
     }
     .brand {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 8px 16px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 16px;
-    }
-    .brand-left {
-      display: flex;
-      align-items: center;
       gap: 10px;
-      font-weight: 700;
-      font-size: 15px;
-      letter-spacing: -0.3px;
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.5px;
+      color: var(--fg);
+      padding: 0 8px;
     }
     .brand-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: var(--radius-sm);
-      background: var(--fg);
-      color: #FFF;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--burgundy);
       display: grid;
       place-items: center;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .version-tag {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--fg-muted);
-      background: var(--bg-subtle);
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-    }
-
-    .side-group {
-      margin-bottom: 20px;
-    }
-    .side-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--fg-muted);
-      padding: 0 8px;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      color: #FFF;
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: 0 4px 10px rgba(124, 10, 36, 0.3);
     }
     .side-nav {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 5px;
+    }
+    .side-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--fg-muted);
+      padding: 0 10px;
+      margin-bottom: 4px;
     }
     .side-btn {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       width: 100%;
       border: 1px solid transparent;
       background: transparent;
-      padding: 8px 10px;
-      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      border-radius: 14px;
       font-family: var(--font-sans);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--fg-secondary);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--fg-muted);
       cursor: pointer;
       text-align: left;
-      transition: background 0.12s, color 0.12s;
+      transition: all 0.18s ease;
     }
     .side-btn:hover {
-      background: var(--bg-subtle);
+      background: var(--bg-warm);
       color: var(--fg);
     }
     .side-btn.active {
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 600;
-      border-color: rgba(124, 10, 36, 0.15);
+      background: var(--surface);
+      border-color: var(--border-strong);
+      color: var(--fg);
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(24, 21, 18, 0.05);
     }
-    .side-btn svg {
-      width: 16px;
-      height: 16px;
-      stroke: currentColor;
-      stroke-width: 2;
-      fill: none;
-      flex-shrink: 0;
+    .side-btn .ico-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
     }
-
+    .side-btn.active .ico-box {
+      background: var(--burgundy);
+      color: #FFFFFF;
+    }
     .side-footer {
       border-top: 1px solid var(--border);
       padding-top: 14px;
@@ -191,112 +180,90 @@
       flex-direction: column;
       gap: 8px;
     }
-    .status-row {
+
+    /* Estado de Sincronización Blackboard */
+    .bb-status {
+      font-size: 11px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--bg-warm);
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 11.5px;
-      color: var(--fg-secondary);
-      padding: 6px 8px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      gap: 6px;
     }
-    .status-dot {
-      width: 6px;
-      height: 6px;
+    .bb-dot {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--amber);
+      background: var(--gold);
+      flex-shrink: 0;
     }
-    .status-dot.ok { background: var(--green); }
+    .bb-dot.ok { background: var(--green); }
+    .bb-sync-btn {
+      border: none;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 10.5px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--fg);
+    }
+    .bb-sync-btn:hover { border-color: var(--burgundy); color: var(--burgundy); }
 
-    /* Botones estándar */
-    .btn {
+    /* Iconos Minimalistas */
+    .ico-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: var(--gold-soft);
+      color: var(--gold-dark);
+      border: 1px solid rgba(212, 155, 75, 0.25);
+      display: inline-grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .ico-box svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .cta-pill {
+      background: var(--burgundy);
+      color: #FFFFFF;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 100px;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 8px 12px;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 12.5px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--fg);
-      transition: all 0.12s;
-      text-decoration: none;
+      transition: transform 0.15s ease, background 0.2s ease;
+      box-shadow: 0 6px 16px -4px rgba(124, 10, 36, 0.4);
     }
-    .btn:hover { background: var(--bg-subtle); }
-    .btn-primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #FFF;
-    }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-sm { padding: 4px 8px; font-size: 11.5px; border-radius: var(--radius-sm); }
-    .btn-ghost {
-      border-color: transparent;
-      background: transparent;
-      color: var(--fg-muted);
-    }
-    .btn-ghost:hover {
-      background: var(--red-soft);
-      color: var(--red);
+    .cta-pill:hover {
+      background: var(--burgundy-dark);
+      transform: translateY(-1px);
     }
 
-    /* Área Principal */
-    .main-area {
-      padding: 24px 32px 48px;
-      min-width: 0;
-    }
+    .main-area { min-width: 0; }
 
-    /* Barra Superior de Estado */
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 16px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .topbar-title h1 {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      margin: 0;
-    }
-    .topbar-title p {
-      font-size: 12.5px;
-      color: var(--fg-muted);
-      margin: 2px 0 0;
-    }
-    .topbar-metrics {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .metric-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 6px 12px;
-      border-radius: var(--radius-md);
-      font-size: 12px;
-    }
-    .metric-pill span { color: var(--fg-muted); }
-    .metric-pill b { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
-
-    /* Grid de Vistas */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 1.35fr 1fr;
+      grid-template-columns: 1.32fr 1fr;
       gap: 24px;
       align-items: start;
     }
@@ -304,2334 +271,634 @@
 
     @media (max-width: 1024px) {
       .app-shell { grid-template-columns: 1fr; }
-      .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+      .sidebar { position: static; padding: 16px; }
       .side-nav { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
       .side-btn { width: auto; white-space: nowrap; }
-      .main-area { padding: 20px 16px; }
+      .side-label { display: none; }
     }
     @media (max-width: 860px) {
       .dashboard-grid { grid-template-columns: 1fr; }
     }
 
-    /* Tarjetas Estructurales */
-    .card {
+    /* Hero Izquierdo */
+    .hero-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow-xs);
-      margin-bottom: 20px;
-    }
-    .card-head {
-      display: flex;
-      justify-content: space-between;
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
       align-items: center;
-      margin-bottom: 14px;
-      gap: 10px;
-      flex-wrap: wrap;
+      position: relative;
+      overflow: visible;
+      margin-bottom: 24px;
     }
-    .card-head h2 {
-      margin: 0;
-      font-size: 14.5px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    @media (max-width: 600px) {
+      .hero-card { grid-template-columns: 1fr; padding: 22px; }
     }
-    .card-head h2 svg {
-      width: 16px;
-      height: 16px;
-      stroke: var(--fg-secondary);
-      stroke-width: 2;
-      fill: none;
-    }
-
-    /* Badges limpios */
-    .badge {
+    .badge-pill {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: var(--radius-sm);
-      background: var(--bg-subtle);
-      color: var(--fg-secondary);
-      border: 1px solid var(--border);
-    }
-    .badge.pos { background: var(--green-soft); color: var(--green); border-color: rgba(21,128,61,0.2); }
-    .badge.neg { background: var(--red-soft); color: var(--red); border-color: rgba(185,28,28,0.2); }
-    .badge.accent { background: var(--accent-soft); color: var(--accent); border-color: rgba(124,10,36,0.2); }
-    .badge.amber { background: var(--amber-soft); color: var(--amber); border-color: rgba(180,83,9,0.2); }
-
-    /* Selector de Días */
-    .days-bar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
       gap: 6px;
-      margin-bottom: 16px;
-    }
-    .day-pill {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 8px 4px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.12s, background 0.12s;
-    }
-    .day-pill:hover { border-color: var(--border-strong); background: var(--bg-subtle); }
-    .day-pill b { display: block; font-size: 12.5px; font-weight: 600; }
-    .day-pill small { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); margin-top: 2px; }
-    .day-pill.on {
-      background: var(--fg);
-      border-color: var(--fg);
-      color: #FFF;
-    }
-    .day-pill.on b, .day-pill.on small { color: #FFF; }
-
-    /* Lista de Bloques Horarios */
-    .task-list { display: flex; flex-direction: column; gap: 6px; }
-    .task-item {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 12px;
-      border-radius: var(--radius-md);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: border-color 0.12s, background 0.12s;
-    }
-    .task-item:hover { border-color: var(--border-strong); background: var(--surface); }
-    .task-item.now { border-left: 3px solid var(--accent); background: var(--surface); }
-    .task-item.done { opacity: 0.55; background: var(--bg-subtle); }
-    .task-item.done .task-title { text-decoration: line-through; color: var(--fg-muted); }
-    .task-left { display: flex; gap: 10px; align-items: flex-start; }
-    .task-time {
-      font-family: var(--font-mono);
+      background: var(--bg-warm);
+      border: 1px solid var(--border-strong);
+      color: var(--fg);
+      padding: 5px 12px;
+      border-radius: 100px;
       font-size: 11.5px;
       font-weight: 600;
-      color: var(--fg-muted);
-      min-width: 44px;
-      padding-top: 1px;
+      margin-bottom: 14px;
     }
-    .task-title { font-weight: 600; font-size: 13.5px; color: var(--fg); }
-    .task-loc { font-size: 11.5px; color: var(--fg-muted); margin-top: 1px; }
-    .supp-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-    .supp-chip {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: var(--surface);
-      border: 1px solid var(--border-strong);
-      color: var(--fg-secondary);
-      cursor: pointer;
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--burgundy);
     }
-    .supp-chip.done { background: var(--fg); border-color: var(--fg); color: #FFF; }
-    .check-box {
-      width: 18px;
-      height: 18px;
-      border-radius: 4px;
-      border: 1.5px solid var(--border-strong);
-      display: grid;
-      place-items: center;
-      color: #FFF;
-      font-size: 11px;
+    .hero-title {
+      font-size: 36px; line-height: 1.06; font-weight: 800; letter-spacing: -1.2px; margin: 0 0 12px; color: var(--fg);
+    }
+    .hero-title span { color: var(--burgundy); }
+    .hero-sub { color: var(--fg-muted); font-size: 13.8px; margin: 0 0 20px; max-width: 380px; }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .btn-outline {
+      background: var(--surface); border: 1px solid var(--border-strong); color: var(--fg);
+      padding: 10px 16px; border-radius: 100px; font-family: var(--font-sans); font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-outline:hover { background: var(--bg-warm); }
+    .hero-features { display: flex; gap: 16px; font-size: 12px; color: var(--fg-muted); font-weight: 600; }
+    .hero-features span { display: inline-flex; align-items: center; gap: 6px; }
+
+    /* Rueda 3D */
+    .sculpture-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding-top: 10px;
+    }
+    .sculpture-svg {
+      width: 100%;
+      max-width: 215px;
+      height: auto;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 18px 24px rgba(24, 21, 18, 0.14));
+    }
+    .sculpture-pct {
+      position: absolute;
+      z-index: 5;
+      font-family: var(--font-display);
+      font-size: 29px;
       font-weight: 700;
-      flex-shrink: 0;
-      margin-top: 2px;
+      color: var(--fg);
+      letter-spacing: -1px;
     }
-    .task-item.done .check-box { background: var(--accent); border-color: var(--accent); }
+    .prod-floating-badge {
+      position: absolute;
+      top: -6px;
+      left: -8px;
+      z-index: 25;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid var(--gold);
+      border-radius: 16px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      box-shadow: 0 14px 28px -4px rgba(24, 21, 18, 0.22);
+      transform: translateZ(0);
+    }
+    .prod-floating-badge .ico-box {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--burgundy);
+      color: #FFFFFF;
+      border: none;
+    }
+    .prod-floating-badge div b {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--fg);
+    }
+    .prod-floating-badge div small {
+      display: block;
+      font-size: 10px;
+      color: var(--burgundy);
+      font-weight: 700;
+    }
+
+    /* Barra Días */
+    .days-bar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 18px; }
+    .day-pill {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .day-pill:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+    .day-pill b { display: block; font-size: 14px; font-weight: 800; color: var(--fg); }
+    .day-pill small { display: block; font-family: var(--font-display); font-size: 11px; color: var(--fg-muted); margin-top: 2px; }
+    .day-pill.on { background: var(--burgundy); border-color: var(--burgundy); color: #FFFFFF; box-shadow: 0 8px 18px -4px rgba(124, 10, 36, 0.38); }
+    .day-pill.on b, .day-pill.on small { color: #FFFFFF; }
+
+    /* Tarjetas */
+    .section-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
+      padding: 24px; box-shadow: var(--shadow-soft); margin-bottom: 24px;
+    }
+    .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; flex-wrap: wrap; }
+    .section-head h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.4px; display: flex; align-items: center; gap: 10px; }
+
+    /* Horario */
+    .task-list { display: flex; flex-direction: column; gap: 10px; }
+    .task-item {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+      padding: 14px 16px; border-radius: 18px; background: var(--bg); border: 1px solid var(--border); cursor: pointer; transition: all 0.18s ease;
+    }
+    .task-item:hover { border-color: var(--border-strong); background: #FFFFFF; box-shadow: 0 6px 16px rgba(0,0,0,0.04); }
+    .task-item.now { border-color: var(--burgundy); background: #FFFFFF; box-shadow: 0 8px 24px -6px rgba(124, 10, 36, 0.18); }
+    .task-item.done { opacity: 0.58; background: var(--bg-warm); }
+    .task-item.done .task-title { text-decoration: line-through; color: var(--fg-muted); }
+    .task-left { display: flex; gap: 12px; align-items: flex-start; }
+    .task-time { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--fg-muted); display: flex; align-items: center; gap: 6px; }
+    .now-badge { background: var(--burgundy); color: #FFF; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 100px; letter-spacing: 0.8px; }
+    .task-title { font-weight: 700; font-size: 14.5px; color: var(--fg); margin: 2px 0 4px; }
+    .task-loc { font-size: 11.5px; color: var(--fg-muted); font-weight: 500; }
+    .supp-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .supp-chip {
+      font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; background: var(--surface);
+      border: 1px solid var(--border-strong); color: var(--fg); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
+    }
+    .supp-chip.done { background: var(--burgundy); border-color: var(--burgundy); color: #FFFFFF; }
+    .check-circle {
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-strong);
+      display: grid; place-items: center; color: #FFF; font-size: 13px; font-weight: 800; flex-shrink: 0; margin-top: 4px; transition: all 0.15s;
+    }
+    .task-item.done .check-circle { background: var(--burgundy); border-color: var(--burgundy); }
 
     /* Hidratación */
-    .water-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .water-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
     .water-btn {
-      padding: 8px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      background: var(--bg);
-      font-family: var(--font-mono);
-      font-weight: 600;
-      font-size: 12px;
-      color: var(--fg);
-      cursor: pointer;
+      padding: 12px; border-radius: 14px; border: 1px solid var(--border-strong); background: var(--bg);
+      font-family: var(--font-sans); font-weight: 700; font-size: 13.5px; color: var(--fg); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;
     }
-    .water-btn.done { background: var(--accent); border-color: var(--accent); color: #FFF; }
+    .water-btn.done { background: var(--burgundy); border-color: var(--burgundy); color: #FFFFFF; box-shadow: 0 6px 14px -4px rgba(124, 10, 36, 0.35); }
 
-    /* KPI Band */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
+    /* Columna Derecha */
+    .impact-panel { background: var(--bg-warm); border: 1px solid var(--border-strong); border-radius: var(--radius-xl); padding: 26px; box-shadow: var(--shadow-soft); position: relative; }
+    .impact-title { font-size: 24px; font-weight: 800; letter-spacing: -0.7px; line-height: 1.15; margin: 0 0 6px; }
+    .impact-sub { font-size: 13px; color: var(--fg-muted); margin: 0 0 20px; }
+
+    .kpi-band {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 18px 12px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; box-shadow: 0 8px 24px -6px rgba(24, 21, 18, 0.05); margin-bottom: 22px;
     }
-    .kpi-cell {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
+    .kpi-box { display: flex; flex-direction: column; align-items: center; }
+    .kpi-box .ico-box { margin-bottom: 6px; }
+    .kpi-num { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--fg); letter-spacing: -0.5px; }
+    .kpi-label { font-size: 11px; color: var(--fg-muted); line-height: 1.25; margin-top: 2px; font-weight: 500; }
+
+    .floating-chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 20px; box-shadow: var(--shadow-float); margin-bottom: 24px; position: relative; }
+    .fc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .fc-head b { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; }
+    .fc-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--fg-muted); }
+    .fc-svg-container { position: relative; width: 100%; height: 155px; }
+    .fc-highlight-box {
+      position: absolute; right: 12px; bottom: 12px; background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+      color: #FFFFFF; padding: 9px 13px; border-radius: 14px; box-shadow: 0 10px 20px -4px rgba(124, 10, 36, 0.45); text-align: center; pointer-events: none;
     }
-    .kpi-label { font-size: 11px; color: var(--fg-muted); font-weight: 500; }
-    .kpi-val {
-      font-family: var(--font-mono);
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--fg);
-      margin-top: 4px;
+    .fc-highlight-box b { display: block; font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: 1.1; }
+    .fc-highlight-box span { font-size: 9.5px; opacity: 0.85; display: block; margin-top: 2px; }
+
+    .solutions-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .sol-item { background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: all 0.15s; }
+    .sol-item:hover { background: var(--surface); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .sol-left { display: flex; align-items: center; gap: 12px; }
+    .sol-name { font-weight: 700; font-size: 13.5px; color: var(--fg); }
+    .sol-desc { font-size: 11.5px; color: var(--fg-muted); }
+    .sol-streak {
+      font-family: var(--font-display); font-size: 12px; font-weight: 700; padding: 5px 11px; border-radius: 100px;
+      background: var(--gold-soft); border: 1px solid rgba(212, 155, 75, 0.35); color: var(--gold-dark); white-space: nowrap; display: inline-flex; align-items: center; gap: 5px;
     }
 
-    /* Matriz 7D */
-    .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .matrix-table th {
-      padding: 6px 4px;
-      color: var(--fg-muted);
-      font-family: var(--font-mono);
-      font-weight: 600;
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-    }
-    .matrix-table th.active-col { color: var(--accent); }
-    .matrix-table th:first-child { text-align: left; font-family: var(--font-sans); }
-    .matrix-table td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--bg-subtle); }
-    .matrix-table td:first-child { text-align: left; font-weight: 500; }
+    .white-box-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-top: 20px; box-shadow: var(--shadow-soft); }
+
+    /* Matriz */
+    .matrix-legend { display: flex; gap: 12px; font-size: 11px; color: var(--fg-muted); margin-bottom: 10px; flex-wrap: wrap; }
+    .matrix-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .matrix-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .matrix-table th { padding: 8px 4px; color: var(--fg-muted); font-weight: 700; border-bottom: 1px solid var(--border); text-align: center; }
+    .matrix-table th.active-col { color: var(--burgundy); }
+    .matrix-table th:first-child { text-align: left; }
+    .matrix-table td { padding: 7px 3px; text-align: center; border-bottom: 1px solid var(--bg-warm); }
+    .matrix-table td:first-child { text-align: left; font-weight: 600; }
+    .m-habit-cell { display: flex; align-items: center; gap: 8px; }
+    .m-habit-cell .ico-box { width: 26px; height: 26px; border-radius: 7px; }
+    .m-habit-cell .ico-box svg { width: 14px; height: 14px; }
     .m-dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      display: inline-grid;
-      place-items: center;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--fg-muted);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      cursor: pointer;
-      user-select: none;
+      width: 26px; height: 26px; border-radius: 8px; display: inline-grid; place-items: center; background: var(--bg);
+      border: 1px solid var(--border-strong); color: var(--fg-muted); font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.15s ease; user-select: none;
     }
-    .m-dot:hover:not(.na) { border-color: var(--fg); }
-    .m-dot.on { background: var(--accent); border-color: var(--accent); color: #FFF; }
-    .m-dot.part { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); }
-    .m-dot.na { background: transparent; border-color: transparent; color: var(--border-strong); cursor: default; }
+    .m-dot:hover:not(.na) { border-color: var(--burgundy); transform: scale(1.08); }
+    .m-dot.on { background: var(--burgundy); border-color: var(--burgundy); color: #FFF; }
+    .m-dot.part { background: var(--gold-soft); border-color: var(--gold); color: var(--gold-dark); }
+    .m-dot.na { background: transparent; border-color: transparent; color: #C7BCAE; cursor: default; }
 
-    /* Formularios limpios */
-    .form-stack { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
-    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .form-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    @media (max-width: 640px) {
-      .form-grid-2, .form-grid-3, .form-grid-4 { grid-template-columns: 1fr 1fr; }
+    /* Formularios e Inputs */
+    .notes-form { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    @media (max-width: 580px) {
+      .form-row, .form-row-3 { grid-template-columns: 1fr; }
     }
-    .input, select.input {
-      padding: 8px 10px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-strong);
-      background: var(--bg);
-      font-family: var(--font-sans);
-      font-size: 12.5px;
-      color: var(--fg);
-      outline: none;
-      width: 100%;
+    .notes-input {
+      padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-strong);
+      background: var(--bg); font-family: var(--font-sans); font-size: 13px; color: var(--fg); outline: none; width: 100%;
     }
-    .input.mono { font-family: var(--font-mono); }
-    .input:focus { border-color: var(--fg); background: var(--surface); }
+    .notes-input:focus { border-color: var(--burgundy); background: #FFF; }
+    .notes-add-btn {
+      background: var(--burgundy); color: #FFF; border: none; border-radius: 12px; padding: 10px 16px;
+      font-family: var(--font-sans); font-weight: 700; font-size: 13px; cursor: pointer; text-align: center; transition: background 0.15s;
+    }
+    .notes-add-btn:hover { background: var(--burgundy-dark); }
+    .custom-tasks-list { display: flex; flex-direction: column; gap: 8px; }
+    .ct-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); font-size: 13px; }
+    .ct-left { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1; }
+    .ct-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border-strong); display: grid; place-items: center; color: #FFF; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+    .ct-item.done .ct-check { background: var(--burgundy); border-color: var(--burgundy); }
+    .ct-item.done .ct-text { text-decoration: line-through; color: var(--fg-muted); }
+    .ct-del { border: none; background: transparent; color: var(--fg-muted); cursor: pointer; font-size: 15px; padding: 2px 6px; border-radius: 6px; }
+    .ct-del:hover { background: var(--burgundy-soft); color: var(--burgundy); }
+    .bb-tag {
+      font-size: 9.5px; font-weight: 800; padding: 2px 6px; border-radius: 6px;
+      background: var(--gold-soft); color: var(--gold-dark); border: 1px solid rgba(212,155,75,0.3); margin-left: 6px;
+    }
 
-    /* Tablas de Datos (Trading, Clipping, Nutrición) */
-    .data-table-wrap { overflow-x: auto; margin-top: 12px; }
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-    .data-table th {
-      text-align: left;
-      padding: 8px 8px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--fg-muted);
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    .data-table td {
-      padding: 8px 8px;
-      border-bottom: 1px solid var(--bg-subtle);
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-    .data-table tr:hover td { background: var(--bg); }
+    /* Exámenes */
+    .exam-card { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--border); margin-bottom: 8px; gap: 10px; }
+    .exam-info b { display: block; font-size: 13.5px; color: var(--fg); font-weight: 700; }
+    .exam-info small { color: var(--fg-muted); font-size: 11.5px; }
+    .exam-countdown { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 100px; background: var(--burgundy-soft); color: var(--burgundy); border: 1px solid rgba(124, 10, 36, 0.2); white-space: nowrap; }
 
-    /* Secciones Ocultas / Activas */
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-
-    /* Barra de Patrimonio (Proyectos) */
-    .wealth-strip {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 18px 22px;
+    /* ====================================================
+       SECCIÓN PROYECTOS PERSONALES (Trading, Clipping, YT, Side Hustles)
+       ==================================================== */
+    .projects-wrap, .calai-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .projects-wrap.active, .calai-wrap.active {
+      display: flex;
+    }
+    .wealth-banner {
+      background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+      color: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      box-shadow: var(--shadow-float);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 20px;
+      gap: 20px;
     }
-    .wealth-main small {
-      font-size: 11px;
-      font-weight: 600;
+    .wealth-banner small {
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--fg-muted);
+      letter-spacing: 1.5px;
+      font-size: 11px;
+      font-weight: 700;
+      opacity: 0.85;
       display: block;
+      margin-bottom: 4px;
     }
     .wealth-total {
-      font-family: var(--font-mono);
-      font-size: 28px;
+      font-family: var(--font-display);
+      font-size: 42px;
       font-weight: 700;
-      letter-spacing: -1px;
-      color: var(--fg);
-      margin-top: 2px;
+      letter-spacing: -1.5px;
+      line-height: 1.05;
     }
-    .wealth-splits { display: flex; gap: 12px; flex-wrap: wrap; }
-    .wealth-pill {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 8px 14px;
+    .wealth-breakdown {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .wb-pill {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 10px 16px;
       min-width: 130px;
     }
-    .wealth-pill span { display: block; font-size: 11px; color: var(--fg-muted); }
-    .wealth-pill b { font-family: var(--font-mono); font-size: 14.5px; font-weight: 600; }
-
-    /* Terminal de Gráfico de Trading */
-    .terminal-box {
-      background: var(--surface-dark);
-      color: #F4F4F0;
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin: 12px 0;
-      border: 1px solid #2A2A28;
+    .wb-pill span {
+      display: block;
+      font-size: 11px;
+      opacity: 0.8;
     }
-    .terminal-head {
+    .wb-pill b {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+
+    .pnl-badge {
+      font-family: var(--font-display);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+    .pnl-badge.pos { background: var(--green-soft); color: var(--green); }
+    .pnl-badge.neg { background: var(--red-soft); color: var(--red); }
+
+    .rr-pill {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: var(--gold-soft);
+      color: var(--gold-dark);
+      border: 1px solid rgba(212, 155, 75, 0.35);
+    }
+
+    .trading-chart-box {
+      background: #141210;
+      border: 1px solid #2C2622;
+      border-radius: 20px;
+      padding: 18px;
+      color: #F6EFE2;
+      margin: 14px 0 18px;
+      box-shadow: inset 0 2px 12px rgba(0,0,0,0.4);
+    }
+    .tc-top {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
       gap: 8px;
     }
-
-    /* Tarjeta Don Mancuerna YouTube */
-    .yt-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 20px;
+    .tc-balance {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: #FFFFFF;
     }
-    .yt-top {
+    .tc-svg-wrap {
+      width: 100%;
+      height: 185px;
+    }
+
+    .trade-log-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 14px;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      margin-bottom: 8px;
+      gap: 10px;
+    }
+    .trade-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-top: 3px;
+      font-size: 11.5px;
+      color: var(--fg-muted);
+    }
+    .trade-amt {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .trade-amt.pos { color: var(--green); }
+    .trade-amt.neg { color: var(--red); }
+
+    .trade-preview-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: var(--bg-warm);
+      border: 1px dashed var(--border-strong);
+      font-size: 12px;
+      color: var(--fg-muted);
+    }
+
+    /* Don Mancuerna YouTube Card */
+    .yt-card {
+      background: linear-gradient(145deg, #1E1916 0%, #120E0C 100%);
+      color: #FFFFFF;
+      border-radius: 22px;
+      padding: 22px;
+      border: 1px solid #332924;
+      position: relative;
+      overflow: hidden;
+    }
+    .yt-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
-    .yt-identity { display: flex; align-items: center; gap: 10px; }
-    .yt-badge-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-md);
-      background: #DC2626;
-      color: #FFF;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      font-size: 14px;
+    .yt-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #FF0033;
       display: grid;
       place-items: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #FFF;
+      box-shadow: 0 6px 16px rgba(255, 0, 51, 0.35);
+      text-decoration: none;
     }
-    .live-dot {
+    .yt-live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 0, 51, 0.16);
+      border: 1px solid rgba(255, 0, 51, 0.4);
+      color: #FF4D6D;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .yt-pulse {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #DC2626;
-      display: inline-block;
-      animation: pulse 1.8s infinite;
+      background: #FF0033;
+      animation: pulseRed 1.6s infinite;
     }
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.35; }
-      100% { opacity: 1; }
+    @keyframes pulseRed {
+      0% { box-shadow: 0 0 0 0 rgba(255, 0, 51, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(255, 0, 51, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 0, 51, 0); }
     }
+    .yt-subs-num {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin: 4px 0 6px;
+    }
+    .yt-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .yt-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #FFF;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .yt-btn:hover { background: rgba(255, 255, 255, 0.2); }
+    .yt-btn.red { background: #FF0033; border-color: #FF0033; }
 
-    /* Cal AI - Escáner de Fotos */
-    .upload-zone {
-      border: 1.5px dashed var(--border-strong);
-      border-radius: var(--radius-lg);
-      padding: 20px;
+    /* ====================================================
+       SECCIÓN CAL AI · NUTRICIÓN & ESCÁNER POR FOTO
+       ==================================================== */
+    .cal-upload-zone {
+      border: 2px dashed var(--border-strong);
+      border-radius: 20px;
+      padding: 24px 18px;
       text-align: center;
       background: var(--bg);
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+      transition: all 0.2s ease;
       position: relative;
+      margin-bottom: 14px;
     }
-    .upload-zone:hover {
-      border-color: var(--accent);
-      background: var(--surface);
+    .cal-upload-zone:hover {
+      border-color: var(--burgundy);
+      background: var(--bg-warm);
     }
-    .upload-preview {
-      max-height: 180px;
-      border-radius: var(--radius-md);
-      margin: 10px auto 0;
-      display: none;
+    .cal-preview-img {
+      max-width: 100%;
+      max-height: 220px;
+      border-radius: 14px;
       object-fit: cover;
+      display: none;
+      margin: 0 auto 12px;
+      box-shadow: var(--shadow-soft);
+    }
+    .macro-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+    @media (max-width: 560px) {
+      .macro-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .macro-card {
+      background: var(--bg);
       border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 10px;
+      text-align: center;
     }
-    .macro-bar-wrap {
-      margin-bottom: 10px;
+    .macro-card b {
+      font-family: var(--font-display);
+      font-size: 20px;
+      display: block;
+      color: var(--fg);
     }
-    .macro-bar-head {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      margin-bottom: 4px;
+    .macro-card small {
+      font-size: 11px;
+      color: var(--fg-muted);
+      font-weight: 600;
     }
-    .macro-track {
+    .macro-bar-track {
       height: 6px;
-      background: var(--bg-subtle);
+      background: var(--border);
       border-radius: 99px;
       overflow: hidden;
+      margin-top: 6px;
     }
-    .macro-fill {
+    .macro-bar-fill {
       height: 100%;
-      background: var(--accent);
       border-radius: 99px;
-      transition: width 0.3s ease;
+      transition: width 0.35s ease;
     }
-
-    /* Modal de API Keys */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(20, 20, 19, 0.55);
-      display: none;
-      place-items: center;
-      z-index: 100;
-      padding: 16px;
-    }
-    .modal-backdrop.open { display: grid; }
-    .modal-card {
-      background: var(--surface);
+    .meal-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      max-width: 460px;
-      width: 100%;
-      padding: 22px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+      margin-bottom: 8px;
     }
-  </style>
-</head>
-<body>
-
-  <div class="app-shell">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div>
-        <div class="brand">
-          <div class="brand-left">
-            <div class="brand-icon">N</div>
-            <span>NexoraOS</span>
-          </div>
-          <span class="version-tag">v4.0</span>
-        </div>
-
-        <div class="side-group">
-          <div class="side-label">Operaciones</div>
-          <nav class="side-nav">
-            <button class="side-btn active" id="nav-all" onclick="setSection('all')">
-              <span id="ico-nav-all"></span>
-              <span>Panel General</span>
-            </button>
-            <button class="side-btn" id="nav-projects" onclick="setSection('projects')">
-              <span id="ico-nav-projects"></span>
-              <span>Trading & Proyectos</span>
-            </button>
-            <button class="side-btn" id="nav-calai" onclick="setSection('calai')">
-              <span id="ico-nav-calai"></span>
-              <span>Nutrición · Cal AI</span>
-            </button>
-            <button class="side-btn" id="nav-matrix" onclick="setSection('matrix')">
-              <span id="ico-nav-matrix"></span>
-              <span>Matriz 7 Días</span>
-            </button>
-            <button class="side-btn" id="nav-exams" onclick="setSection('exams')">
-              <span id="ico-nav-exams"></span>
-              <span>Exámenes US</span>
-            </button>
-            <button class="side-btn" id="nav-notes" onclick="setSection('notes')">
-              <span id="ico-nav-notes"></span>
-              <span>Tareas Diarias</span>
-            </button>
-          </nav>
-        </div>
-
-        <div class="side-group">
-          <div class="side-label">Filtros Rápidos</div>
-          <nav class="side-nav">
-            <button class="side-btn" id="nav-pending" onclick="togglePendingFilter()">
-              <span id="ico-nav-filter"></span>
-              <span>Solo pendientes hoy</span>
-            </button>
-          </nav>
-        </div>
-      </div>
-
-      <div class="side-footer">
-        <div class="status-row">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span class="status-dot" id="bb-dot"></span>
-            <span id="bb-status-text" style="font-size:11px;">Blackboard US</span>
-          </div>
-          <button class="btn btn-sm" onclick="syncBlackboardCalendar(true)">Sync</button>
-        </div>
-
-        <button class="btn" onclick="openApiModal()" style="width:100%; justify-content:space-between;">
-          <span>⚙ API Keys (Local)</span>
-          <span class="badge" id="api-status-badge">Configurar</span>
-        </button>
-
-        <div style="display:grid; grid-template-columns: 1fr auto; gap:6px;">
-          <button class="btn btn-primary" onclick="jumpToday()">Hoy</button>
-          <button class="btn" id="rs" title="Reiniciar progreso de hábitos de la semana">Reiniciar</button>
-        </div>
-      </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main-area">
-
-      <!-- TOPBAR DE ESTADO GLOBAL -->
-      <header class="topbar">
-        <div class="topbar-title">
-          <h1 id="view-main-title">Panel de Rendimiento Diario</h1>
-          <p id="wk-label">Semana activa</p>
-        </div>
-        <div class="topbar-metrics">
-          <div class="metric-pill">
-            <span>Cumplimiento Semanal</span>
-            <b id="global-pct">0%</b>
-          </div>
-          <div class="metric-pill">
-            <span>Calorías Hoy</span>
-            <b id="top-cal-today">0 kcal</b>
-          </div>
-          <div class="metric-pill">
-            <span>Don Mancuerna</span>
-            <b id="top-yt-subs">0 subs</b>
-          </div>
-          <button class="btn btn-primary" onclick="markCurrentBlock()">Completar bloque actual</button>
-        </div>
-      </header>
-
-      <!-- =========================================================
-           VISTA 1: PANEL DE HÁBITOS, HORARIO, MATRIZ Y EXÁMENES
-           ========================================================= -->
-      <div class="dashboard-grid" id="main-grid">
-
-        <!-- COLUMNA IZQUIERDA: Agenda y Agua -->
-        <div id="col-left">
-          <nav class="days-bar" id="days-bar"></nav>
-
-          <section class="card" id="sec-schedule">
-            <div class="card-head">
-              <h2>
-                <span id="ico-schedule-title"></span>
-                <span id="day-title">Objetivos del Día</span>
-              </h2>
-              <span class="badge" id="day-counter">0 / 0</span>
-            </div>
-            <div class="task-list" id="task-list"></div>
-          </section>
-
-          <section class="card" id="sec-water">
-            <div class="card-head" style="margin-bottom:6px;">
-              <h2>
-                <span id="ico-water-title"></span>
-                <span>Hidratación Diaria (3L)</span>
-              </h2>
-              <span class="badge accent" id="water-status">0 / 3 L</span>
-            </div>
-            <div class="water-row" id="water-row"></div>
-          </section>
-        </div>
-
-        <!-- COLUMNA DERECHA: Métricas, Matriz, Exámenes y Notas -->
-        <div id="col-right">
-
-          <div class="card" id="sec-metrics-block">
-            <div class="card-head">
-              <h2>Rendimiento y Consistencia</h2>
-              <span class="badge" id="fc-badge-val">0% media</span>
-            </div>
-
-            <div class="kpi-grid">
-              <div class="kpi-cell">
-                <div class="kpi-label">Bloques semana</div>
-                <div class="kpi-val" id="kpi-done">+0</div>
-              </div>
-              <div class="kpi-cell">
-                <div class="kpi-label">Día activo</div>
-                <div class="kpi-val" id="kpi-day-pct">0%</div>
-              </div>
-              <div class="kpi-cell">
-                <div class="kpi-label">Supl. + Agua</div>
-                <div class="kpi-val" id="kpi-supps">0/0</div>
-              </div>
-            </div>
-
-            <div style="height:135px; width:100%; margin-bottom:16px;" id="curve-chart"></div>
-
-            <div class="card-head" style="margin-top:8px; margin-bottom:8px;">
-              <h2 style="font-size:13px;">Rachas de Hábitos Clave</h2>
-            </div>
-            <div id="streaks-list" style="display:flex; flex-direction:column; gap:6px;"></div>
-          </div>
-
-          <!-- Matriz 7D -->
-          <div class="card" id="sec-matrix-block">
-            <div class="card-head">
-              <h2>Matriz de Consistencia (7D)</h2>
-              <span class="badge">Clic para alternar</span>
-            </div>
-            <div style="overflow-x:auto;">
-              <table class="matrix-table" id="matrix-table"></table>
-            </div>
-          </div>
-
-          <!-- Gestor de Exámenes US -->
-          <div class="card" id="sec-exams-block">
-            <div class="card-head">
-              <h2>Exámenes y Entregas (US)</h2>
-              <span class="badge" id="exams-counter">0 programados</span>
-            </div>
-            <form class="form-stack" onsubmit="addCustomExam(event)">
-              <div class="form-grid-2">
-                <input type="text" id="exam-name-input" class="input" placeholder="Asignatura / Examen (Ej: Cálculo)" required>
-                <input type="date" id="exam-date-input" class="input mono" required>
-              </div>
-              <button type="submit" class="btn btn-primary">+ Añadir Convocatoria</button>
-            </form>
-            <div id="exams-list-container" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;"></div>
-          </div>
-
-          <!-- Tareas Diarias -->
-          <div class="card" id="sec-notes-block">
-            <div class="card-head">
-              <h2 id="notes-box-title">Tareas del Día</h2>
-              <span class="badge" id="notes-counter">0 pendientes</span>
-            </div>
-            <form class="form-stack" onsubmit="addCustomTask(event)">
-              <div style="display:flex; gap:6px;">
-                <input type="text" id="custom-task-input" class="input" placeholder="Añadir tarea o entrega de Blackboard..." required>
-                <button type="submit" class="btn btn-primary">Añadir</button>
-              </div>
-            </form>
-            <div id="custom-tasks-list" style="display:flex; flex-direction:column; gap:6px; margin-top:8px;"></div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- =========================================================
-           VISTA 2: PROYECTOS PERSONALES (Trading con Compra/Venta/RR + Don Mancuerna YT)
-           ========================================================= -->
-      <section class="view-section" id="projects-view">
-
-        <div class="wealth-strip">
-          <div class="wealth-main">
-            <small>Patrimonio Neto & Liquidez de Proyectos</small>
-            <div class="wealth-total" id="total-empire-money">0,00 €</div>
-          </div>
-          <div class="wealth-splits">
-            <div class="wealth-pill">
-              <span>Cartera Trading</span>
-              <b id="wb-trading">0,00 €</b>
-            </div>
-            <div class="wealth-pill">
-              <span>Ingresos Clipping</span>
-              <b id="wb-clipping">0,00 €</b>
-            </div>
-            <div class="wealth-pill">
-              <span>Side Hustles</span>
-              <b id="wb-hustles">0,00 €</b>
-            </div>
-          </div>
-        </div>
-
-        <div class="dashboard-grid">
-
-          <!-- COLUMNA IZQUIERDA: TERMINAL DE TRADING (Precio Compra, Venta, PnL y RR) -->
-          <div>
-            <div class="card">
-              <div class="card-head">
-                <h2>Terminal de Trading & Registro de Operaciones</h2>
-                <span class="badge pos" id="trading-pnl-badge">+0,00 € (0%)</span>
-              </div>
-
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; background:var(--bg); padding:8px 12px; border-radius:var(--radius-md); border:1px solid var(--border); flex-wrap:wrap;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:12px; color:var(--fg-secondary); font-weight:500;">Capital Base Inicial (€):</span>
-                  <input type="number" step="0.01" id="initial-cap-input" class="input mono" style="width:110px; padding:4px 8px;" onchange="updateInitialCapital(this.value)">
-                </div>
-                <div style="display:flex; gap:12px; font-size:12px;" class="mono">
-                  <span>Winrate: <b id="trading-winrate">0%</b></span>
-                  <span>R:R Medio: <b id="trading-avg-rr">1:0.0</b></span>
-                </div>
-              </div>
-
-              <!-- Gráfico de Curva de Capital -->
-              <div class="terminal-box">
-                <div class="terminal-head">
-                  <div>
-                    <small style="color:#85837E; font-size:10.5px; text-transform:uppercase;">Balance Actual de Cartera</small>
-                    <div class="mono" style="font-size:22px; font-weight:700;" id="trading-total-val">0,00 €</div>
-                  </div>
-                  <div style="text-align:right;">
-                    <small style="color:#85837E; font-size:10.5px;">HISTORIAL</small>
-                    <div class="mono" style="font-size:13px;" id="trading-ops-count">0 operaciones</div>
-                  </div>
-                </div>
-                <div style="width:100%; height:170px;" id="trading-svg-container"></div>
-              </div>
-
-              <!-- Formulario Completo: Activo, Compra, Venta, Stop Loss / RR, Inversión -->
-              <form class="form-stack" onsubmit="addTradeEntry(event)" style="background:var(--bg); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border);">
-                <div style="font-size:12px; font-weight:600; margin-bottom:2px;">Registrar Operación (Cálculo automático de PnL y Ratio R:R)</div>
-
-                <div class="form-grid-4">
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Activo / Par</label>
-                    <input type="text" id="trade-label" class="input mono" placeholder="BTC, NVDA, XAU..." required>
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Dirección</label>
-                    <select id="trade-side" class="input mono" onchange="previewTradeCalc()">
-                      <option value="LONG">LONG (Compra)</option>
-                      <option value="SHORT">SHORT (Venta)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Precio Compra (Entry)</label>
-                    <input type="number" step="any" id="trade-buy" class="input mono" placeholder="Ej: 100.50" required oninput="previewTradeCalc()">
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Precio Venta (Exit)</label>
-                    <input type="number" step="any" id="trade-sell" class="input mono" placeholder="Ej: 108.20" required oninput="previewTradeCalc()">
-                  </div>
-                </div>
-
-                <div class="form-grid-3" style="margin-top:4px;">
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Stop Loss (Opcional p/ R:R)</label>
-                    <input type="number" step="any" id="trade-sl" class="input mono" placeholder="Ej: 97.50" oninput="previewTradeCalc()">
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Ratio R:R (Ej: 2.5 = 1:2.5)</label>
-                    <input type="number" step="0.01" id="trade-rr" class="input mono" placeholder="Auto o manual (Ej: 2.5)">
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Ganancia/Pérdida Neta (€)</label>
-                    <input type="number" step="0.01" id="trade-profit" class="input mono" placeholder="Ej: 45.50 o -15" required>
-                  </div>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; gap:8px; flex-wrap:wrap;">
-                  <small id="trade-calc-preview" class="mono" style="font-size:11px; color:var(--fg-secondary);">Introduce precio de compra y venta para calcular % movimiento y R:R.</small>
-                  <button type="submit" class="btn btn-primary">+ Registrar Operación</button>
-                </div>
-              </form>
-
-              <!-- Tabla de Operaciones Registradas -->
-              <div class="data-table-wrap">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Fecha</th>
-                      <th>Activo</th>
-                      <th>Tipo</th>
-                      <th>Compra</th>
-                      <th>Venta</th>
-                      <th>R:R</th>
-                      <th>Resultado (€)</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="trades-history-tbody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- COLUMNA DERECHA: DON MANCUERNA YT, CLIPPING & SIDE HUSTLES -->
-          <div>
-
-            <!-- 1. DON MANCUERNA YOUTUBE (Enlace Oficial + Auto Sync) -->
-            <div class="yt-box">
-              <div class="yt-top">
-                <div class="yt-identity">
-                  <div class="yt-badge-avatar">DM</div>
-                  <div>
-                    <div style="font-weight:700; font-size:14.5px;">Don Mancuerna</div>
-                    <a href="https://youtube.com/@donmancuerna?si=PP1YbzTHhKO2Qbgt" target="_blank" rel="noopener" class="mono" style="font-size:11.5px; color:var(--accent); text-decoration:none;">
-                      youtube.com/@donmancuerna ↗
-                    </a>
-                  </div>
-                </div>
-                <span class="badge" style="color:#DC2626; border-color:rgba(220,38,38,0.25); background:#FEF2F2;">
-                  <span class="live-dot"></span> AUTO-SYNC
-                </span>
-              </div>
-
-              <div style="display:flex; justify-content:space-between; align-items:baseline; background:var(--bg); padding:14px 16px; border-radius:var(--radius-md); border:1px solid var(--border);">
-                <div>
-                  <small style="font-size:11px; color:var(--fg-muted); text-transform:uppercase; display:block;">Suscriptores del Canal</small>
-                  <div class="mono" style="font-size:30px; font-weight:700; letter-spacing:-1px;" id="yt-subs-display">0</div>
-                  <small id="yt-sync-note" style="font-size:11px; color:var(--fg-muted);">Sincronizando con @donmancuerna...</small>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
-                  <a class="btn btn-primary" style="background:#DC2626; border-color:#DC2626;" href="https://youtube.com/@donmancuerna?si=PP1YbzTHhKO2Qbgt" target="_blank" rel="noopener">
-                    Abrir Canal ↗
-                  </a>
-                  <div style="display:flex; gap:4px;">
-                    <button class="btn btn-sm" onclick="fetchDonMancuernaSubs(true)">↻ Sync</button>
-                    <button class="btn btn-sm" onclick="promptExactSubs()">Fijar</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 2. CLIPPING -->
-            <div class="card">
-              <div class="card-head">
-                <h2>Clipping · Views & Monetización</h2>
-                <span class="badge" id="clipping-rpm-badge">RPM: 0,00 €</span>
-              </div>
-
-              <div class="kpi-grid">
-                <div class="kpi-cell">
-                  <div class="kpi-label">Views Totales</div>
-                  <div class="kpi-val" id="clip-total-views">0</div>
-                </div>
-                <div class="kpi-cell">
-                  <div class="kpi-label">Ingresos</div>
-                  <div class="kpi-val" id="clip-total-money" style="color:var(--green);">0,00 €</div>
-                </div>
-                <div class="kpi-cell">
-                  <div class="kpi-label">Lotes / Campañas</div>
-                  <div class="kpi-val" id="clip-count">0</div>
-                </div>
-              </div>
-
-              <form class="form-stack" onsubmit="addClippingEntry(event)">
-                <div class="form-grid-3">
-                  <input type="text" id="clip-title" class="input" placeholder="Campaña / Vídeo" required>
-                  <input type="number" id="clip-views" class="input mono" placeholder="Views (Ej: 150000)" required>
-                  <input type="number" step="0.01" id="clip-money" class="input mono" placeholder="Ganancia €" required>
-                </div>
-                <button type="submit" class="btn">+ Registrar Lote de Clipping</button>
-              </form>
-
-              <div id="clipping-history-list" style="margin-top:10px; display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;"></div>
-            </div>
-
-            <!-- 3. SIDE HUSTLES -->
-            <div class="card">
-              <div class="card-head">
-                <h2>Side Hustles · Ingresos Extra</h2>
-                <span class="badge pos" id="hustles-total-badge">0,00 €</span>
-              </div>
-              <form class="form-stack" onsubmit="addSideHustleEntry(event)">
-                <div class="form-grid-2">
-                  <input type="text" id="hustle-name" class="input" placeholder="Proyecto / Venta / Servicio" required>
-                  <input type="number" step="0.01" id="hustle-amount" class="input mono" placeholder="Importe €" required>
-                </div>
-                <button type="submit" class="btn">+ Añadir Ingreso Extra</button>
-              </form>
-              <div id="hustles-history-list" style="margin-top:10px; display:flex; flex-direction:column; gap:6px; max-height:150px; overflow-y:auto;"></div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      <!-- =========================================================
-           VISTA 3: CAL AI · ESCÁNER NUTRICIONAL POR FOTO Y REGISTRO SEMANAL
-           ========================================================= -->
-      <section class="view-section" id="calai-view">
-
-        <div class="wealth-strip">
-          <div class="wealth-main">
-            <small>Balance Calórico Semanal (Reinicio automático cada Lunes)</small>
-            <div class="wealth-total" id="cal-weekly-total">0 / 17.500 kcal</div>
-          </div>
-          <div class="wealth-splits">
-            <div class="wealth-pill">
-              <span>Calorías Hoy</span>
-              <b id="cal-today-val">0 kcal</b>
-            </div>
-            <div class="wealth-pill">
-              <span>Proteína Hoy</span>
-              <b id="cal-prot-today">0 g</b>
-            </div>
-            <div class="wealth-pill">
-              <span>Carbos / Grasas Hoy</span>
-              <b id="cal-cf-today">0g / 0g</b>
-            </div>
-            <div class="wealth-pill">
-              <span>Meta Diaria</span>
-              <b id="cal-goal-display" style="cursor:pointer; text-decoration:underline;" onclick="promptCalorieGoal()">2.500 kcal ✎</b>
-            </div>
-          </div>
-        </div>
-
-        <div class="dashboard-grid">
-
-          <!-- COLUMNA IZQUIERDA: ESCÁNER IA DE COMIDAS + REGISTRO MANUAL -->
-          <div>
-            <div class="card">
-              <div class="card-head">
-                <h2>Cal AI Vision · Analizar Comida por Foto</h2>
-                <span class="badge accent">Gemini 2.5 Flash Vision</span>
-              </div>
-              <p style="margin:0 0 12px; font-size:12.5px; color:var(--fg-secondary);">
-                Sube o haz una foto a tu plato. La IA estimará calorías, proteínas, carbohidratos y grasas automáticamente y lo sumará al día seleccionado (<b id="cal-active-day-name">Hoy</b>).
-              </p>
-
-              <label class="upload-zone" for="meal-photo-input">
-                <input type="file" id="meal-photo-input" accept="image/*" capture="environment" style="display:none;" onchange="handleMealPhotoUpload(event)">
-                <div style="font-weight:600; font-size:13.5px; color:var(--fg);">📷 Toca para hacer foto o subir imagen del plato</div>
-                <div style="font-size:11.5px; color:var(--fg-muted); margin-top:4px;">Soporta JPG, PNG, WEBP · Procesamiento privado con tu API Key</div>
-                <img id="meal-preview-img" class="upload-preview" alt="Vista previa del plato">
-              </label>
-
-              <div id="cal-ai-status" style="display:none; margin-top:10px; padding:10px; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--border); font-size:12px;" class="mono"></div>
-
-              <!-- Formulario rellenable por la IA o manualmente -->
-              <form class="form-stack" onsubmit="addMealEntry(event)" style="margin-top:14px; background:var(--bg); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size:12px; font-weight:600;">Datos Nutricionales del Plato</span>
-                  <button type="button" class="btn btn-sm" onclick="openApiModal()">Configurar API Key</button>
-                </div>
-
-                <div class="form-grid-2">
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Plato / Comida</label>
-                    <input type="text" id="meal-name" class="input" placeholder="Ej: Pechuga de pollo con arroz y aguacate" required>
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Día de la semana</label>
-                    <select id="meal-day-select" class="input" onchange="changeCalDay(this.value)"></select>
-                  </div>
-                </div>
-
-                <div class="form-grid-4">
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Calorías (kcal)</label>
-                    <input type="number" id="meal-kcal" class="input mono" placeholder="650" required>
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Proteínas (g)</label>
-                    <input type="number" id="meal-prot" class="input mono" placeholder="48" required>
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Carbohidratos (g)</label>
-                    <input type="number" id="meal-carbs" class="input mono" placeholder="65" required>
-                  </div>
-                  <div>
-                    <label style="font-size:11px; color:var(--fg-muted);">Grasas (g)</label>
-                    <input type="number" id="meal-fats" class="input mono" placeholder="18" required>
-                  </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">+ Guardar Comida en el Registro</button>
-              </form>
-
-              <div class="data-table-wrap">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Comida</th>
-                      <th>Kcal</th>
-                      <th>Prot</th>
-                      <th>Carbs</th>
-                      <th>Grasas</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="meals-day-tbody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- COLUMNA DERECHA: PROGRESO DE MACROS Y TABLA SEMANAL (LUNES A DOMINGO) -->
-          <div>
-            <div class="card">
-              <div class="card-head">
-                <h2>Objetivos de Macros del Día</h2>
-                <span class="badge" id="cal-day-pct-badge">0% del objetivo</span>
-              </div>
-
-              <div class="macro-bar-wrap">
-                <div class="macro-bar-head">
-                  <span>Calorías</span>
-                  <b class="mono" id="bar-kcal-txt">0 / 2500 kcal</b>
-                </div>
-                <div class="macro-track"><div class="macro-fill" id="bar-kcal-fill" style="width:0%;"></div></div>
-              </div>
-
-              <div class="macro-bar-wrap">
-                <div class="macro-bar-head">
-                  <span>Proteínas (Meta: 180g)</span>
-                  <b class="mono" id="bar-prot-txt">0 / 180 g</b>
-                </div>
-                <div class="macro-track"><div class="macro-fill" id="bar-prot-fill" style="width:0%; background:var(--green);"></div></div>
-              </div>
-
-              <div class="macro-bar-wrap">
-                <div class="macro-bar-head">
-                  <span>Carbohidratos (Meta: 280g)</span>
-                  <b class="mono" id="bar-carbs-txt">0 / 280 g</b>
-                </div>
-                <div class="macro-track"><div class="macro-fill" id="bar-carbs-fill" style="width:0%; background:var(--amber);"></div></div>
-              </div>
-
-              <div class="macro-bar-wrap" style="margin-bottom:0;">
-                <div class="macro-bar-head">
-                  <span>Grasas (Meta: 75g)</span>
-                  <b class="mono" id="bar-fats-txt">0 / 75 g</b>
-                </div>
-                <div class="macro-track"><div class="macro-fill" id="bar-fats-fill" style="width:0%; background:var(--blue);"></div></div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-head">
-                <h2>Registro Semanal de Calorías (Lunes a Domingo)</h2>
-                <span class="badge">Auto-Reset Lunes</span>
-              </div>
-              <div class="data-table-wrap" style="margin-top:0;">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Día</th>
-                      <th>Comidas</th>
-                      <th>Proteína</th>
-                      <th>Carbs / Grasas</th>
-                      <th>Total Kcal</th>
-                    </tr>
-                  </thead>
-                  <tbody id="cal-weekly-tbody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- MODAL PRIVADO DE API KEYS (SE GUARDA SOLO EN LOCALSTORAGE) -->
-  <div class="modal-backdrop" id="api-modal">
-    <div class="modal-card">
-      <div class="card-head" style="margin-bottom:8px;">
-        <h2>⚙ Configuración Privada de API Keys</h2>
-        <button class="btn btn-sm" onclick="closeApiModal()">✕</button>
-      </div>
-      <p style="font-size:12px; color:var(--fg-secondary); margin:0 0 14px;">
-        Tus claves se guardan <b>exclusivamente en el almacenamiento local de este navegador (`localStorage`)</b>. Nunca se incluyen en el código fuente ni se suben a tu repositorio de GitHub.
-      </p>
-
-      <form class="form-stack" onsubmit="saveApiKeys(event)">
-        <div>
-          <label style="font-size:11.5px; font-weight:600; display:block; margin-bottom:4px;">Gemini API Key (Para escáner de fotos Cal AI)</label>
-          <input type="password" id="input-gemini-key" class="input mono" placeholder="AIzaSy...">
-          <small style="font-size:11px; color:var(--fg-muted); display:block; margin-top:2px;">Consíguela gratis en Google AI Studio (aistudio.google.com).</small>
-        </div>
-
-        <div style="margin-top:8px;">
-          <label style="font-size:11.5px; font-weight:600; display:block; margin-bottom:4px;">YouTube Data API v3 Key (Opcional para @donmancuerna)</label>
-          <input type="password" id="input-yt-key" class="input mono" placeholder="AIzaSy... (Opcional, ya incluye auto-sync público)">
-        </div>
-
-        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
-          <button type="button" class="btn" onclick="closeApiModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar en este dispositivo</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    // =========================================================================
-    // CONSTANTES Y CONFIGURACIÓN
-    // =========================================================================
-    const BLACKBOARD_ICS_URL = "https://ev.us.es/webapps/calendar/calendarFeed/b9711c0cbad84ef7b37f9addb1de62f4/learn.ics";
-    const DON_MANCUERNA_URL = "https://youtube.com/@donmancuerna?si=PP1YbzTHhKO2Qbgt";
-    const DON_MANCUERNA_HANDLE = "@donmancuerna";
-
-    const ICONS = {
-      trend: `<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
-      target: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>`,
-      sun: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>`,
-      utensils: `<svg viewBox="0 0 24 24"><path d="M4 3v7a3 3 0 0 0 6 0V3"/><path d="M7 3v18"/><path d="M18 3v18"/><path d="M18 3a3 3 0 0 0-3 3v5h3"/></svg>`,
-      book: `<svg viewBox="0 0 24 24"><path d="M2 4h7a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-7a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h8z"/></svg>`,
-      cap: `<svg viewBox="0 0 24 24"><polygon points="12 3 2 8 12 13 22 8 12 3"/><path d="M6 10.5v5.5c0 1.8 2.7 3.2 6 3.2s6-1.4 6-3.2v-5.5"/></svg>`,
-      layers: `<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 12 12 17 22 12"/><polyline points="2 17 12 22 22 17"/></svg>`,
-      dumbbell: `<svg viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><path d="M21 21l-1-1"/><path d="M3 3l1 1"/><path d="M18 22l4-4"/><path d="M2 6l4-4"/><path d="M3 10l7-7"/><path d="M14 21l7-7"/></svg>`,
-      shield: `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-      moon: `<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
-      bed: `<svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/></svg>`,
-      sparkles: `<svg viewBox="0 0 24 24"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2L12 3z"/></svg>`,
-      pill: `<svg viewBox="0 0 24 24"><path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"/></svg>`,
-      drop: `<svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
-      grid: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>`,
-      checkList: `<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
-      calendar: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
-      briefcase: `<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
-      camera: `<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`
-    };
-
-    const CT = {
-      m: [ICONS.sun, 'Mañana'], c: [ICONS.utensils, 'Nutrición'], u: [ICONS.book, 'Universidad'],
-      p: [ICONS.layers, 'Productividad'], s: [ICONS.dumbbell, 'Fuerza & Salud'], n: [ICONS.moon, 'Noche'],
-      d: [ICONS.bed, 'Descanso'], o: [ICONS.sparkles, 'Social']
-    };
-
-    const W = [
-      ['09:30','Despertar, estiramientos (YT) y ducha','m','Casa',['Spray nasal','Calcio']],
-      ['10:00','Desayuno y aseo dental','c','Casa'],
-      ['10:30','Estudio profundo · 2-3 sesiones 50/10 (asignatura del día)','u','Escritorio'],
-      ['13:00','Almuerzo y tiempo libre','c','Casa'],
-      ['14:15','Repaso ligero (30-45 min)','u','Casa'],
-      ['15:00','Preparar mochila, ordenar cuarto y salir','p','Casa']
-    ];
-    const C = (t,x,l,s) => [t,x,'u',l,s||[]];
-    const N = ['19:30','Entrenamiento de cuello','s','Casa'];
-    const CE = ['20:00','Cena ligera (termina ≥75 min antes del gym)','c','Casa'];
-    const G = x => ['21:15','Entrenamiento: '+x,'s','Gimnasio'];
-    const POST = (t,x) => [
-      [t, x||'Llegada y estiramientos nocturnos','n','Casa',['Creatina','Magnesio']],
-      ['23:30','Desconexión: pantallas fuera, luz baja','n','Casa'],
-      ['00:00','Dormir','d','Cama']
-    ];
-    const WE = [
-      ['11:00','Despertar, estiramientos (YT) y ducha','m','Casa',['Spray nasal','Calcio']],
-      ['11:30','Entrenamiento de cuello','s','Casa'],
-      ['11:45','Desayuno / almuerzo unificado','c','Casa'],
-      ['13:00','Estudio / proyectos · sesiones 50/10','p','Casa'],
-      ['16:00','Ocio y ordenar cuarto','p','Casa'],
-      ['17:30','Merienda','c','Casa',['Calcio']],
-      ['20:00','Cena','c','Casa']
-    ];
-
-    const D = [
-      ['Lunes','L',[...W,C('15:30','CIN (Cálculo infinitesimal)','H.012',['Calcio']),C('17:40','MD1 (Matemática discreta 1)','H.012'),N,CE,G('Pierna'),...POST('23:15')]],
-      ['Martes','M',[...W,C('15:30','AE (Administración de empresas)','H.012',['Calcio']),C('17:40','FP1 (Fundamentos de prog. 1)','H.012'),CE,G('Torso'),...POST('23:15')]],
-      ['Miércoles','X',[...W,C('15:30','CED (Circuitos electrónicos)','H.012 - G1.35',['Calcio']),C('17:40','MD1 (Matemática discreta 1)','H.012 - B1.35'),N,['20:00','Cena','c','Casa'],['21:00','Proyectos personales (día sin gym)','p','Escritorio'],...POST('22:45','Estiramientos nocturnos')]],
-      ['Jueves','J',[...W,C('15:30','FP1 (Fundamentos de prog. 1)','I2.31',['Calcio']),C('17:40','CIN (Cálculo infinitesimal)','H.012 - B1.32'),CE,G('Pierna'),...POST('23:15')]],
-      ['Viernes','V',[...W,C('15:30','CED (Circuitos electrónicos)','H0.12',['Calcio']),C('17:40','AE (Administración de empresas)','H.012'),CE,G('Pull'),['23:15','Llegada a casa y fiesta','o','—',['Creatina','Magnesio']]]],
-      ['Sábado','S',[...WE,G('Push'),['23:15','Fiesta o descanso en casa','o','—',['Creatina','Magnesio']]]],
-      ['Domingo','D',[...WE,['21:00','Relax de domingo','d','Casa',['Creatina','Magnesio']],['22:30','Planificación semanal (20 min)','p','Escritorio'],...POST('23:30').slice(1)]]
-    ];
-
-    const KEY_HABITS = [
-      { id: 'morning', short: 'Mañana', name: 'Rutina de Mañana', match: b => b[2]==='m' },
-      { id: 'study', short: 'Estudio 50/10', name: 'Estudio Profundo 50/10', match: b => b[1].includes('Estudio') },
-      { id: 'uni', short: 'Clases US', name: 'Clases Universidad', match: b => b[3].includes('H.') || b[3].includes('I2.') || b[3].includes('H0.') },
-      { id: 'gym', short: 'Gimnasio', name: 'Entrenamiento Fuerza', match: b => b[3]==='Gimnasio' },
-      { id: 'neck', short: 'Cuello', name: 'Entreno de Cuello', match: b => b[1].includes('cuello') },
-      { id: 'supps', short: 'Suplem.', name: 'Suplementación', isSupps: true },
-      { id: 'water', short: 'Agua 3L', name: 'Hidratación 3 L', isWater: true }
-    ];
-
-    const $ = s => document.querySelector(s);
-    const mon = () => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - (d.getDay()+6)%7); return d; };
-    const wkKey = () => mon().toISOString().slice(0,10) + '|' + mon().getDate();
-    const mm = t => { const [h,m] = t.split(':').map(Number); const v = h*60+m; return v<300 ? v+1440 : v; };
-    const nowv = () => { const d = new Date(); const v = d.getHours()*60+d.getMinutes(); return v<300 ? v+1440 : v; };
-    const td = (new Date().getDay()+6)%7;
-    const fmtMoney = n => Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
-
-    let S, day = td, calDay = td, onlyPending = false, currentSection = 'all', confirmRs = false;
-
-    function initStaticIcons() {
-      $('#ico-nav-all').innerHTML = ICONS.grid;
-      $('#ico-nav-projects').innerHTML = ICONS.briefcase;
-      $('#ico-nav-calai').innerHTML = ICONS.camera;
-      $('#ico-nav-matrix').innerHTML = ICONS.calendar;
-      $('#ico-nav-exams').innerHTML = ICONS.cap;
-      $('#ico-nav-notes').innerHTML = ICONS.checkList;
-      $('#ico-nav-filter').innerHTML = ICONS.target;
-      $('#ico-schedule-title').innerHTML = ICONS.calendar;
-      $('#ico-water-title').innerHTML = ICONS.drop;
-
-      const sel = $('#meal-day-select');
-      if (sel) {
-        sel.innerHTML = D.map((d, i) => `<option value="${i}">${d[0]}</option>`).join('');
-        sel.value = calDay;
-      }
+    .meal-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--surface-sand);
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: var(--burgundy);
+      font-size: 12px;
+    }
+    .api-key-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: var(--gold-soft);
+      border: 1px solid rgba(212, 155, 75, 0.4);
+      font-size: 12.5px;
     }
 
-    // =========================================================================
-    // GESTIÓN SEGURA DE API KEYS (SOLO LOCALSTORAGE / CONFIG.LOCAL.JS)
-    // =========================================================================
-    function getApiKeys() {
-      let local = {};
-      try { local = JSON.parse(localStorage.getItem('nexora_api_keys') || '{}') || {}; } catch(e){}
-      const env = window.NEXORA_ENV || {};
-      return {
-        gemini: local.gemini || env.GEMINI_API_KEY || '',
-        youtube: local.youtube || env.YOUTUBE_API_KEY || ''
-      };
-    }
-
-    function updateApiBadge() {
-      const keys = getApiKeys();
-      const badge = $('#api-status-badge');
-      if (!badge) return;
-      if (keys.gemini) {
-        badge.textContent = 'Activa';
-        badge.className = 'badge pos';
-      } else {
-        badge.textContent = 'Falta Key';
-        badge.className = 'badge amber';
-      }
-    }
-
-    function openApiModal() {
-      const keys = getApiKeys();
-      $('#input-gemini-key').value = keys.gemini;
-      $('#input-yt-key').value = keys.youtube;
-      $('#api-modal').classList.add('open');
-    }
-
-    function closeApiModal() {
-      $('#api-modal').classList.remove('open');
-    }
-
-    function saveApiKeys(e) {
-      e.preventDefault();
-      const gemini = $('#input-gemini-key').value.trim();
-      const youtube = $('#input-yt-key').value.trim();
-      localStorage.setItem('nexora_api_keys', JSON.stringify({ gemini, youtube }));
-      updateApiBadge();
-      closeApiModal();
-      if (youtube) fetchDonMancuernaSubs(true);
-    }
-
-    // =========================================================================
-    // CARGA Y PERSISTENCIA CON REINICIO SEMANAL AUTOMÁTICO (HÁBITOS + CAL AI)
-    // =========================================================================
-    function load() {
-      let r = {};
-      try { r = JSON.parse(localStorage.getItem('vida3') || '{}') || {}; } catch(e){}
-      const currentWeek = wkKey();
-      const isSameWeek = r.wk === currentWeek;
-
-      const defaultProjects = {
-        initialCapital: 500,
-        trades: [],
-        clipping: [],
-        ytSubs: 0,
-        sideHustles: []
-      };
-
-      const defaultNutrition = {
-        dailyGoal: (r.nutrition && r.nutrition.dailyGoal) ? r.nutrition.dailyGoal : 2500,
-        // Las comidas semanales se reinician automáticamente al cambiar de semana (Lunes)
-        mealsByDay: isSameWeek && r.nutrition && r.nutrition.mealsByDay ? r.nutrition.mealsByDay : {}
-      };
-
-      S = {
-        wk: currentWeek,
-        c: isSameWeek ? (r.c || {}) : {},
-        notes: isSameWeek ? (r.notes || {}) : {},
-        exams: r.exams || [],
-        bbSyncedUids: r.bbSyncedUids || {},
-        projects: Object.assign({}, defaultProjects, r.projects || {}),
-        nutrition: defaultNutrition
-      };
-    }
-
-    function save() {
-      try { localStorage.setItem('vida3', JSON.stringify(S)); } catch(e){}
-    }
-
-    const tot = d => D[d][2].reduce((a,b) => a + 1 + (b[4]||[]).length, 0) + 3;
-    const keys = d => Object.keys(S.c).filter(k => S.c[k] && k.split('.')[0] == d);
-    const done = d => keys(d).length;
-
-    // =========================================================================
-    // NAVEGACIÓN DE SECCIONES
-    // =========================================================================
-    function setSection(sec) {
-      currentSection = sec;
-      ['all','projects','calai','matrix','exams','notes'].forEach(id => {
-        const btn = $('#nav-' + id);
-        if (btn) btn.classList.toggle('active', id === sec);
-      });
-
-      const mainGrid = $('#main-grid');
-      const projView = $('#projects-view');
-      const calView = $('#calai-view');
-      const colL = $('#col-left');
-      const colR = $('#col-right');
-      const bMetrics = $('#sec-metrics-block');
-      const bMatrix = $('#sec-matrix-block');
-      const bExams = $('#sec-exams-block');
-      const bNotes = $('#sec-notes-block');
-
-      projView.classList.remove('active');
-      calView.classList.remove('active');
-      mainGrid.style.display = 'none';
-
-      if (sec === 'projects') {
-        $('#view-main-title').textContent = 'Terminal de Trading, Proyectos & Don Mancuerna';
-        projView.classList.add('active');
-        render();
-        return;
-      }
-
-      if (sec === 'calai') {
-        $('#view-main-title').textContent = 'Cal AI · Escáner Nutricional y Registro Semanal';
-        calView.classList.add('active');
-        render();
-        return;
-      }
-
-      $('#view-main-title').textContent = 'Panel de Rendimiento Diario';
-      mainGrid.style.display = 'grid';
-
-      if (sec === 'all') {
-        mainGrid.classList.remove('single-col');
-        colL.style.display = 'block'; colR.style.display = 'block';
-        bMetrics.style.display = 'block'; bMatrix.style.display = 'block'; bExams.style.display = 'block'; bNotes.style.display = 'block';
-      } else if (sec === 'matrix') {
-        mainGrid.classList.add('single-col');
-        colL.style.display = 'none'; colR.style.display = 'block';
-        bMetrics.style.display = 'none'; bMatrix.style.display = 'block'; bExams.style.display = 'none'; bNotes.style.display = 'none';
-      } else if (sec === 'exams') {
-        mainGrid.classList.add('single-col');
-        colL.style.display = 'none'; colR.style.display = 'block';
-        bMetrics.style.display = 'none'; bMatrix.style.display = 'none'; bExams.style.display = 'block'; bNotes.style.display = 'none';
-      } else if (sec === 'notes') {
-        mainGrid.classList.add('single-col');
-        colL.style.display = 'none'; colR.style.display = 'block';
-        bMetrics.style.display = 'none'; bMatrix.style.display = 'none'; bExams.style.display = 'none'; bNotes.style.display = 'block';
-      }
-      render();
-    }
-
-    function togglePendingFilter() {
-      onlyPending = !onlyPending;
-      $('#nav-pending').classList.toggle('active', onlyPending);
-      if (currentSection !== 'all') setSection('all');
-      else render();
-    }
-
-    function jumpToday() {
-      day = td;
-      calDay = td;
-      setSection('all');
-    }
-
-    function markCurrentBlock() {
-      let cur = 0;
-      D[day][2].forEach((b, i) => { if (mm(b[0]) <= nowv()) cur = i; });
-      S.c[day + '.' + cur] = true;
-      save();
-      render();
-    }
-
-    // =========================================================================
-    // TRADING CON PRECIO COMPRA, VENTA, GANANCIA Y CÁLCULO DE R:R
-    // =========================================================================
-    function updateInitialCapital(val) {
-      const num = parseFloat(val);
-      S.projects.initialCapital = isNaN(num) ? 0 : num;
-      save();
-      renderProjects();
-    }
-
-    function previewTradeCalc() {
-      const side = $('#trade-side').value;
-      const buy = parseFloat($('#trade-buy').value);
-      const sell = parseFloat($('#trade-sell').value);
-      const sl = parseFloat($('#trade-sl').value);
-      const rrInput = $('#trade-rr');
-      const preview = $('#trade-calc-preview');
-
-      if (isNaN(buy) || isNaN(sell) || buy <= 0) {
-        preview.textContent = 'Introduce precio de compra y venta para calcular % movimiento y R:R.';
-        return;
-      }
-
-      const pctMove = side === 'LONG'
-        ? ((sell - buy) / buy) * 100
-        : ((buy - sell) / buy) * 100;
-
-      let rrText = 'Sin SL';
-      if (!isNaN(sl) && sl > 0 && sl !== buy) {
-        const risk = Math.abs(buy - sl);
-        const reward = Math.abs(sell - buy);
-        const rr = +(reward / risk).toFixed(2);
-        rrInput.value = rr;
-        rrText = `1:${rr}R`;
-      }
-
-      preview.textContent = `Movimiento: ${pctMove >= 0 ? '+' : ''}${pctMove.toFixed(2)}% (${side}) · Ratio R:R estimado: ${rrText}`;
-    }
-
-    function addTradeEntry(e) {
-      e.preventDefault();
-      const label = $('#trade-label').value.trim().toUpperCase();
-      const side = $('#trade-side').value;
-      const buyPrice = parseFloat($('#trade-buy').value);
-      const sellPrice = parseFloat($('#trade-sell').value);
-      const slPrice = parseFloat($('#trade-sl').value);
-      let rrVal = parseFloat($('#trade-rr').value);
-      const profit = parseFloat($('#trade-profit').value);
-
-      if (!label || isNaN(buyPrice) || isNaN(sellPrice) || isNaN(profit)) return;
-
-      if (isNaN(rrVal) && !isNaN(slPrice) && slPrice !== buyPrice) {
-        rrVal = +(Math.abs(sellPrice - buyPrice) / Math.abs(buyPrice - slPrice)).toFixed(2);
-      }
-
-      S.projects.trades.push({
-        id: Date.now(),
-        label,
-        side,
-        buyPrice,
-        sellPrice,
-        rr: isNaN(rrVal) ? null : rrVal,
-        profit,
-        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
-      });
-
-      $('#trade-label').value = '';
-      $('#trade-buy').value = '';
-      $('#trade-sell').value = '';
-      $('#trade-sl').value = '';
-      $('#trade-rr').value = '';
-      $('#trade-profit').value = '';
-      save();
-      renderProjects();
-    }
-
-    function deleteTradeEntry(id) {
-      S.projects.trades = S.projects.trades.filter(t => t.id !== id);
-      save();
-      renderProjects();
-    }
-
-    // =========================================================================
-    // SINCRONIZACIÓN AUTOMÁTICA DE SUSCRIPTORES DE DON MANCUERNA (YOUTUBE)
-    // =========================================================================
-    async function fetchTextWithFallbackProxies(targetUrl) {
-      const proxies = [
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
-      ];
-      for (const pUrl of proxies) {
-        try {
-          const res = await fetch(pUrl, { cache: 'no-store' });
-          if (res.ok) {
-            const txt = await res.text();
-            if (txt && txt.length > 50) return txt;
-          }
-        } catch (err) {}
-      }
-      throw new Error('No se pudo conectar mediante proxies.');
-    }
-
-    function parseSubscriberString(str) {
-      if (!str) return null;
-      const clean = str.toLowerCase().replace(/suscriptores|subscribers|subs/g, '').trim();
-      const numMatch = clean.match(/([\d.,]+)\s*(k|m|mil|millones)?/i);
-      if (!numMatch) return null;
-      let val = parseFloat(numMatch[1].replace(',', '.'));
-      const mult = (numMatch[2] || '').toLowerCase();
-      if (mult === 'k' || mult === 'mil') val *= 1000;
-      else if (mult === 'm' || mult === 'millones') val *= 1000000;
-      else val = parseInt(numMatch[1].replace(/\D/g, ''), 10);
-      return isNaN(val) ? null : Math.round(val);
-    }
-
-    async function fetchDonMancuernaSubs(manual = false) {
-      const noteEl = $('#yt-sync-note');
-      if (manual && noteEl) noteEl.textContent = 'Sincronizando con @donmancuerna...';
-
-      const { youtube } = getApiKeys();
-
-      // 1. Si el usuario configuró YouTube Data API v3 Key, usar endpoint oficial
-      if (youtube) {
-        try {
-          const apiUrl = `https://www.googleapis.com/youtube/v3/channels?part=statistics&forHandle=donmancuerna&key=${encodeURIComponent(youtube)}`;
-          const res = await fetch(apiUrl);
-          const data = await res.json();
-          const subCount = data?.items?.[0]?.statistics?.subscriberCount;
-          if (subCount != null) {
-            S.projects.ytSubs = parseInt(subCount, 10);
-            save();
-            renderProjects();
-            if (noteEl) noteEl.textContent = `Sincronizado vía YouTube API Oficial (${new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})})`;
-            return;
-          }
-        } catch (e) {}
-      }
-
-      // 2. Sincronización automática pública desde la página del canal https://youtube.com/@donmancuerna
-      try {
-        const html = await fetchTextWithFallbackProxies('https://www.youtube.com/@donmancuerna');
-        const patterns = [
-          /"subscriberCountText":\{"accessibility":\{"accessibilityData":\{"label":"([^"]+)"/,
-          /"subscriberCountText":\{"simpleText":"([^"]+)"/,
-          /"metadataParts":\[\{"text":\{"content":"([^"]*suscriptores[^"]*|[^"]*subscribers[^"]*)"/i
-        ];
-        for (const rgx of patterns) {
-          const m = html.match(rgx);
-          if (m && m[1]) {
-            const parsed = parseSubscriberString(m[1]);
-            if (parsed !== null && parsed >= 0) {
-              S.projects.ytSubs = parsed;
-              save();
-              renderProjects();
-              if (noteEl) noteEl.textContent = `Auto-sync activo: ${m[1]} (${new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})})`;
-              return;
-            }
-          }
-        }
-      } catch (e) {}
-
-      if (noteEl) noteEl.textContent = 'Canal vinculado: @donmancuerna · Listo';
-    }
-
-    function promptExactSubs() {
-      const val = prompt('Introduce el número actual de suscriptores de Don Mancuerna:', S.projects.ytSubs || 0);
-      if (val !== null) {
-        const n = parseInt(val.replace(/\D/g, ''), 10);
-        if (!isNaN(n)) {
-          S.projects.ytSubs = n;
-          save();
-          renderProjects();
-        }
-      }
-    }
-
-    // =========================================================================
-    // CAL AI VISION · ESCÁNER DE FOTOS CON GEMINI API Y REGISTRO SEMANAL
-    // =========================================================================
-    function changeCalDay(val) {
-      calDay = parseInt(val, 10) || 0;
-      renderCalAI();
-    }
-
-    function promptCalorieGoal() {
-      const val = prompt('Meta diaria de calorías (kcal):', S.nutrition.dailyGoal || 2500);
-      if (val !== null) {
-        const n = parseInt(val, 10);
-        if (!isNaN(n) && n > 500) {
-          S.nutrition.dailyGoal = n;
-          save();
-          renderCalAI();
-        }
-      }
-    }
-
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = reader.result.split(',')[1];
-          resolve({ base64, mimeType: file.type || 'image/jpeg', dataUrl: reader.result });
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function handleMealPhotoUpload(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      const statusBox = $('#cal-ai-status');
-      const previewImg = $('#meal-preview-img');
-      statusBox.style.display = 'block';
-      statusBox.textContent = 'Procesando imagen...';
-
-      try {
-        const { base64, mimeType, dataUrl } = await fileToBase64(file);
-        previewImg.src = dataUrl;
-        previewImg.style.display = 'block';
-
-        const { gemini } = getApiKeys();
-        if (!gemini) {
-          statusBox.innerHTML = '⚠️ <b>Falta tu API Key de Gemini.</b> Pulsa en "⚙ API Keys (Local)" en el menú izquierdo para pegarla de forma privada, o rellena los macros manualmente abajo.';
-          openApiModal();
-          return;
-        }
-
-        statusBox.textContent = '🤖 Analizando plato con Cal AI (Gemini 2.5 Flash Vision)...';
-
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(gemini)}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                {
-                  text: 'Actúa como un nutricionista experto y sistema Cal AI. Analiza la comida de esta imagen y devuelve ÚNICAMENTE un objeto JSON válido con las claves exactas: {"name": "Nombre breve del plato en español", "kcal": numero_entero, "protein": numero_entero_gramos, "carbs": numero_entero_gramos, "fats": numero_entero_gramos}. No incluyas markdown ni texto adicional.'
-                },
-                {
-                  inline_data: { mime_type: mimeType, data: base64 }
-                }
-              ]
-            }],
-            generationConfig: {
-              responseMimeType: "application/json"
-            }
-          })
-        });
-
-        const data = await response.json();
-        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        const cleanJson = rawText.replace(/```json|```/g, '').trim();
-        const parsed = JSON.parse(cleanJson);
-
-        $('#meal-name').value = parsed.name || 'Comida escaneada';
-        $('#meal-kcal').value = Math.round(Number(parsed.kcal) || 0);
-        $('#meal-prot').value = Math.round(Number(parsed.protein) || 0);
-        $('#meal-carbs').value = Math.round(Number(parsed.carbs) || 0);
-        $('#meal-fats').value = Math.round(Number(parsed.fats) || 0);
-
-        statusBox.innerHTML = `✓ <b>Detectado:</b> ${parsed.name} (${parsed.kcal} kcal · ${parsed.protein}g P · ${parsed.carbs}g C · ${parsed.fats}g G). Revisa o pulsa Guardar.`;
-      } catch (err) {
-        statusBox.innerHTML = `❌ Error al analizar la imagen con la API. Verifica tu Gemini API Key o introduce los valores manualmente.`;
-      }
-    }
-
-    function addMealEntry(e) {
-      e.preventDefault();
-      const name = $('#meal-name').value.trim();
-      const kcal = parseInt($('#meal-kcal').value, 10) || 0;
-      const prot = parseInt($('#meal-prot').value, 10) || 0;
-      const carbs = parseInt($('#meal-carbs').value, 10) || 0;
-      const fats = parseInt($('#meal-fats').value, 10) || 0;
-      if (!name) return;
-
-      if (!S.nutrition.mealsByDay[calDay]) S.nutrition.mealsByDay[calDay] = [];
-      S.nutrition.mealsByDay[calDay].push({
-        id: Date.now(),
-        name,
-        kcal,
-        prot,
-        carbs,
-        fats,
-        time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
-      });
-
-      $('#meal-name').value = '';
-      $('#meal-kcal').value = '';
-      $('#meal-prot').value = '';
-      $('#meal-carbs').value = '';
-      $('#meal-fats').value = '';
-      $('#cal-ai-status').style.display = 'none';
-      save();
-      render();
-    }
-
-    function deleteMealEntry(dIdx, id) {
-      if (!S.nutrition.mealsByDay[dIdx]) return;
-      S.nutrition.mealsByDay[dIdx] = S.nutrition.mealsByDay[dIdx].filter(m => m.id !== id);
-      save();
-      render();
-    }
-
-    function renderCalAI() {
-      const goal = Number(S.nutrition.dailyGoal || 2500);
-      const weekGoal = goal * 7;
-      $('#cal-goal-display').textContent = `${goal.toLocaleString('es-ES')} kcal ✎`;
-      $('#cal-active-day-name').textContent = D[calDay][0];
-      if ($('#meal-day-select')) $('#meal-day-select').value = calDay;
-
-      let weekKcal = 0;
-      const weeklyRowsHtml = D.map((d, idx) => {
-        const list = S.nutrition.mealsByDay[idx] || [];
-        const dKcal = list.reduce((a, m) => a + m.kcal, 0);
-        const dProt = list.reduce((a, m) => a + m.prot, 0);
-        const dCarbs = list.reduce((a, m) => a + m.carbs, 0);
-        const dFats = list.reduce((a, m) => a + m.fats, 0);
-        weekKcal += dKcal;
-
-        return `
-          <tr style="cursor:pointer; ${idx === calDay ? 'background:var(--accent-soft);' : ''}" onclick="changeCalDay(${idx})">
-            <td><b>${d[0]}</b> ${idx === td ? '<span class="badge accent">Hoy</span>' : ''}</td>
-            <td class="mono">${list.length} platos</td>
-            <td class="mono">${dProt} g</td>
-            <td class="mono">${dCarbs}g / ${dFats}g</td>
-            <td class="mono"><b>${dKcal.toLocaleString('es-ES')} kcal</b></td>
-          </tr>
-        `;
-      }).join('');
-
-      $('#cal-weekly-tbody').innerHTML = weeklyRowsHtml;
-      $('#cal-weekly-total').textContent = `${weekKcal.toLocaleString('es-ES')} / ${weekGoal.toLocaleString('es-ES')} kcal`;
-
-      // Datos del día seleccionado en Cal AI
-      const activeMeals = S.nutrition.mealsByDay[calDay] || [];
-      const curKcal = activeMeals.reduce((a, m) => a + m.kcal, 0);
-      const curProt = activeMeals.reduce((a, m) => a + m.prot, 0);
-      const curCarbs = activeMeals.reduce((a, m) => a + m.carbs, 0);
-      const curFats = activeMeals.reduce((a, m) => a + m.fats, 0);
-
-      // Datos de HOY para el topbar
-      const todayMeals = S.nutrition.mealsByDay[td] || [];
-      const todayKcal = todayMeals.reduce((a, m) => a + m.kcal, 0);
-      $('#top-cal-today').textContent = `${todayKcal} kcal`;
-
-      $('#cal-today-val').textContent = `${curKcal.toLocaleString('es-ES')} kcal`;
-      $('#cal-prot-today').textContent = `${curProt} g`;
-      $('#cal-cf-today').textContent = `${curCarbs}g / ${curFats}g`;
-
-      const pctKcal = Math.min(100, Math.round((curKcal / goal) * 100));
-      $('#cal-day-pct-badge').textContent = `${pctKcal}% de ${D[calDay][0]}`;
-      $('#bar-kcal-txt').textContent = `${curKcal} / ${goal} kcal`;
-      $('#bar-kcal-fill').style.width = `${pctKcal}%`;
-
-      $('#bar-prot-txt').textContent = `${curProt} / 180 g`;
-      $('#bar-prot-fill').style.width = `${Math.min(100, (curProt / 180) * 100)}%`;
-
-      $('#bar-carbs-txt').textContent = `${curCarbs} / 280 g`;
-      $('#bar-carbs-fill').style.width = `${Math.min(100, (curCarbs / 280) * 100)}%`;
-
-      $('#bar-fats-txt').textContent = `${curFats} / 75 g`;
-      $('#bar-fats-fill').style.width = `${Math.min(100, (curFats / 75) * 100)}%`;
-
-      $('#meals-day-tbody').innerHTML = activeMeals.length === 0
-        ? `<tr><td colspan="6" style="text-align:center; color:var(--fg-muted); padding:14px;">Sin comidas registradas el ${D[calDay][0].toLowerCase()}. Sube una foto o añade un plato.</td></tr>`
-        : activeMeals.map(m => `
-            <tr>
-              <td><b>${m.name}</b> <small style="color:var(--fg-muted);">${m.time}</small></td>
-              <td class="mono"><b>${m.kcal}</b></td>
-              <td class="mono">${m.prot}g</td>
-              <td class="mono">${m.carbs}g</td>
-              <td class="mono">${m.fats}g</td>
-              <td style="text-align:right;"><button class="btn btn-sm btn-ghost" onclick="deleteMealEntry(${calDay}, ${m.id})">✕</button></td>
-            </tr>
-          `).join('');
-    }
-
-    // =========================================================================
-    // CLIPPING Y SIDE HUSTLES
-    // =========================================================================
-    function addClippingEntry(e) {
-      e.preventDefault();
-      const title = $('#clip-title').value.trim();
-      const views = parseInt($('#clip-views').value, 10) || 0;
-      const money = parseFloat($('#clip-money').value) || 0;
-      if (!title) return;
-      S.projects.clipping.push({
-        id: Date.now(),
-        title,
-        views,
-        money,
-        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
-      });
-      $('#clip-title').value = '';
-      $('#clip-views').value = '';
-      $('#clip-money').value = '';
-      save();
-      renderProjects();
-    }
-
-    function deleteClippingEntry(id) {
-      S.projects.clipping = S.projects.clipping.filter(c => c.id !== id);
-      save();
-      renderProjects();
-    }
-
-    function addSideHustleEntry(e) {
-      e.preventDefault();
-      const name = $('#hustle-name').value.trim();
-      const amount = parseFloat($('#hustle-amount').value) || 0;
-      if (!name) return;
-      S.projects.sideHustles.push({
-        id: Date.now(),
-        name,
-        amount,
-        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
-      });
-      $('#hustle-name').value = '';
-      $('#hustle-amount').value = '';
-      save();
-      renderProjects();
-    }
-
-    function deleteSideHustleEntry(id) {
-      S.projects.sideHustles = S.projects.sideHustles.filter(h => h.id !== id);
-      save();
-      renderProjects();
-    }
-
-    // =========================================================================
-    // GRÁFICO Y RENDER DE PROYECTOS / TRADING
-    // =========================================================================
-    function renderTradingChart() {
-      const base = Number(S.projects.initialCapital || 0);
-      const trades = S.projects.trades || [];
-      const pointsData = [{ label: 'Base', val: base, diff: 0 }];
-      let running = base;
-
-      trades.forEach(t => {
-        running += Number(t.profit || 0);
-        pointsData.push({ label: t.label, val: running, diff: Number(t.profit || 0) });
-      });
-
-      const W = 520, H = 165, padL = 16, padR = 16, padT = 16, padB = 24;
-      const gw = W - padL - padR, gh = H - padT - padB;
-
-      const vals = pointsData.map(p => p.val);
-      const minV = Math.min(...vals, base * 0.96);
-      const maxV = Math.max(...vals, base * 1.04, minV + 10);
-      const range = Math.max(maxV - minV, 1);
-
-      const step = pointsData.length > 1 ? gw / (pointsData.length - 1) : gw;
-      const pts = pointsData.map((p, i) => ({
-        x: padL + (pointsData.length > 1 ? i * step : gw / 2),
-        y: padT + gh - ((p.val - minV) / range) * gh,
-        ...p
-      }));
-
-      const isUp = running >= base;
-      const strokeCol = isUp ? '#22C55E' : '#EF4444';
-
-      let dPath = pts.length === 1
-        ? `M ${padL},${pts[0].y.toFixed(1)} L ${W - padR},${pts[0].y.toFixed(1)}`
-        : pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-
-      const baseLineY = padT + gh - ((base - minV) / range) * gh;
-
-      $('#trading-svg-container').innerHTML = `
-        <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;">
-          <line x1="${padL}" y1="${baseLineY.toFixed(1)}" x2="${W - padR}" y2="${baseLineY.toFixed(1)}" stroke="#333330" stroke-width="1" stroke-dasharray="3 3"/>
-          <path d="${dPath}" fill="none" stroke="${strokeCol}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          ${pts.map((p, i) => `
-            <g>
-              <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === pts.length - 1 ? 4.5 : 3}" fill="${p.diff >= 0 ? '#22C55E' : '#EF4444'}" stroke="#121211" stroke-width="1.5"/>
-              ${(i === 0 || i === pts.length - 1 || pts.length <= 7) ? `
-                <text x="${p.x.toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="9.5" fill="#85837E" font-family="JetBrains Mono">${p.label.slice(0, 7)}</text>
-              ` : ''}
-            </g>
-          `).join('')}
-        </svg>
-      `;
-    }
-
-    function renderProjects() {
-      const baseCap = Number(S.projects.initialCapital || 0);
-      const trades = S.projects.trades || [];
-      const tradesPnl = trades.reduce((acc, t) => acc + Number(t.profit || 0), 0);
-      const portfolioTotal = baseCap + tradesPnl;
-      const pnlPct = baseCap > 0 ? ((tradesPnl / baseCap) * 100).toFixed(1) : '0.0';
-
-      // Winrate & R:R Medio
-      const wins = trades.filter(t => Number(t.profit) > 0).length;
-      const winrate = trades.length > 0 ? Math.round((wins / trades.length) * 100) : 0;
-      const rrTrades = trades.filter(t => t.rr != null && !isNaN(t.rr));
-      const avgRr = rrTrades.length > 0
-        ? (rrTrades.reduce((a, t) => a + Number(t.rr), 0) / rrTrades.length).toFixed(2)
-        : '0.0';
-
-      $('#trading-winrate').textContent = `${winrate}%`;
-      $('#trading-avg-rr').textContent = `1:${avgRr}`;
-
-      const clips = S.projects.clipping || [];
-      const totalViews = clips.reduce((acc, c) => acc + Number(c.views || 0), 0);
-      const totalClipMoney = clips.reduce((acc, c) => acc + Number(c.money || 0), 0);
-      const rpm = totalViews > 0 ? (totalClipMoney / (totalViews / 1000)) : 0;
-
-      const hustles = S.projects.sideHustles || [];
-      const totalHustlesMoney = hustles.reduce((acc, h) => acc + Number(h.amount || 0), 0);
-
-      const grandTotal = portfolioTotal + totalClipMoney + totalHustlesMoney;
-
-      $('#total-empire-money').textContent = fmtMoney(grandTotal);
-      $('#wb-trading').textContent = fmtMoney(portfolioTotal);
-      $('#wb-clipping').textContent = fmtMoney(totalClipMoney);
-      $('#wb-hustles').textContent = fmtMoney(totalHustlesMoney);
-
-      const capInput = $('#initial-cap-input');
-      if (document.activeElement !== capInput) capInput.value = baseCap;
-      $('#trading-total-val').textContent = fmtMoney(portfolioTotal);
-      $('#trading-ops-count').textContent = `${trades.length} operaciones`;
-
-      const pnlBadge = $('#trading-pnl-badge');
-      pnlBadge.className = `badge ${tradesPnl >= 0 ? 'pos' : 'neg'}`;
-      pnlBadge.textContent = `${tradesPnl >= 0 ? '+' : ''}${fmtMoney(tradesPnl)} (${tradesPnl >= 0 ? '+' : ''}${pnlPct}%)`;
-
-      renderTradingChart();
-
-      $('#trades-history-tbody').innerHTML = trades.length === 0
-        ? `<tr><td colspan="8" style="text-align:center; color:var(--fg-muted); padding:14px;">Sin operaciones registradas. Introduce precio de compra, venta y beneficio arriba.</td></tr>`
-        : [...trades].reverse().map(t => {
-            const sideBadge = t.side === 'SHORT'
-              ? `<span class="badge neg">SHORT</span>`
-              : `<span class="badge pos">LONG</span>`;
-            const buyStr = t.buyPrice != null ? Number(t.buyPrice).toLocaleString('es-ES', {maximumFractionDigits:4}) : '—';
-            const sellStr = t.sellPrice != null ? Number(t.sellPrice).toLocaleString('es-ES', {maximumFractionDigits:4}) : '—';
-            const rrStr = t.rr != null ? `1:${t.rr}R` : '—';
-            return `
-              <tr>
-                <td class="mono" style="color:var(--fg-muted);">${t.date || '—'}</td>
-                <td><b>${t.label}</b></td>
-                <td>${sideBadge}</td>
-                <td class="mono">${buyStr}</td>
-                <td class="mono">${sellStr}</td>
-                <td class="mono"><span class="badge">${rrStr}</span></td>
-                <td class="mono" style="font-weight:700; color:${t.profit >= 0 ? 'var(--green)' : 'var(--red)'};">
-                  ${t.profit >= 0 ? '+' : ''}${fmtMoney(t.profit)}
-                </td>
-                <td style="text-align:right;">
-                  <button class="btn btn-sm btn-ghost" onclick="deleteTradeEntry(${t.id})">✕</button>
-                </td>
-              </tr>
-            `;
-          }).join('');
-
-      // Don Mancuerna Subs
-      const subsFormatted = Number(S.projects.ytSubs || 0).toLocaleString('es-ES');
-      $('#yt-subs-display').textContent = subsFormatted;
-      $('#top-yt-subs').textContent = `${subsFormatted} subs`;
-
-      // Clipping
-      $('#clip-total-views').textContent = totalViews.toLocaleString('es-ES');
-      $('#clip-total-money').textContent = fmtMoney(totalClipMoney);
-      $('#clip-count').textContent = clips.length;
-      $('#clipping-rpm-badge').textContent = `RPM: ${fmtMoney(rpm)}`;
-
-      $('#clipping-history-list').innerHTML = clips.map(c => `
-        <div class="task-item" style="cursor:default; align-items:center;">
-          <div>
-            <b style="font-size:12.5px;">${c.title}</b>
-            <small class="mono" style="color:var(--fg-muted); margin-left:6px;">${Number(c.views).toLocaleString('es-ES')} views · ${c.date}</small>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="mono" style="font-weight:600; color:var(--green);">+${fmtMoney(c.money)}</span>
-            <button class="btn btn-sm btn-ghost" onclick="deleteClippingEntry(${c.id})">✕</button>
-          </div>
-        </div>
-      `).reverse().join('');
-
-      // Side Hustles
-      $('#hustles-total-badge').textContent = fmtMoney(totalHustlesMoney);
-      $('#hustles-history-list').innerHTML = hustles.map(h => `
-        <div class="task-item" style="cursor:default; align-items:center;">
-          <div>
-            <b style="font-size:12.5px;">${h.name}</b>
-            <small class="mono" style="color:var(--fg-muted); margin-left:6px;">${h.date}</small>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="mono" style="font-weight:600; color:var(--green);">+${fmtMoney(h.amount)}</span>
-            <button class="btn btn-sm btn-ghost" onclick="deleteSideHustleEntry(${h.id})">✕</button>
-          </div>
-        </div>
-      `).reverse().join('');
-    }
-
-    // =========================================================================
-    // BLACKBOARD ICS SYNC + MATRIZ + HÁBITOS
-    // =========================================================================
-    function parseIcsDate(val) {
-      if (!val) return null;
-      const clean = val.replace(/^.*:/, '').trim();
-      const m = clean.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/);
-      if (!m) return null;
-      const year = +m[1], month = +m[2] - 1, dayNum = +m[3];
-      const hr = +(m[4] || 0), min = +(m[5] || 0), sec = +(m[6] || 0);
-      return m[7] === 'Z' ? new Date(Date.UTC(year, month, dayNum, hr, min, sec)) : new Date(year, month, dayNum, hr, min, sec);
-    }
-
-    function parseIcsEvents(rawIcs) {
-      const unfolded = rawIcs.replace(/\r?\n[ \t]/g, '');
-      const blocks = unfolded.split('BEGIN:VEVENT').slice(1);
-      const events = [];
-      blocks.forEach(block => {
-        const body = block.split('END:VEVENT')[0];
-        const lines = body.split(/\r?\n/);
-        let uid = '', summary = '', dtstart = null, dtend = null;
-        lines.forEach(line => {
-          if (line.startsWith('UID')) uid = line.split(':').slice(1).join(':').trim();
-          else if (line.startsWith('SUMMARY')) summary = line.split(':').slice(1).join(':').trim().replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, ' ');
-          else if (line.startsWith('DTSTART')) dtstart = parseIcsDate(line);
-          else if (line.startsWith('DTEND')) dtend = parseIcsDate(line);
-        });
-        const refDate = dtstart || dtend;
-        if (summary && refDate && !isNaN(refDate.getTime())) {
-          events.push({ uid: uid || (summary + '_' + refDate.toISOString()), summary, date: refDate });
-        }
-      });
-      return events;
-    }
-
-    async function syncBlackboardCalendar() {
-      const statusTxt = $('#bb-status-text');
-      const dot = $('#bb-dot');
-      if (statusTxt) statusTxt.textContent = 'Sincronizando...';
-      try {
-        const icsText = await fetchTextWithFallbackProxies(BLACKBOARD_ICS_URL);
-        if (!icsText.includes('BEGIN:VCALENDAR')) throw new Error('Invalid ICS');
-        const events = parseIcsEvents(icsText);
-        const weekMon = mon();
-        const weekSun = new Date(weekMon); weekSun.setDate(weekSun.getDate() + 6); weekSun.setHours(23, 59, 59, 999);
-        const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-
-        events.forEach(ev => {
-          if (S.bbSyncedUids[ev.uid]) return;
-          const dateStr = ev.date.toISOString().slice(0, 10);
-          const isExamLike = /examen|parcial|control|prueba|convocatoria|test|final/i.test(ev.summary);
-
-          if (ev.date >= weekMon && ev.date <= weekSun) {
-            const dIdx = (ev.date.getDay() + 6) % 7;
-            if (!S.notes[dIdx]) S.notes[dIdx] = [];
-            if (!S.notes[dIdx].some(n => n.bbUid === ev.uid)) {
-              const hr = ev.date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-              S.notes[dIdx].push({ id: Date.now() + Math.random(), text: `${ev.summary} (${hr})`, done: false, fromBB: true, bbUid: ev.uid });
-            }
-          }
-          if (ev.date >= todayStart && (isExamLike || ev.date > weekSun)) {
-            if (!S.exams.some(x => x.bbUid === ev.uid)) {
-              S.exams.push({ id: Date.now() + Math.random(), name: ev.summary, date: dateStr, fromBB: true, bbUid: ev.uid });
-            }
-          }
-          S.bbSyncedUids[ev.uid] = true;
-        });
-
-        S.exams.sort((a, b) => new Date(a.date) - new Date(b.date));
-        save();
-        render();
-        if (dot) dot.classList.add('ok');
-        if (statusTxt) statusTxt.textContent = `Blackboard OK`;
-      } catch (e) {
-        if (statusTxt) statusTxt.textContent = 'Blackboard Local';
-      }
-    }
-
-    function getHabitKeysForDay(dIdx, h) {
-      if (h.isWater) return [1, 2, 3].map(n => `${dIdx}.w${n}`);
-      if (h.isSupps) {
-        const list = [];
-        D[dIdx][2].forEach((b, i) => { (b[4] || []).forEach((_, sIdx) => list.push(`${dIdx}.${i}.${sIdx}`)); });
-        return list;
-      }
-      const list = [];
-      D[dIdx][2].forEach((b, i) => { if (h.match(b)) list.push(`${dIdx}.${i}`); });
-      return list;
-    }
-
-    function getHabitStatus(dIdx, h) {
-      const hKeys = getHabitKeysForDay(dIdx, h);
-      if (hKeys.length === 0) return 'na';
-      const doneCount = hKeys.filter(k => !!S.c[k]).length;
-      if (doneCount === 0) return 'none';
-      if (doneCount === hKeys.length) return 'done';
-      return 'part';
-    }
-
-    function toggleHabitInMatrix(dIdx, habitId) {
-      const h = KEY_HABITS.find(x => x.id === habitId);
-      if (!h) return;
-      const hKeys = getHabitKeysForDay(dIdx, h);
-      if (hKeys.length === 0) return;
-      const allDone = hKeys.every(k => !!S.c[k]);
-      hKeys.forEach(k => { if (allDone) delete S.c[k]; else S.c[k] = true; });
-      save();
-      render();
-    }
-
-    function calcStreak(h) {
-      let s = 0;
-      for (let i = td; i >= 0; i--) {
-        const st = getHabitStatus(i, h);
-        if (st === 'na') continue;
-        if (st === 'done') s++;
-        else break;
-      }
-      return s;
-    }
-
-    function addCustomExam(e) {
-      e.preventDefault();
-      const name = $('#exam-name-input').value.trim();
-      const date = $('#exam-date-input').value;
-      if (!name || !date) return;
-      S.exams.push({ id: Date.now(), name, date });
-      S.exams.sort((a, b) => new Date(a.date) - new Date(b.date));
-      $('#exam-name-input').value = '';
-      $('#exam-date-input').value = '';
-      save();
-      render();
-    }
-
-    function deleteExam(id) {
-      S.exams = S.exams.filter(x => x.id !== id);
-      save();
-      render();
-    }
-
-    function addCustomTask(e) {
-      e.preventDefault();
-      const text = $('#custom-task-input').value.trim();
-      if (!text) return;
-      if (!S.notes[day]) S.notes[day] = [];
-      S.notes[day].push({ id: Date.now(), text, done: false });
-      $('#custom-task-input').value = '';
-      save();
-      render();
-    }
-
-    function toggleCustomTask(id) {
-      const item = (S.notes[day] || []).find(x => x.id === id);
-      if (item) item.done = !item.done;
-      save();
-      render();
-    }
-
-    function deleteCustomTask(id) {
-      if (!S.notes[day]) return;
-      S.notes[day] = S.notes[day].filter(x => x.id !== id);
-      save();
-      render();
-    }
-
-    function renderSmoothCurve(pcts) {
-      const W = 380, H = 130, padL = 16, padR = 16, padT = 14, padB = 22;
-      const gw = W - padL - padR, gh = H - padT - padB;
-      const step = gw / 6;
-      const pts = pcts.map((v, i) => ({ x: padL + i * step, y: padT + gh - (v / 100) * gh, v, label: D[i][1] }));
-      const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-
-      $('#curve-chart').innerHTML = `
-        <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;">
-          <line x1="${padL}" y1="${padT + gh}" x2="${W - padR}" y2="${padT + gh}" stroke="#E5E3DC" stroke-width="1"/>
-          <path d="${d}" fill="none" stroke="#141413" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          ${pts.map((p, idx) => `
-            <g style="cursor:pointer" onclick="selectDay(${idx})">
-              <circle cx="${p.x}" cy="${p.y}" r="${idx === day ? 5 : 3.5}" fill="${idx === day ? '#7C0A24' : '#FFFFFF'}" stroke="#141413" stroke-width="1.8"/>
-              <text x="${p.x}" y="${H - 3}" text-anchor="middle" font-size="10" font-family="JetBrains Mono" font-weight="${idx === day ? '700' : '500'}" fill="${idx === day ? '#7C0A24' : '#85837E'}">${p.label}</text>
-            </g>
-          `).join('')}
-        </svg>
-      `;
-    }
-
-    function selectDay(dIdx) {
-      day = dIdx;
-      render();
-    }
-
-    function render() {
-      const m = mon();
-      const e = new Date(m); e.setDate(e.getDate() + 6);
-      const f = x => x.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-      $('#wk-label').textContent = `Semana ${f(m)} – ${f(e)} · Sincronización activa`;
-
-      let totalWeek = 0, doneWeek = 0;
-      const dailyPcts = D.map((_, i) => {
-        const t = tot(i), dn = done(i);
-        totalWeek += t; doneWeek += dn;
-        return Math.round((dn / t) * 100);
-      });
-
-      const globalPct = Math.round((doneWeek / totalWeek) * 100);
-      $('#global-pct').textContent = `${globalPct}%`;
-
-      const ks = keys(day);
-      const supTotal = D[day][2].reduce((a, b) => a + (b[4] || []).length, 0);
-      const supDone = ks.filter(k => k.split('.').length === 3).length;
-      const waterDone = ks.filter(k => k.includes('.w')).length;
-      const dayPct = dailyPcts[day];
-
-      $('#kpi-done').textContent = `+${doneWeek}`;
-      $('#kpi-day-pct').textContent = `${dayPct}%`;
-      $('#kpi-supps').textContent = `${supDone + waterDone}/${supTotal + 3}`;
-      $('#fc-badge-val').textContent = `${globalPct}% media semanal`;
-
-      $('#days-bar').innerHTML = D.map((d, i) => `
-        <div class="day-pill ${i === day ? 'on' : ''}" data-d="${i}">
-          <b>${d[1]}</b>
-          <small>${dailyPcts[i]}%</small>
-        </div>
-      `).join('');
-
-      $('#day-title').textContent = `${D[day][0]} · Bloques`;
-      $('#day-counter').textContent = `${ks.length} / ${tot(day)}`;
-
-      let cur = -1;
-      if (day === td) D[day][2].forEach((b, i) => { if (mm(b[0]) <= nowv()) cur = i; });
-
-      const tasksHtml = D[day][2].map((b, i) => {
-        const k = day + '.' + i;
-        const isDone = !!S.c[k];
-        if (onlyPending && isDone) return '';
-        return `
-          <div class="task-item ${isDone ? 'done' : ''} ${i === cur ? 'now' : ''}" data-k="${k}">
-            <div class="task-left">
-              <div class="task-time">${b[0]}</div>
-              <div>
-                <div class="task-title">${b[1]} ${i === cur ? '<span class="badge accent" style="margin-left:4px;">AHORA</span>' : ''}</div>
-                <div class="task-loc">${CT[b[2]][1]} · ${b[3]}</div>
-                ${(b[4] && b[4].length) ? `
-                  <div class="supp-wrap">
-                    ${b[4].map((s, j) => `<span class="supp-chip ${S.c[k + '.' + j] ? 'done' : ''}" data-k="${k + '.' + j}">${s}</span>`).join('')}
-                  </div>
-                ` : ''}
-              </div>
-            </div>
-            <div class="check-box">${isDone ? '✓' : ''}</div>
-          </div>
-        `;
-      }).join('');
-
-      $('#task-list').innerHTML = tasksHtml || `<p style="text-align:center; color:var(--fg-muted); padding:16px 0;">Todo completado por hoy.</p>`;
-
-      $('#water-status').textContent = `${waterDone} / 3 L`;
-      $('#water-row').innerHTML = [1, 2, 3].map(n => `
-        <button class="water-btn ${S.c[day + '.w' + n] ? 'done' : ''}" data-k="${day + '.w' + n}">${n}L</button>
-      `).join('');
-
-      renderSmoothCurve(dailyPcts);
-
-      $('#streaks-list').innerHTML = KEY_HABITS.map(h => {
-        const st = calcStreak(h);
-        return `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:12.5px;">
-            <span style="font-weight:500;">${h.name}</span>
-            <span class="badge">${st} ${st === 1 ? 'día' : 'días'}</span>
-          </div>
-        `;
-      }).join('');
-
-      const head = `<tr><th>Hábito</th>${D.map((d, idx) => `<th class="${idx === day ? 'active-col' : ''}" style="cursor:pointer" onclick="selectDay(${idx})">${d[1]}</th>`).join('')}</tr>`;
-      const body = KEY_HABITS.map(h => `
-        <tr>
-          <td>${h.short}</td>
-          ${D.map((_, dIdx) => {
-            const st = getHabitStatus(dIdx, h);
-            if (st === 'na') return `<td><span class="m-dot na">—</span></td>`;
-            const cls = st === 'done' ? 'on' : (st === 'part' ? 'part' : '');
-            const sym = st === 'done' ? '✓' : (st === 'part' ? '◐' : '·');
-            return `<td><span class="m-dot ${cls}" onclick="toggleHabitInMatrix(${dIdx}, '${h.id}')">${sym}</span></td>`;
-          }).join('')}
-        </tr>
-      `).join('');
-      $('#matrix-table').innerHTML = head + body;
-
-      // Exámenes
-      const exams = S.exams || [];
-      $('#exams-counter').textContent = `${exams.length}`;
-      const todayObj = new Date(); todayObj.setHours(0,0,0,0);
-      $('#exams-list-container').innerHTML = exams.length === 0
-        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12px; padding:8px;">Sin exámenes próximos.</div>`
-        : exams.map(ex => {
-            const exDate = new Date(ex.date + 'T00:00:00');
-            const diffDays = Math.ceil((exDate - todayObj) / (1000 * 60 * 60 * 24));
-            const countText = diffDays === 0 ? 'Hoy' : (diffDays > 0 ? `${diffDays}d` : 'Pasado');
-            return `
-              <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md); font-size:12.5px;">
-                <div>
-                  <b>${ex.name}</b> ${ex.fromBB ? '<span class="badge">BB</span>' : ''}
-                  <div class="mono" style="font-size:11px; color:var(--fg-muted);">${ex.date}</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <span class="badge accent">${countText}</span>
-                  <button class="btn btn-sm btn-ghost" onclick="deleteExam(${ex.id})">✕</button>
-                </div>
-              </div>
-            `;
-          }).join('');
-
-      // Tareas Diarias
-      $('#notes-box-title').textContent = `Tareas · ${D[day][0]}`;
-      const dayNotes = S.notes[day] || [];
-      $('#notes-counter').textContent = `${dayNotes.filter(x => !x.done).length} pend.`;
-      $('#custom-tasks-list').innerHTML = dayNotes.length === 0
-        ? `<div style="text-align:center; color:var(--fg-muted); font-size:12px; padding:8px;">Sin tareas adicionales.</div>`
-        : dayNotes.map(item => `
-            <div class="task-item ${item.done ? 'done' : ''}" style="align-items:center; padding:8px 10px;">
-              <div style="display:flex; align-items:center; gap:8px; flex:1;" onclick="toggleCustomTask(${item.id})">
-                <div class="check-box" style="margin:0;">${item.done ? '✓' : ''}</div>
-                <span class="task-title" style="font-size:12.5px;">${item.text} ${item.fromBB ? '<span class="badge">BB</span>' : ''}</span>
-              </div>
-              <button class="btn btn-sm btn-ghost" onclick="deleteCustomTask(${item.id})">✕</button>
-            </div>
-          `).join('');
-
-      renderProjects();
-      renderCalAI();
-      updateApiBadge();
-    }
-
-    document.addEventListener('click', e => {
-      const t = e.target.closest('[data-k],[data-d],#rs');
-      if (!t) return;
-      if (t.dataset.d != null) {
-        day = +t.dataset.d;
-      } else if (t.id === 'rs') {
-        if (!confirmRs) {
-          confirmRs = true;
-          t.textContent = '¿Confirmar?';
-          return;
-        }
-        S.c = {};
-        confirmRs = false;
-        t.textContent = 'Reiniciar';
-      } else {
-        const k = t.dataset.k;
-        S.c[k] = !S.c[k];
-        if (!S.c[k]) delete S.c[k];
-      }
-      save();
-      render();
-    });
-
-    initStaticIcons();
-    load();
-    render();
-
-    // Sincronización automática en segundo plano (Blackboard US + Don Mancuerna YouTube)
-    syncBlackboardCalendar();
-    fetchDonMancuernaSubs(false);
-    setInterval(() => {
-      syncBlackboardCalendar();
-      fetchDonMancuernaSubs(false);
-    }, 10 * 60 * 1000);
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
-    }
-  </script>
-</body>
-</html>
+    .reset-btn {
+      width: 100%; padding: 10px; border-radius: 12px; border: 1px dashed var(--border-strong);
