@@ -1,0 +1,9 @@
+{
+  "name": "habits-dashboard",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Panel personal mobile-first con integracion en vivo de Revolut X para Vercel",
+  "engines": {
+    "node": ">=20"
+  }
+}

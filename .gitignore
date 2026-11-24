@@ -1,0 +1,7 @@
+node_modules/
+.vercel/
+.ds-receipts/
+.env
+.env.*
+*.pem
+*.key
