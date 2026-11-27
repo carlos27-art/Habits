@@ -1,6 +1,6 @@
 /* Generated from tokens/tokens.json. The ONLY place raw values live.
    Every other stylesheet reads these variables. Change the theme here, nowhere else.
-   Theme: dark, near-black graphite with a single lime accent. */
+   Theme: dark, near-black slate-graphite with a single cobalt-sky blue accent. */
 
 :root {
   color-scheme: dark;
@@ -90,38 +90,38 @@
   --textarea-height: 6rem;
 
   /* Semantic: surfaces */
-  --color-bg: #08090A;
-  --color-bg-glow-1: rgb(197 240 74 / 0.09);
-  --color-bg-glow-2: rgb(52 211 153 / 0.06);
-  --color-surface: #111413;
-  --color-surface-glass: rgb(18 22 20 / 0.78);
-  --color-surface-raised: #171B19;
-  --color-surface-muted: #202623;
-  --color-border: #262D29;
-  --color-border-solid: #262D29;
-  --color-border-strong: #6A756F;
-  --color-overlay: #1A1F1D;
-  --color-backdrop: rgb(4 6 5 / 0.68);
-  --color-bar-bg: rgb(10 12 11 / 0.84);
+  --color-bg: #07090E;
+  --color-bg-glow-1: rgb(56 189 248 / 0.11);
+  --color-bg-glow-2: rgb(96 165 250 / 0.07);
+  --color-surface: #0F131C;
+  --color-surface-glass: rgb(16 21 31 / 0.78);
+  --color-surface-raised: #151B26;
+  --color-surface-muted: #1D2533;
+  --color-border: #242E3F;
+  --color-border-solid: #242E3F;
+  --color-border-strong: #64748B;
+  --color-overlay: #18202C;
+  --color-backdrop: rgb(3 5 9 / 0.68);
+  --color-bar-bg: rgb(9 12 18 / 0.84);
 
   /* Semantic: text */
-  --color-text: #F1F4F2;
-  --color-text-muted: #A3AEA8;
+  --color-text: #F1F5F9;
+  --color-text-muted: #9AA8BC;
 
-  /* Semantic: action */
-  --color-action-primary: #C5F04A;
-  --color-action-primary-hover: #D6F87A;
-  --color-action-primary-text: #0B1004;
+  /* Semantic: action (electric sky-cobalt blue) */
+  --color-action-primary: #38BDF8;
+  --color-action-primary-hover: #7DD3FC;
+  --color-action-primary-text: #040B14;
   --color-action-destructive: #CF1742;
   --color-action-destructive-hover: #B01036;
   --color-action-destructive-text: #FFFFFF;
 
   /* Semantic: accent (the only accent) */
-  --color-accent-text: #C5F04A;
-  --color-accent-soft: #1B2410;
-  --color-accent-border: #556B1F;
-  --color-accent-glow: rgb(197 240 74 / 0.24);
-  --color-focus: #C5F04A;
+  --color-accent-text: #38BDF8;
+  --color-accent-soft: #0C1F33;
+  --color-accent-border: #1D588A;
+  --color-accent-glow: rgb(56 189 248 / 0.25);
+  --color-focus: #38BDF8;
 
   /* Semantic: status */
   --color-positive: #34D399;
@@ -132,26 +132,26 @@
   --color-warning-soft: #291F0B;
 
   /* Semantic: data viz */
-  --color-chart-line: #C5F04A;
-  --color-chart-fill-top: rgb(197 240 74 / 0.28);
-  --color-chart-fill-bottom: rgb(197 240 74 / 0);
-  --color-chart-grid: #222825;
-  --color-chart-2: #34D399;
+  --color-chart-line: #38BDF8;
+  --color-chart-fill-top: rgb(56 189 248 / 0.28);
+  --color-chart-fill-bottom: rgb(56 189 248 / 0);
+  --color-chart-grid: #1E2736;
+  --color-chart-2: #818CF8;
   --color-chart-3: #FBBF24;
-  --color-heat-0: #1A1F1D;
-  --color-heat-1: #283615;
-  --color-heat-2: #4A661B;
-  --color-heat-3: #86AD2A;
-  --color-heat-4: #C5F04A;
+  --color-heat-0: #18202C;
+  --color-heat-1: #10304D;
+  --color-heat-2: #155585;
+  --color-heat-3: #2088C9;
+  --color-heat-4: #38BDF8;
 
   /* Semantic: depth */
-  --shadow-sm: 0 2px 6px rgb(4 7 6 / 0.28);
-  --shadow-raised: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 38px -20px rgb(4 7 6 / 0.36);
+  --shadow-sm: 0 2px 6px rgb(3 6 12 / 0.28);
+  --shadow-raised: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 38px -20px rgb(3 6 12 / 0.36);
   --shadow-glow: 0 0 0 1px var(--color-accent-border), 0 10px 28px -10px var(--color-accent-glow);
-  --shadow-sheet: 0 -18px 48px -18px rgb(4 7 6 / 0.38);
+  --shadow-sheet: 0 -18px 48px -18px rgb(3 6 12 / 0.38);
   --blur-glass: saturate(1.4) blur(20px);
   --blur-backdrop: blur(4px);
-  --gradient-lead: linear-gradient(140deg, rgb(32 43 18 / 0.88) 0%, rgb(18 22 20 / 0.88) 45%, rgb(18 22 20 / 0.88) 100%);
+  --gradient-lead: linear-gradient(140deg, rgb(14 36 62 / 0.88) 0%, rgb(16 21 31 / 0.88) 45%, rgb(16 21 31 / 0.88) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {

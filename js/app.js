@@ -132,17 +132,19 @@ const shortDate = () => new Date().toLocaleDateString('es-ES', { day: '2-digit',
    STATE & MIGRATION
    ========================================================================= */
 const DEFAULT_HABITS = () => [
-  { id: 'gym', name: 'Entrenamiento de fuerza', icon: 'dumbbell', days: [0, 1, 3, 4, 5] },
-  { id: 'study', name: 'Estudio profundo', icon: 'timer', days: [0, 1, 2, 3, 4, 5, 6] },
   { id: 'morning', name: 'Rutina de mañana', icon: 'sun', days: [0, 1, 2, 3, 4, 5, 6] },
+  { id: 'study', name: 'Estudio profundo', icon: 'timer', days: [0, 1, 2, 3, 4, 5, 6] },
+  { id: 'neck', name: 'Movilidad y cuello', icon: 'shield', days: [0, 2, 5] },
   { id: 'uni', name: 'Clases universidad', icon: 'cap', days: [0, 1, 2, 3, 4] },
-  { id: 'neck', name: 'Movilidad y cuello', icon: 'shield', days: [0, 2, 5] }
+  { id: 'gym', name: 'Entrenamiento de fuerza', icon: 'dumbbell', days: [0, 1, 3, 4, 5] }
 ];
 
+const DEFAULT_ORDER = ['morning', 'study', 'neck', 'uni', 'gym'];
+
 const DEFAULT_SUPPS = () => [
-  { id: 'creatina', name: 'Creatina 5 g' },
-  { id: 'magnesio', name: 'Magnesio' },
-  { id: 'calcio', name: 'Calcio y vitamina D' }
+  { id: 'calcio', name: 'Calcio', target: 2 },
+  { id: 'creatina', name: 'Creatina 5 g', target: 1 },
+  { id: 'magnesio', name: 'Magnesio', target: 1 }
 ];
 
 let S = null;
@@ -199,11 +201,28 @@ function emptyState() {
 function normalizeState(raw) {
   const base = emptyState();
   if (!raw || typeof raw !== 'object') return base;
+  const rawHabits = Array.isArray(raw.habits) ? [...raw.habits] : base.habits;
+  rawHabits.sort((a, b) => {
+    const ia = DEFAULT_ORDER.indexOf(a.id);
+    const ib = DEFAULT_ORDER.indexOf(b.id);
+    if (ia >= 0 && ib >= 0) return ia - ib;
+    if (ia >= 0) return -1;
+    if (ib >= 0) return 1;
+    return 0;
+  });
+  const rawSupps = (Array.isArray(raw.supplements) ? raw.supplements : base.supplements).map(s => {
+    const isCalcio = s.id === 'calcio' || /calcio/i.test(s.name || '');
+    return {
+      ...s,
+      name: isCalcio ? 'Calcio' : s.name,
+      target: Number(s.target || (isCalcio ? 2 : 1))
+    };
+  });
   return {
     version: 3,
     updatedAt: Number(raw.updatedAt || 0),
-    habits: Array.isArray(raw.habits) ? raw.habits : base.habits,
-    supplements: Array.isArray(raw.supplements) ? raw.supplements : base.supplements,
+    habits: rawHabits,
+    supplements: rawSupps,
     logs: raw.logs && typeof raw.logs === 'object' ? raw.logs : {},
     agenda: Array.isArray(raw.agenda) ? raw.agenda : [],
     bbSyncedUids: raw.bbSyncedUids && typeof raw.bbSyncedUids === 'object' ? raw.bbSyncedUids : {},
@@ -607,12 +626,7 @@ function renderHabits() {
         <p>Añade los hábitos que quieras seguir cada día y mide tus rachas reales.</p>
       </li>`;
   } else {
-    const sortedHabits = [...S.habits].sort((a, b) => {
-      const sa = isScheduledOn(a, selDate) ? 0 : 1;
-      const sb = isScheduledOn(b, selDate) ? 0 : 1;
-      return sa - sb;
-    });
-    $('#habit-list').innerHTML = sortedHabits.map(h => {
+    $('#habit-list').innerHTML = S.habits.map(h => {
       const scheduled = isScheduledOn(h, selDate);
       const isDone = !!(log.habits && log.habits[h.id]);
       const st = habitCurrentStreak(h);
@@ -636,22 +650,29 @@ function renderHabits() {
     }).join('');
   }
 
-  // Water
-  const wVal = Number(log.water || 0);
-  $('#water-status').textContent = `${wVal} / 3 L`;
-  $('#water-row').innerHTML = [1, 2, 3].map(n => `
-    <button type="button" class="water-btn" data-water="${n}" aria-pressed="${wVal >= n}" aria-label="Agua ${n} litros">
-      ${icon('drop')}
-      <span>${n} L</span>
-    </button>`).join('');
+  // Water (additive input in L or ml)
+  const wVal = Math.round(Number(log.water || 0) * 100) / 100;
+  const wFmt = fmtNum(wVal, wVal % 1 === 0 ? 0 : (wVal * 10) % 1 === 0 ? 1 : 2);
+  $('#water-status').textContent = `${wFmt} / 3 L`;
+  $('#water-bar').style.inlineSize = `${Math.min(100, Math.round((wVal / 3) * 100))}%`;
+  $('#water-reset').hidden = wVal <= 0;
 
-  // Supplements
+  // Supplements (supports multi-dose counter like Calcio 0/2 -> 1/2 -> 2/2)
   const supps = S.supplements || [];
-  const supDone = supps.filter(s => log.supps && log.supps[s.id]).length;
-  $('#supps-status').textContent = `${supDone} / ${supps.length}`;
+  const suppCount = s => {
+    const rawVal = log.supps ? log.supps[s.id] : 0;
+    return rawVal === true ? Number(s.target || 1) : Number(rawVal || 0);
+  };
+  const supTotalDoses = supps.reduce((a, s) => a + Number(s.target || 1), 0);
+  const supDoneDoses = supps.reduce((a, s) => a + Math.min(Number(s.target || 1), suppCount(s)), 0);
+  $('#supps-status').textContent = `${supDoneDoses} / ${supTotalDoses}`;
   $('#supps-row').innerHTML = supps.length ? supps.map(s => {
-    const on = !!(log.supps && log.supps[s.id]);
-    return `<button type="button" class="chip" data-supp="${esc(s.id)}" aria-pressed="${on}">${icon('pill')}<span>${esc(s.name)}</span></button>`;
+    const target = Number(s.target || 1);
+    const cur = Math.min(target, suppCount(s));
+    const done = cur >= target;
+    const partial = cur > 0 && cur < target;
+    const badge = target > 1 ? ` <span class="chip-count">${cur}/${target}</span>` : '';
+    return `<button type="button" class="chip" data-supp="${esc(s.id)}" aria-pressed="${done}"${partial ? ' data-partial="true"' : ''}>${icon('pill')}<span>${esc(s.name)}</span>${badge}</button>`;
   }).join('') : `<p class="muted small">Sin suplementos configurados.</p>`;
 
   $('#supps-edit').innerHTML = supps.map(s => `
@@ -1694,9 +1715,19 @@ const forms = {
     const inp = $('#supp-input');
     const name = inp.value.trim();
     if (!name) return 'nosave';
-    S.supplements.push({ id: uid(), name });
+    const isCalcio = /calcio/i.test(name);
+    S.supplements.push({ id: uid(), name, target: isCalcio ? 2 : 1 });
     f.reset();
     toast('Suplemento añadido');
+  },
+  water(f) {
+    const raw = parseFloat(String($('#water-input').value || '').replace(',', '.'));
+    if (Number.isNaN(raw) || raw <= 0) return 'nosave';
+    const liters = raw >= 20 ? raw / 1000 : raw;
+    const log = ensureDayLog(selectedIso);
+    log.water = Math.round((Number(log.water || 0) + liters) * 100) / 100;
+    f.reset();
+    toast(`+${fmtNum(liters, liters % 1 === 0 ? 0 : 2)} L de agua`);
   },
   task(f) {
     const txt = $('#task-text').value.trim();
@@ -1903,18 +1934,15 @@ document.addEventListener('click', e => {
     return;
   }
 
-  if (ds.water !== undefined) {
-    const n = Number(ds.water);
-    const log = ensureDayLog(selectedIso);
-    log.water = log.water === n ? n - 1 : n;
-    save();
-    renderHabits();
-    return;
-  }
   if (ds.supp) {
     const log = ensureDayLog(selectedIso);
-    if (log.supps[ds.supp]) delete log.supps[ds.supp];
-    else log.supps[ds.supp] = true;
+    const s = (S.supplements || []).find(x => String(x.id) === String(ds.supp));
+    const target = Number(s?.target || 1);
+    const rawVal = log.supps[ds.supp];
+    const cur = rawVal === true ? target : Number(rawVal || 0);
+    const next = cur >= target ? 0 : cur + 1;
+    if (next <= 0) delete log.supps[ds.supp];
+    else log.supps[ds.supp] = next;
     save();
     renderHabits();
     return;
@@ -1972,6 +2000,14 @@ document.addEventListener('click', e => {
 
   switch (ds.action) {
     case 'add-habit': openHabitDialog(null); break;
+    case 'water-reset': {
+      const log = ensureDayLog(selectedIso);
+      log.water = 0;
+      save();
+      renderHabits();
+      toast('Agua reiniciada');
+      break;
+    }
     case 'habit-delete':
       if (editingHabitId) {
         S.habits = S.habits.filter(h => h.id !== editingHabitId);

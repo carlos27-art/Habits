@@ -128,9 +128,17 @@
             <section class="panel" aria-labelledby="h-water">
               <div class="panel-head">
                 <h2 class="panel-title" id="h-water">Agua</h2>
-                <span class="figure" id="water-status">0 / 3 L</span>
+                <div class="head-actions">
+                  <span class="figure" id="water-status">0 / 3 L</span>
+                  <button class="btn btn-ghost btn-sm" type="button" data-action="water-reset" id="water-reset" hidden>Reiniciar</button>
+                </div>
               </div>
-              <div class="water-row" id="water-row" role="group" aria-labelledby="h-water"></div>
+              <div class="progress progress-lg" aria-hidden="true"><span id="water-bar"></span></div>
+              <form class="inline-form" data-form="water">
+                <label class="sr-only" for="water-input">Cantidad de agua en litros o mililitros</label>
+                <input class="input" id="water-input" type="number" min="0.05" step="any" inputmode="decimal" placeholder="Ej: 0,5 L o 500 ml" required>
+                <button class="btn btn-primary" type="submit"><span class="icon" data-icon="plus"></span><span>Sumar</span></button>
+              </form>
             </section>
 
             <section class="panel" aria-labelledby="h-supps">
