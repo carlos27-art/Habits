@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Habits</title>
-  <meta name="description" content="Panel personal: agenda, hábitos, universidad, finanzas y nutrición.">
+  <meta name="description" content="Panel personal: hábitos y rachas, agenda universitaria, cocina con IA y finanzas.">
 
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -14,14 +14,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Habits">
   <meta name="theme-color" content="">
-
-  <script>
-    (function () {
-      var t = localStorage.getItem('habits_theme');
-      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', t);
-    })();
-  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,25 +29,24 @@
     <!-- Barra lateral (escritorio) -->
     <aside class="sidebar" aria-label="Navegación principal">
       <div class="brand">
-        <span class="brand-mark" aria-hidden="true">H</span>
+        <span class="brand-mark" aria-hidden="true"><span class="icon" data-icon="flame"></span></span>
         <span class="brand-name">Habits</span>
       </div>
 
       <nav class="side-nav" aria-label="Secciones">
-        <button class="nav-item" type="button" data-view="hoy" aria-current="page"><span class="icon" data-icon="sun"></span><span>Hoy</span></button>
-        <button class="nav-item" type="button" data-view="semana"><span class="icon" data-icon="grid"></span><span>Semana</span></button>
-        <button class="nav-item" type="button" data-view="uni"><span class="icon" data-icon="cap"></span><span>Universidad</span></button>
+        <button class="nav-item" type="button" data-view="habitos" aria-current="page"><span class="icon" data-icon="flame"></span><span>Hábitos</span></button>
+        <button class="nav-item" type="button" data-view="agenda"><span class="icon" data-icon="calendar"></span><span>Agenda</span></button>
+        <button class="nav-item" type="button" data-view="cocina"><span class="icon" data-icon="chef"></span><span>Cocina</span></button>
         <button class="nav-item" type="button" data-view="finanzas"><span class="icon" data-icon="wallet"></span><span>Finanzas</span></button>
-        <button class="nav-item" type="button" data-view="nutricion"><span class="icon" data-icon="utensils"></span><span>Nutrición</span></button>
       </nav>
 
       <div class="side-foot">
         <div class="sync-line">
-          <span class="status-dot" data-bb-dot aria-hidden="true"></span>
-          <span data-bb-text>Blackboard pendiente</span>
+          <span class="status-dot" data-sync-dot aria-hidden="true"></span>
+          <span data-sync-text>Sin sincronizar</span>
         </div>
-        <button class="btn btn-ghost btn-sm theme-toggle" type="button" data-action="toggle-theme" aria-label="Cambiar tema">
-          <span class="icon" data-icon="moon"></span><span class="theme-label">Tema oscuro</span>
+        <button class="btn btn-ghost settings-btn" type="button" data-action="open-settings">
+          <span class="icon" data-icon="settings"></span><span>Ajustes</span>
         </button>
       </div>
     </aside>
@@ -64,199 +55,360 @@
     <header class="topbar">
       <div class="topbar-row">
         <div class="brand">
-          <span class="brand-mark" aria-hidden="true">H</span>
+          <span class="brand-mark" aria-hidden="true"><span class="icon" data-icon="flame"></span></span>
           <span class="brand-name">Habits</span>
         </div>
         <div class="topbar-actions">
-          <span class="status-dot" data-bb-dot aria-hidden="true"></span>
-          <button class="btn btn-ghost btn-sm btn-icon" type="button" data-action="toggle-theme" aria-label="Cambiar tema">
-            <span class="icon" data-icon="moon"></span>
+          <span class="status-dot" data-sync-dot aria-hidden="true"></span>
+          <button class="btn btn-ghost btn-sm btn-icon" type="button" data-action="open-settings" aria-label="Ajustes">
+            <span class="icon" data-icon="settings"></span>
           </button>
         </div>
       </div>
       <nav class="tabbar" aria-label="Secciones">
-        <button class="tab" type="button" data-view="hoy" aria-current="page"><span class="icon" data-icon="sun"></span><span>Hoy</span></button>
-        <button class="tab" type="button" data-view="semana"><span class="icon" data-icon="grid"></span><span>Semana</span></button>
-        <button class="tab" type="button" data-view="uni"><span class="icon" data-icon="cap"></span><span>Uni</span></button>
+        <button class="tab" type="button" data-view="habitos" aria-current="page"><span class="icon" data-icon="flame"></span><span>Hábitos</span></button>
+        <button class="tab" type="button" data-view="agenda"><span class="icon" data-icon="calendar"></span><span>Agenda</span></button>
+        <button class="tab" type="button" data-view="cocina"><span class="icon" data-icon="chef"></span><span>Cocina</span></button>
         <button class="tab" type="button" data-view="finanzas"><span class="icon" data-icon="wallet"></span><span>Finanzas</span></button>
-        <button class="tab" type="button" data-view="nutricion"><span class="icon" data-icon="utensils"></span><span>Comida</span></button>
       </nav>
     </header>
 
     <main id="main" class="main" tabindex="-1">
 
-      <!-- ============================== HOY ============================== -->
-      <section class="view" id="view-hoy" aria-labelledby="h-hoy">
+      <!-- ============================== HÁBITOS ============================== -->
+      <section class="view" id="view-habitos" aria-labelledby="h-title">
         <header class="view-head">
-          <p class="eyebrow" id="today-label">Hoy</p>
-          <h1 class="view-title" id="h-hoy">Tu día</h1>
+          <p class="eyebrow" id="h-eyebrow">Hoy</p>
+          <h1 class="view-title" id="h-title">Hoy</h1>
         </header>
 
-        <div class="lead lead-split">
-          <div class="lead-metric">
-            <p class="label">Progreso del día</p>
-            <p class="hero-num"><span id="day-pct">0</span><span class="hero-unit">%</span></p>
-            <p class="muted" id="day-count">0 de 0 objetivos</p>
-            <div class="progress" aria-hidden="true"><span id="day-bar"></span></div>
+        <div class="lead lead-habits">
+          <div class="ring-block">
+            <div class="ring" aria-hidden="true">
+              <svg viewBox="0 0 120 120">
+                <circle class="ring-bg" cx="60" cy="60" r="52"/>
+                <circle class="ring-fg" id="ring-fg" cx="60" cy="60" r="52"/>
+              </svg>
+            </div>
+            <div class="ring-center">
+              <p class="hero-num"><span id="day-pct">0</span><span class="hero-unit">%</span></p>
+            </div>
           </div>
-          <div class="now-card" id="now-card" aria-live="polite"></div>
+          <div class="lead-side">
+            <div class="lead-metric">
+              <p class="label">Progreso del día</p>
+              <p class="lead-line" id="day-count">0 de 0 completados</p>
+            </div>
+            <div class="streak-hero">
+              <span class="streak-flame" aria-hidden="true"><span class="icon" data-icon="flame"></span></span>
+              <div>
+                <p class="streak-num"><span id="best-streak">0</span> <span class="streak-unit" id="best-streak-unit">días</span></p>
+                <p class="muted small" id="best-streak-name">Marca un hábito para empezar una racha</p>
+              </div>
+            </div>
+            <div class="day-strip" id="habit-strip" role="group" aria-label="Elegir día"></div>
+          </div>
         </div>
 
-        <div class="strip-head">
-          <h2 class="label" id="h-strip">Día</h2>
-          <button class="btn btn-ghost btn-sm" type="button" data-action="go-today" id="go-today" hidden>Volver a hoy</button>
-        </div>
-        <div class="day-strip" data-strip="habits" role="group" aria-labelledby="h-strip"></div>
-
-        <div class="grid grid-8-4">
-          <section class="panel" aria-labelledby="h-agenda">
+        <div class="grid grid-7-5">
+          <section class="panel" aria-labelledby="h-list">
             <div class="panel-head">
               <div>
-                <h2 class="panel-title" id="h-agenda">Agenda</h2>
-                <p class="muted small" id="agenda-sub">Bloques del día</p>
+                <h2 class="panel-title" id="h-list">Hábitos</h2>
+                <p class="muted small" id="h-list-sub">Pulsa un hábito para marcarlo</p>
               </div>
-              <button class="switch" type="button" role="switch" aria-checked="false" data-action="toggle-pending" id="pending-switch">
-                <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
-                <span>Solo pendientes</span>
+              <button class="btn btn-primary btn-sm" type="button" data-action="add-habit">
+                <span class="icon" data-icon="plus"></span><span>Nuevo</span>
               </button>
             </div>
-            <ol class="timeline" id="task-list"></ol>
+            <ul class="habit-list" id="habit-list"></ul>
           </section>
 
           <div class="stack">
-            <section class="panel" aria-labelledby="h-agua">
+            <section class="panel" aria-labelledby="h-water">
               <div class="panel-head">
-                <h2 class="panel-title" id="h-agua">Agua</h2>
+                <h2 class="panel-title" id="h-water">Agua</h2>
                 <span class="figure" id="water-status">0 / 3 L</span>
               </div>
-              <div class="segmented segmented-3" id="water-row" role="group" aria-labelledby="h-agua"></div>
+              <div class="water-row" id="water-row" role="group" aria-labelledby="h-water"></div>
             </section>
 
-            <section class="panel" aria-labelledby="h-tareas">
+            <section class="panel" aria-labelledby="h-supps">
               <div class="panel-head">
-                <h2 class="panel-title" id="h-tareas">Tareas</h2>
-                <span class="tag" id="notes-counter">0 pendientes</span>
+                <h2 class="panel-title" id="h-supps">Suplementos</h2>
+                <span class="tag" id="supps-status">0 / 0</span>
               </div>
-              <form class="inline-form" data-form="task">
-                <label class="sr-only" for="custom-task-input">Nueva tarea</label>
-                <input class="input" id="custom-task-input" type="text" placeholder="Nueva tarea" required>
-                <button class="btn btn-secondary btn-icon" type="submit" aria-label="Añadir tarea"><span class="icon" data-icon="plus"></span></button>
-              </form>
-              <ul class="check-list" id="custom-tasks-list"></ul>
-            </section>
-
-            <section class="panel" aria-labelledby="h-next">
-              <div class="panel-head">
-                <h2 class="panel-title" id="h-next">Próximo examen</h2>
-                <button class="btn btn-ghost btn-sm" type="button" data-view="uni">Ver todos</button>
-              </div>
-              <div id="next-exam"></div>
+              <div class="chips" id="supps-row" role="group" aria-labelledby="h-supps"></div>
+              <details class="disclosure">
+                <summary><span class="icon" data-icon="pencil"></span><span>Editar suplementos</span></summary>
+                <div class="disclosure-body">
+                  <form class="inline-form" data-form="supp">
+                    <label class="sr-only" for="supp-input">Nuevo suplemento</label>
+                    <input class="input" id="supp-input" type="text" maxlength="30" placeholder="Nuevo suplemento" required>
+                    <button class="btn btn-secondary btn-icon" type="submit" aria-label="Añadir suplemento"><span class="icon" data-icon="plus"></span></button>
+                  </form>
+                  <ul class="row-list" id="supps-edit"></ul>
+                </div>
+              </details>
             </section>
           </div>
         </div>
-      </section>
 
-      <!-- ============================== SEMANA ============================== -->
-      <section class="view" id="view-semana" aria-labelledby="h-semana" hidden>
-        <header class="view-head">
-          <p class="eyebrow" id="week-label">Semana</p>
-          <h1 class="view-title" id="h-semana">Consistencia</h1>
-        </header>
-
-        <div class="lead lead-chart">
-          <div class="lead-metric">
-            <p class="label">Progreso semanal</p>
-            <p class="hero-num"><span id="week-pct">0</span><span class="hero-unit">%</span></p>
-            <dl class="mini-stats">
-              <div><dt>Objetivos hechos</dt><dd id="kpi-done">0</dd></div>
-              <div><dt>Suplementos y agua hoy</dt><dd id="kpi-supps">0/0</dd></div>
-            </dl>
+        <section class="panel panel-chart" aria-labelledby="h-progress">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title" id="h-progress">Progreso</h2>
+              <p class="muted small" id="progress-sub">Cumplimiento diario</p>
+            </div>
+            <div class="segmented" role="radiogroup" aria-label="Periodo" id="range-group">
+              <button type="button" role="radio" aria-checked="true" data-range="7">7 días</button>
+              <button type="button" role="radio" aria-checked="false" data-range="30">30 días</button>
+            </div>
           </div>
-          <figure class="chart" id="week-chart"></figure>
-        </div>
+          <dl class="stat-row stat-row-3">
+            <div><dt>Media</dt><dd id="st-avg">0 %</dd></div>
+            <div><dt>Días perfectos</dt><dd id="st-perfect">0</dd></div>
+            <div><dt>Hechos</dt><dd id="st-done">0</dd></div>
+          </dl>
+          <figure class="chart" id="progress-chart"></figure>
+        </section>
 
-        <div class="grid grid-8-4">
-          <section class="panel" aria-labelledby="h-matriz">
+        <div class="grid grid-7-5">
+          <section class="panel" aria-labelledby="h-heat">
             <div class="panel-head">
               <div>
-                <h2 class="panel-title" id="h-matriz">Matriz de hábitos</h2>
-                <p class="muted small">Pulsa una celda para marcar el hábito completo.</p>
+                <h2 class="panel-title" id="h-heat">Constancia</h2>
+                <p class="muted small">Últimas 24 semanas</p>
               </div>
             </div>
-            <div class="table-scroll">
-              <table class="matrix" id="matrix-table">
-                <caption class="sr-only">Estado de cada hábito por día de la semana</caption>
-              </table>
+            <div class="heat-wrap" id="heatmap"></div>
+            <div class="heat-legend" aria-hidden="true">
+              <span>Menos</span>
+              <span class="heat-cell" data-level="0"></span>
+              <span class="heat-cell" data-level="1"></span>
+              <span class="heat-cell" data-level="2"></span>
+              <span class="heat-cell" data-level="3"></span>
+              <span class="heat-cell" data-level="4"></span>
+              <span>Más</span>
             </div>
-            <ul class="legend" aria-label="Leyenda">
-              <li><span class="m-key m-key-done" aria-hidden="true"></span>Hecho</li>
-              <li><span class="m-key m-key-part" aria-hidden="true"></span>Parcial</li>
-              <li><span class="m-key" aria-hidden="true"></span>Pendiente</li>
-              <li><span class="m-key m-key-na" aria-hidden="true"></span>No aplica</li>
-            </ul>
           </section>
 
-          <section class="panel" aria-labelledby="h-rachas">
+          <section class="panel" aria-labelledby="h-streaks">
             <div class="panel-head">
-              <h2 class="panel-title" id="h-rachas">Rachas</h2>
+              <h2 class="panel-title" id="h-streaks">Rachas</h2>
               <span class="muted small">días seguidos</span>
             </div>
             <ol class="rank-list" id="streaks-list"></ol>
           </section>
         </div>
-
-        <section class="panel panel-quiet" aria-labelledby="h-reset">
-          <div class="panel-head">
-            <div>
-              <h2 class="panel-title" id="h-reset">Reiniciar semana</h2>
-              <p class="muted small">Borra los hábitos marcados y las comidas de esta semana. Exámenes y finanzas se conservan.</p>
-            </div>
-            <button class="btn btn-destructive" type="button" data-action="reset-week" id="reset-week">Reiniciar</button>
-          </div>
-        </section>
       </section>
 
-      <!-- ============================== UNIVERSIDAD ============================== -->
-      <section class="view" id="view-uni" aria-labelledby="h-uni" hidden>
+      <!-- ============================== AGENDA ============================== -->
+      <section class="view" id="view-agenda" aria-labelledby="h-agenda" hidden>
         <header class="view-head">
-          <p class="eyebrow">Universidad de Sevilla</p>
-          <h1 class="view-title" id="h-uni">Exámenes y entregas</h1>
+          <p class="eyebrow">Universidad de Sevilla y tareas</p>
+          <h1 class="view-title" id="h-agenda">Agenda</h1>
         </header>
 
         <div class="lead lead-split">
-          <div class="lead-metric" id="uni-lead"></div>
-          <div class="sync-card">
-            <div class="sync-row">
-              <span class="status-dot" data-bb-dot aria-hidden="true"></span>
-              <div>
-                <p class="strong" data-bb-text>Blackboard pendiente</p>
-                <p class="muted small">El calendario se sincroniza cada 15 minutos.</p>
+          <div class="lead-metric" id="agenda-lead"></div>
+          <div class="lead-aside">
+            <dl class="mini-stats">
+              <div><dt>Pendientes hoy</dt><dd id="ag-today">0</dd></div>
+              <div><dt>Próximos 7 días</dt><dd id="ag-week">0</dd></div>
+            </dl>
+            <div class="sync-card">
+              <div class="sync-row">
+                <span class="status-dot" data-bb-dot aria-hidden="true"></span>
+                <div>
+                  <p class="strong" data-bb-text>Blackboard pendiente</p>
+                  <p class="muted small">Se sincroniza solo cada 15 minutos.</p>
+                </div>
               </div>
+              <button class="btn btn-secondary" type="button" data-action="bb-sync" id="bb-sync-btn">
+                <span class="icon" data-icon="refresh"></span><span>Sincronizar</span>
+              </button>
             </div>
-            <button class="btn btn-secondary" type="button" data-action="bb-sync" id="bb-sync-btn">
-              <span class="icon" data-icon="refresh"></span><span>Sincronizar ahora</span>
-            </button>
           </div>
         </div>
 
-        <section class="panel" aria-labelledby="h-examenes">
-          <div class="panel-head">
-            <h2 class="panel-title" id="h-examenes">Calendario</h2>
-            <span class="tag" id="exams-counter">0 programados</span>
+        <div class="grid grid-5-7">
+          <section class="panel" aria-labelledby="h-add-task">
+            <div class="panel-head">
+              <h2 class="panel-title" id="h-add-task">Añadir</h2>
+            </div>
+            <form class="form-grid" data-form="task">
+              <div class="field field-full">
+                <label class="field-label" for="task-text">Qué hay que hacer</label>
+                <input class="input" id="task-text" type="text" maxlength="120" placeholder="Entrega práctica FP1" required>
+              </div>
+              <div class="field field-full">
+                <span class="field-label" id="task-type-label">Tipo</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="task-type-label" id="task-type">
+                  <button type="button" role="radio" aria-checked="true" data-ttype="tarea">Tarea</button>
+                  <button type="button" role="radio" aria-checked="false" data-ttype="entrega">Entrega</button>
+                  <button type="button" role="radio" aria-checked="false" data-ttype="examen">Examen</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="task-date">Fecha</label>
+                <input class="input" id="task-date" type="date" required>
+              </div>
+              <div class="field">
+                <label class="field-label" for="task-time">Hora (opcional)</label>
+                <input class="input" id="task-time" type="time">
+              </div>
+              <button class="btn btn-primary field-full" type="submit"><span class="icon" data-icon="plus"></span><span>Añadir a la agenda</span></button>
+            </form>
+          </section>
+
+          <section class="panel" aria-labelledby="h-ag-list">
+            <div class="panel-head">
+              <h2 class="panel-title" id="h-ag-list">Próximamente</h2>
+              <div class="segmented" role="radiogroup" aria-label="Filtro" id="ag-filter">
+                <button type="button" role="radio" aria-checked="true" data-agfilter="pend">Pendiente</button>
+                <button type="button" role="radio" aria-checked="false" data-agfilter="exam">Exámenes</button>
+                <button type="button" role="radio" aria-checked="false" data-agfilter="all">Todo</button>
+              </div>
+            </div>
+            <ol class="ag-list" id="agenda-list"></ol>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============================== COCINA ============================== -->
+      <section class="view" id="view-cocina" aria-labelledby="h-cocina" hidden>
+        <header class="view-head">
+          <p class="eyebrow" id="k-eyebrow">Superávit calórico</p>
+          <h1 class="view-title" id="h-cocina">Cocina</h1>
+        </header>
+
+        <div class="lead lead-split">
+          <div class="lead-metric">
+            <p class="label" id="k-day-label">Plan de hoy</p>
+            <p class="hero-num hero-kcal"><span id="k-kcal">0</span><span class="hero-unit">kcal</span></p>
+            <p id="k-target-status"></p>
+            <ul class="macro-list" id="k-macros"></ul>
           </div>
-          <form class="form-grid form-exam" data-form="exam">
-            <div class="field">
-              <label class="field-label" for="exam-name-input">Asignatura o entrega</label>
-              <input class="input" id="exam-name-input" type="text" placeholder="Cálculo infinitesimal" required>
+          <div class="lead-aside">
+            <div class="eaten-block">
+              <div class="eaten-head">
+                <p class="label">Comido hoy</p>
+                <p class="figure" id="k-eaten">0 kcal</p>
+              </div>
+              <div class="progress progress-lg" aria-hidden="true"><span id="k-eaten-bar"></span></div>
             </div>
-            <div class="field">
-              <label class="field-label" for="exam-date-input">Fecha</label>
-              <input class="input" id="exam-date-input" type="date" required>
+            <div class="day-strip day-strip-week" id="menu-strip" role="group" aria-label="Día del menú"></div>
+            <div class="gen-row">
+              <button class="btn btn-primary" type="button" data-action="generate-menu" id="gen-btn">
+                <span class="icon" data-icon="sparkles"></span><span id="gen-label">Generar menú semanal</span>
+              </button>
+              <p class="muted small" id="menu-meta" aria-live="polite">Aún no hay menú</p>
             </div>
-            <button class="btn btn-primary" type="submit">Añadir</button>
-          </form>
-          <ul class="row-list" id="exams-list"></ul>
-        </section>
+          </div>
+        </div>
+
+        <div class="grid grid-7-5">
+          <section class="panel" aria-labelledby="h-meals">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title" id="h-meals">Comidas del día</h2>
+                <p class="muted small" id="meals-sub">Recetas pensadas con lo que tienes en casa</p>
+              </div>
+            </div>
+            <ol class="meal-list" id="meal-list"></ol>
+          </section>
+
+          <div class="stack">
+            <section class="panel" aria-labelledby="h-pantry">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title" id="h-pantry">Despensa</h2>
+                  <p class="muted small">Lo que tienes en casa para cocinar</p>
+                </div>
+                <span class="tag" id="pantry-count">0 productos</span>
+              </div>
+              <form class="form-grid form-pantry" data-form="pantry">
+                <div class="field field-full">
+                  <label class="field-label" for="pantry-name">Producto</label>
+                  <input class="input" id="pantry-name" type="text" maxlength="60" placeholder="Pechuga de pollo" required>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="pantry-qty">Cantidad</label>
+                  <input class="input" id="pantry-qty" type="number" min="0" step="any" inputmode="decimal" placeholder="500">
+                </div>
+                <div class="field">
+                  <span class="field-label" id="pantry-unit-label">Unidad</span>
+                  <div class="segmented segmented-tight" role="radiogroup" aria-labelledby="pantry-unit-label" id="pantry-unit">
+                    <button type="button" role="radio" aria-checked="true" data-unit="g">g</button>
+                    <button type="button" role="radio" aria-checked="false" data-unit="ml">ml</button>
+                    <button type="button" role="radio" aria-checked="false" data-unit="ud">ud</button>
+                  </div>
+                </div>
+                <button class="btn btn-secondary field-full" type="submit"><span class="icon" data-icon="plus"></span><span>Añadir a la despensa</span></button>
+              </form>
+              <details class="disclosure">
+                <summary><span class="icon" data-icon="list"></span><span>Añadir varios de golpe</span></summary>
+                <div class="disclosure-body">
+                  <form class="stack-form" data-form="pantry-bulk">
+                    <label class="field-label" for="pantry-bulk">Un producto por línea, con cantidad si la sabes</label>
+                    <textarea class="input textarea" id="pantry-bulk" placeholder="Arroz 1 kg&#10;Huevos 12&#10;Leche 2 l&#10;Avena 500 g"></textarea>
+                    <button class="btn btn-secondary" type="submit">Añadir lista</button>
+                  </form>
+                </div>
+              </details>
+              <ul class="row-list row-list-scroll" id="pantry-list"></ul>
+              <button class="btn btn-destructive-ghost btn-sm" type="button" data-action="clear-pantry" id="clear-pantry">Vaciar despensa</button>
+            </section>
+
+            <section class="panel" aria-labelledby="h-shop">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title" id="h-shop">Lista de la compra</h2>
+                  <p class="muted small">Lo que falta para el menú de la semana</p>
+                </div>
+                <span class="tag" id="shop-count">0</span>
+              </div>
+              <ul class="check-list" id="shop-list"></ul>
+            </section>
+
+            <section class="panel panel-quiet" aria-labelledby="h-prefs">
+              <details class="disclosure disclosure-flat" id="prefs">
+                <summary><span class="icon" data-icon="settings"></span><span id="h-prefs">Objetivo y preferencias</span></summary>
+                <div class="disclosure-body">
+                  <form class="form-grid" data-form="prefs">
+                    <div class="field">
+                      <label class="field-label" for="pref-min">Kcal mínimas</label>
+                      <input class="input" id="pref-min" type="number" min="1200" max="6000" inputmode="numeric" required>
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="pref-max">Kcal máximas</label>
+                      <input class="input" id="pref-max" type="number" min="1200" max="6000" inputmode="numeric" required>
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="pref-prot">Proteína diaria (g)</label>
+                      <input class="input" id="pref-prot" type="number" min="40" max="400" inputmode="numeric" required>
+                    </div>
+                    <div class="field">
+                      <span class="field-label" id="pref-meals-label">Comidas al día</span>
+                      <div class="segmented segmented-tight" role="radiogroup" aria-labelledby="pref-meals-label" id="pref-meals">
+                        <button type="button" role="radio" aria-checked="false" data-meals="3">3</button>
+                        <button type="button" role="radio" aria-checked="false" data-meals="4">4</button>
+                        <button type="button" role="radio" aria-checked="true" data-meals="5">5</button>
+                        <button type="button" role="radio" aria-checked="false" data-meals="6">6</button>
+                      </div>
+                    </div>
+                    <div class="field field-full">
+                      <label class="field-label" for="pref-notes">Notas para la IA (horarios, alergias, lo que no te gusta)</label>
+                      <textarea class="input textarea" id="pref-notes" maxlength="600"></textarea>
+                    </div>
+                    <button class="btn btn-primary field-full" type="submit">Guardar preferencias</button>
+                  </form>
+                </div>
+              </details>
+            </section>
+          </div>
+        </div>
       </section>
 
       <!-- ============================== FINANZAS ============================== -->
@@ -280,7 +432,6 @@
 
         <div class="grid grid-8-4">
           <div class="stack">
-            <!-- Revolut X -->
             <section class="panel" aria-labelledby="h-revx" id="revx-panel">
               <div class="panel-head">
                 <div>
@@ -314,24 +465,8 @@
                   <tbody id="revx-rows"></tbody>
                 </table>
               </div>
-
-              <details class="disclosure" id="revx-config">
-                <summary><span class="icon" data-icon="key"></span><span>Conexión</span></summary>
-                <div class="disclosure-body">
-                  <p class="muted small">
-                    Las claves de Revolut X viven solo en Vercel (variables <code>REVX_API_KEY</code> y <code>REVX_PRIVATE_KEY</code>).
-                    Si definiste <code>DASHBOARD_TOKEN</code>, escríbelo aquí; se guarda solo en este dispositivo.
-                  </p>
-                  <form class="inline-form" data-form="revx-token">
-                    <label class="sr-only" for="revx-token-input">Token del panel</label>
-                    <input class="input" id="revx-token-input" type="password" autocomplete="off" placeholder="Token del panel">
-                    <button class="btn btn-primary" type="submit">Guardar</button>
-                  </form>
-                </div>
-              </details>
             </section>
 
-            <!-- Diario de trading -->
             <section class="panel" aria-labelledby="h-trading">
               <div class="panel-head">
                 <div>
@@ -398,26 +533,6 @@
           </div>
 
           <div class="stack">
-            <section class="panel" aria-labelledby="h-yt">
-              <div class="panel-head">
-                <div>
-                  <h2 class="panel-title" id="h-yt">Don Mancuerna</h2>
-                  <p class="muted small">YouTube</p>
-                </div>
-                <a class="btn btn-ghost btn-icon" href="https://youtube.com/@donmancuerna" target="_blank" rel="noopener" aria-label="Abrir canal en YouTube">
-                  <span class="icon" data-icon="external"></span>
-                </a>
-              </div>
-              <p class="big-num" id="yt-subs">0</p>
-              <p class="muted small" id="yt-note">Suscriptores</p>
-              <div class="btn-row">
-                <button class="btn btn-secondary btn-sm" type="button" data-action="yt-add" data-n="1">+1</button>
-                <button class="btn btn-secondary btn-sm" type="button" data-action="yt-add" data-n="10">+10</button>
-                <button class="btn btn-secondary btn-sm" type="button" data-action="yt-set">Fijar</button>
-                <button class="btn btn-ghost btn-sm" type="button" data-action="yt-refresh" aria-label="Actualizar suscriptores"><span class="icon" data-icon="refresh"></span></button>
-              </div>
-            </section>
-
             <section class="panel" aria-labelledby="h-clip">
               <div class="panel-head">
                 <h2 class="panel-title" id="h-clip">Clipping</h2>
@@ -428,7 +543,7 @@
                 <div><dt>Views</dt><dd id="clip-views-total">0</dd></div>
                 <div><dt>Lotes</dt><dd id="clip-count">0</dd></div>
               </dl>
-              <form class="form-grid form-2" data-form="clip">
+              <form class="form-grid" data-form="clip">
                 <div class="field field-full">
                   <label class="field-label" for="clip-title">Campaña o vídeo</label>
                   <input class="input" id="clip-title" type="text" placeholder="TikTok lote 1" required>
@@ -451,7 +566,7 @@
                 <h2 class="panel-title" id="h-hustle">Ingresos extra</h2>
                 <span class="tag" id="hustles-total">0,00 €</span>
               </div>
-              <form class="form-grid form-2" data-form="hustle">
+              <form class="form-grid" data-form="hustle">
                 <div class="field">
                   <label class="field-label" for="hustle-name">Concepto</label>
                   <input class="input" id="hustle-name" type="text" placeholder="Web, bot, venta" required>
@@ -468,120 +583,80 @@
         </div>
       </section>
 
-      <!-- ============================== NUTRICIÓN ============================== -->
-      <section class="view" id="view-nutricion" aria-labelledby="h-nutri" hidden>
-        <header class="view-head">
-          <p class="eyebrow" id="nutri-day-label">Nutrición</p>
-          <h1 class="view-title" id="h-nutri">Nutrición</h1>
-        </header>
-
-        <div class="lead lead-split">
-          <div class="lead-metric">
-            <p class="label">Calorías del día</p>
-            <p class="hero-num"><span id="kcal-day">0</span><span class="hero-unit" id="kcal-goal">/ 2600</span></p>
-            <div class="progress" aria-hidden="true"><span id="kcal-bar"></span></div>
-            <p class="muted small" id="kcal-week">0 kcal esta semana</p>
-          </div>
-          <ul class="macro-list" id="macro-list"></ul>
-        </div>
-
-        <div class="strip-head">
-          <h2 class="label" id="h-nstrip">Día</h2>
-        </div>
-        <div class="day-strip" data-strip="nutri" role="group" aria-labelledby="h-nstrip"></div>
-
-        <div class="grid grid-7-5">
-          <section class="panel" aria-labelledby="h-scan">
-            <div class="panel-head">
-              <div>
-                <h2 class="panel-title" id="h-scan">Registrar comida</h2>
-                <p class="muted small">Haz una foto y la IA estima los macros, o escríbelos.</p>
-              </div>
-              <span class="pill" id="ai-status"><span class="status-dot" aria-hidden="true"></span><span>IA sin configurar</span></span>
-            </div>
-
-            <label class="dropzone" id="dropzone">
-              <input class="sr-only" id="meal-photo-input" type="file" accept="image/*" capture="environment">
-              <span class="dropzone-inner" id="dropzone-inner"></span>
-            </label>
-
-            <form class="form-grid form-meal" data-form="meal">
-              <div class="field field-full">
-                <label class="field-label" for="meal-name">Plato</label>
-                <input class="input" id="meal-name" type="text" placeholder="Pollo con arroz y aguacate" required>
-              </div>
-              <div class="field">
-                <label class="field-label" for="meal-kcal">Kcal</label>
-                <input class="input" id="meal-kcal" type="number" inputmode="numeric" required>
-              </div>
-              <div class="field">
-                <label class="field-label" for="meal-prot">Proteína (g)</label>
-                <input class="input" id="meal-prot" type="number" inputmode="numeric" required>
-              </div>
-              <div class="field">
-                <label class="field-label" for="meal-carbs">Carbos (g)</label>
-                <input class="input" id="meal-carbs" type="number" inputmode="numeric" required>
-              </div>
-              <div class="field">
-                <label class="field-label" for="meal-fat">Grasas (g)</label>
-                <input class="input" id="meal-fat" type="number" inputmode="numeric" required>
-              </div>
-              <button class="btn btn-primary field-full" type="submit">Guardar comida</button>
-            </form>
-
-            <ul class="row-list" id="meals-list"></ul>
-
-            <details class="disclosure" id="ai-config">
-              <summary><span class="icon" data-icon="key"></span><span>IA y objetivos</span></summary>
-              <div class="disclosure-body">
-                <p class="muted small">La clave se guarda solo en el almacenamiento local de este dispositivo.</p>
-                <form class="form-grid form-2" data-form="ai">
-                  <div class="field field-full">
-                    <span class="field-label" id="ai-provider-label">Proveedor</span>
-                    <div class="segmented" role="radiogroup" aria-labelledby="ai-provider-label" id="ai-provider">
-                      <button type="button" role="radio" aria-checked="true" data-provider="gemini">Gemini</button>
-                      <button type="button" role="radio" aria-checked="false" data-provider="openai">OpenAI</button>
-                    </div>
-                  </div>
-                  <div class="field field-full">
-                    <label class="field-label" for="ai-api-key-input">API key</label>
-                    <input class="input" id="ai-api-key-input" type="password" autocomplete="off" placeholder="AIza... o sk-...">
-                  </div>
-                  <div class="field">
-                    <label class="field-label" for="goal-kcal">Objetivo kcal</label>
-                    <input class="input" id="goal-kcal" type="number" inputmode="numeric">
-                  </div>
-                  <div class="field">
-                    <label class="field-label" for="goal-prot">Objetivo proteína (g)</label>
-                    <input class="input" id="goal-prot" type="number" inputmode="numeric">
-                  </div>
-                  <button class="btn btn-primary" type="submit">Guardar</button>
-                  <button class="btn btn-destructive-ghost" type="button" data-action="ai-clear">Borrar clave</button>
-                </form>
-              </div>
-            </details>
-          </section>
-
-          <section class="panel" aria-labelledby="h-nweek">
-            <div class="panel-head">
-              <h2 class="panel-title" id="h-nweek">Semana</h2>
-              <span class="tag" id="nutri-goal-tag">Meta 2600 kcal</span>
-            </div>
-            <figure class="chart" id="nutri-week-chart"></figure>
-            <dl class="stat-row stat-row-3">
-              <div><dt>Proteína</dt><dd id="wk-prot">0 g</dd></div>
-              <div><dt>Carbos</dt><dd id="wk-carbs">0 g</dd></div>
-              <div><dt>Grasas</dt><dd id="wk-fat">0 g</dd></div>
-            </dl>
-          </section>
-        </div>
-      </section>
-
       <footer class="page-end">
-        <p class="muted small">Habits. Datos guardados en este dispositivo.</p>
+        <p class="muted small" id="foot-note">Habits. Tus datos se guardan en este dispositivo.</p>
       </footer>
     </main>
   </div>
+
+  <!-- Diálogo: hábito -->
+  <dialog class="sheet" id="habit-dialog" aria-labelledby="habit-dialog-title">
+    <form class="sheet-inner" data-form="habit">
+      <div class="sheet-head">
+        <h2 class="sheet-title" id="habit-dialog-title">Nuevo hábito</h2>
+        <button class="btn btn-ghost btn-icon" type="button" data-action="close-dialog" aria-label="Cerrar"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="field">
+        <label class="field-label" for="habit-name">Nombre</label>
+        <input class="input" id="habit-name" type="text" maxlength="40" placeholder="Leer 20 minutos" required>
+      </div>
+      <div class="field">
+        <span class="field-label" id="habit-icons-label">Icono</span>
+        <div class="icon-grid" role="radiogroup" aria-labelledby="habit-icons-label" id="habit-icons"></div>
+      </div>
+      <div class="field">
+        <span class="field-label" id="habit-days-label">Qué días toca</span>
+        <div class="days-pick" role="group" aria-labelledby="habit-days-label" id="habit-days"></div>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn btn-destructive-ghost" type="button" data-action="habit-delete" id="habit-delete" hidden>Eliminar</button>
+        <span class="sheet-spacer"></span>
+        <button class="btn btn-ghost" type="button" data-action="close-dialog">Cancelar</button>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Diálogo: ajustes -->
+  <dialog class="sheet" id="settings-dialog" aria-labelledby="settings-title">
+    <form class="sheet-inner" data-form="settings">
+      <div class="sheet-head">
+        <h2 class="sheet-title" id="settings-title">Ajustes</h2>
+        <button class="btn btn-ghost btn-icon" type="button" data-action="close-dialog" aria-label="Cerrar"><span class="icon" data-icon="x"></span></button>
+      </div>
+
+      <div class="settings-block">
+        <div class="sync-row">
+          <span class="status-dot" data-sync-dot aria-hidden="true"></span>
+          <div>
+            <p class="strong">Sincronización iPhone y PC</p>
+            <p class="muted small" data-sync-text>Sin sincronizar</p>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="token-input">Token del panel (DASHBOARD_TOKEN)</label>
+          <input class="input" id="token-input" type="password" autocomplete="off" placeholder="Tu contraseña del panel">
+        </div>
+        <p class="muted small">Es la misma contraseña que pusiste en Vercel. Se guarda solo en este dispositivo y protege tus datos, la IA de cocina y Revolut X.</p>
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">Guardar y sincronizar</button>
+          <button class="btn btn-secondary" type="button" data-action="sync-now"><span class="icon" data-icon="refresh"></span><span>Sincronizar ahora</span></button>
+        </div>
+      </div>
+
+      <div class="settings-block">
+        <p class="strong">Copia de seguridad</p>
+        <p class="muted small">Descarga todos tus datos en un archivo o restaura una copia anterior.</p>
+        <div class="btn-row">
+          <button class="btn btn-secondary" type="button" data-action="export"><span class="icon" data-icon="download"></span><span>Exportar</span></button>
+          <label class="btn btn-secondary file-btn">
+            <input class="sr-only" id="import-input" type="file" accept="application/json,.json">
+            <span class="icon" data-icon="upload"></span><span>Importar</span>
+          </label>
+        </div>
+      </div>
+    </form>
+  </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 

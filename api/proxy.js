@@ -1,7 +1,5 @@
 const ALLOWED_HOSTS = new Set([
-  'ev.us.es',
-  'youtube.com',
-  'www.youtube.com'
+  'ev.us.es'
 ]);
 
 module.exports = async function handler(req, res) {
@@ -30,7 +28,7 @@ module.exports = async function handler(req, res) {
   try {
     const upstream = await fetch(parsed.toString(), {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; HabitsDashboard/2.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; HabitsDashboard/3.0)',
         'Accept-Language': 'es-ES,es;q=0.9'
       }
     });

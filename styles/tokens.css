@@ -1,7 +1,10 @@
 /* Generated from tokens/tokens.json. The ONLY place raw values live.
-   Every other stylesheet reads these variables. Change the theme here, nowhere else. */
+   Every other stylesheet reads these variables. Change the theme here, nowhere else.
+   Theme: dark, near-black graphite with a single lime accent. */
 
 :root {
+  color-scheme: dark;
+
   /* Primitive: space (4px rhythm) */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -19,6 +22,7 @@
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
   --radius-full: 999px;
 
   /* Primitive: type */
@@ -30,10 +34,10 @@
   --text-md: 1rem;
   --text-lg: 1.25rem;
   --text-xl: 1.625rem;
-  --text-title: 2.5rem;
-  --text-display: 2.75rem;
-  --text-hero: 3.5rem;
-  --leading-tight: 1.05;
+  --text-title: 2.375rem;
+  --text-display: 3rem;
+  --text-hero: 4rem;
+  --leading-tight: 1;
   --leading-snug: 1.3;
   --leading-body: 1.5;
   --weight-regular: 400;
@@ -41,14 +45,15 @@
   --weight-semibold: 600;
   --weight-bold: 700;
   --tracking-tight: -0.02em;
-  --tracking-display: -0.035em;
-  --tracking-caps: 0.06em;
+  --tracking-display: -0.045em;
+  --tracking-caps: 0.08em;
 
   /* Primitive: motion */
   --duration-fast: 120ms;
   --duration-base: 200ms;
-  --duration-slow: 420ms;
+  --duration-slow: 480ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Primitive: borders and sizing */
   --border-width: 1px;
@@ -57,95 +62,96 @@
   --focus-ring-offset: 2px;
   --icon-sm: 1rem;
   --icon-md: 1.25rem;
+  --icon-lg: 1.5rem;
+  --icon-stroke: 1.75;
   --dot-size: 0.5rem;
   --bar-height: 0.375rem;
-  --opacity-disabled: 0.45;
-  --opacity-done: 0.55;
+  --bar-height-lg: 0.625rem;
+  --opacity-disabled: 0.4;
+  --opacity-off: 0.55;
 
   /* Component */
   --control-height: 2.75rem;
   --control-height-sm: 2.25rem;
-  --tabbar-height: 4rem;
-  --sidebar-width: 15rem;
-  --content-max: 76rem;
+  --control-height-lg: 3.5rem;
+  --tabbar-height: 4.5rem;
+  --sidebar-width: 16rem;
+  --content-max: 78rem;
   --measure-body: 62ch;
   --chart-height: 11rem;
-  --chart-height-lg: 13rem;
-  --list-max: 20rem;
-  --thumb-size: 2.75rem;
-  --matrix-cell: 2.25rem;
+  --chart-height-lg: 14rem;
+  --list-max: 22rem;
+  --ring-size: 9rem;
+  --ring-size-lg: 11rem;
+  --ring-stroke: 0.625rem;
+  --heat-cell: 0.8125rem;
+  --heat-gap: 0.1875rem;
+  --sheet-max: 32rem;
+  --textarea-height: 6rem;
 
-  /* Semantic: light (default) */
-  color-scheme: light;
-  --color-bg: #F7F7F5;
-  --color-surface: #FFFFFF;
-  --color-surface-muted: #ECECE8;
-  --color-border: #DEDDD8;
-  --color-border-strong: #75757E;
-  --color-text: #17171A;
-  --color-text-muted: #52525B;
-  --color-action-primary: #4338CA;
-  --color-action-primary-hover: #3730A3;
-  --color-action-primary-text: #FFFFFF;
-  --color-accent-text: #4338CA;
-  --color-accent-soft: #EEF0FF;
-  --color-action-destructive: #B91C1C;
-  --color-action-destructive-hover: #991B1B;
-  --color-action-destructive-text: #FFFFFF;
-  --color-positive: #15803D;
-  --color-positive-soft: #E7F6EC;
-  --color-negative: #B91C1C;
-  --color-negative-soft: #FDECEC;
-  --color-warning: #92400E;
-  --color-warning-soft: #FDF3E2;
-  --color-focus: #4338CA;
-  --color-overlay: #ECECE8;
-  --color-chart-line: #17171A;
-  --color-chart-fill: rgb(67 56 202 / 0.14);
-  --color-chart-grid: #DEDDD8;
-  --color-chart-2: #A8ABFF;
-  --color-chart-3: #FBBF24;
-  --shadow-sm: 0 1px 2px rgb(23 23 26 / 0.06);
-  --shadow-raised: 0 2px 6px rgb(23 23 26 / 0.05), 0 12px 28px -12px rgb(23 23 26 / 0.14);
-  --shadow-bar: 0 -1px 0 rgb(23 23 26 / 0.06);
-  --blur-bar: saturate(1.6) blur(16px);
-  --color-bar-bg: #F7F7F5;
-}
+  /* Semantic: surfaces */
+  --color-bg: #08090A;
+  --color-bg-glow-1: rgb(197 240 74 / 0.09);
+  --color-bg-glow-2: rgb(52 211 153 / 0.06);
+  --color-surface: #111413;
+  --color-surface-glass: rgb(18 22 20 / 0.78);
+  --color-surface-raised: #171B19;
+  --color-surface-muted: #202623;
+  --color-border: #262D29;
+  --color-border-solid: #262D29;
+  --color-border-strong: #6A756F;
+  --color-overlay: #1A1F1D;
+  --color-backdrop: rgb(4 6 5 / 0.68);
+  --color-bar-bg: rgb(10 12 11 / 0.84);
 
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --color-bg: #0D0E11;
-  --color-surface: #15171C;
-  --color-surface-muted: #1E2129;
-  --color-border: #2A2E39;
-  --color-border-strong: #6B7280;
-  --color-text: #ECEDF0;
-  --color-text-muted: #A1A6B3;
-  --color-action-primary: #4F46E5;
-  --color-action-primary-hover: #4338CA;
-  --color-action-primary-text: #FFFFFF;
-  --color-accent-text: #A8ABFF;
-  --color-accent-soft: #1D1E3A;
-  --color-action-destructive: #B91C1C;
-  --color-action-destructive-hover: #991B1B;
+  /* Semantic: text */
+  --color-text: #F1F4F2;
+  --color-text-muted: #A3AEA8;
+
+  /* Semantic: action */
+  --color-action-primary: #C5F04A;
+  --color-action-primary-hover: #D6F87A;
+  --color-action-primary-text: #0B1004;
+  --color-action-destructive: #CF1742;
+  --color-action-destructive-hover: #B01036;
   --color-action-destructive-text: #FFFFFF;
-  --color-positive: #4ADE80;
-  --color-positive-soft: #0B2A17;
-  --color-negative: #FCA5A5;
-  --color-negative-soft: #3A1010;
+
+  /* Semantic: accent (the only accent) */
+  --color-accent-text: #C5F04A;
+  --color-accent-soft: #1B2410;
+  --color-accent-border: #556B1F;
+  --color-accent-glow: rgb(197 240 74 / 0.24);
+  --color-focus: #C5F04A;
+
+  /* Semantic: status */
+  --color-positive: #34D399;
+  --color-positive-soft: #0E281E;
+  --color-negative: #FDA4AF;
+  --color-negative-soft: #2C1218;
   --color-warning: #FBBF24;
-  --color-warning-soft: #33210A;
-  --color-focus: #A8ABFF;
-  --color-overlay: #1E2129;
-  --color-chart-line: #ECEDF0;
-  --color-chart-fill: rgb(168 171 255 / 0.16);
-  --color-chart-grid: #2A2E39;
-  --color-chart-2: #A8ABFF;
+  --color-warning-soft: #291F0B;
+
+  /* Semantic: data viz */
+  --color-chart-line: #C5F04A;
+  --color-chart-fill-top: rgb(197 240 74 / 0.28);
+  --color-chart-fill-bottom: rgb(197 240 74 / 0);
+  --color-chart-grid: #222825;
+  --color-chart-2: #34D399;
   --color-chart-3: #FBBF24;
-  --shadow-sm: 0 1px 2px rgb(23 23 26 / 0.28);
-  --shadow-raised: 0 2px 8px rgb(23 23 26 / 0.32), 0 14px 30px -12px rgb(23 23 26 / 0.45);
-  --shadow-bar: 0 -1px 0 rgb(255 255 255 / 0.06);
-  --color-bar-bg: #0D0E11;
+  --color-heat-0: #1A1F1D;
+  --color-heat-1: #283615;
+  --color-heat-2: #4A661B;
+  --color-heat-3: #86AD2A;
+  --color-heat-4: #C5F04A;
+
+  /* Semantic: depth */
+  --shadow-sm: 0 2px 6px rgb(4 7 6 / 0.28);
+  --shadow-raised: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 38px -20px rgb(4 7 6 / 0.36);
+  --shadow-glow: 0 0 0 1px var(--color-accent-border), 0 10px 28px -10px var(--color-accent-glow);
+  --shadow-sheet: 0 -18px 48px -18px rgb(4 7 6 / 0.38);
+  --blur-glass: saturate(1.4) blur(20px);
+  --blur-backdrop: blur(4px);
+  --gradient-lead: linear-gradient(140deg, rgb(32 43 18 / 0.88) 0%, rgb(18 22 20 / 0.88) 45%, rgb(18 22 20 / 0.88) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {

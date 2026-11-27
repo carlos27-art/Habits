@@ -152,7 +152,7 @@ module.exports = async function handler(req, res) {
 
   if (!checkDashboardToken(req)) {
     res.statusCode = 401;
-    res.end(JSON.stringify({ error: 'Introduce el token del panel en Conexion' }));
+    res.end(JSON.stringify({ error: 'Introduce el token del panel en Ajustes' }));
     return;
   }
 

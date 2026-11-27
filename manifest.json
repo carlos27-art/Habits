@@ -1,13 +1,13 @@
 {
   "name": "Habits",
   "short_name": "Habits",
-  "description": "Panel personal: agenda, habitos, universidad, finanzas con Revolut X y nutricion.",
+  "description": "Panel personal: habitos y rachas, agenda universitaria, cocina con IA y finanzas.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#F7F7F5",
-  "theme_color": "#F7F7F5",
+  "background_color": "#08090A",
+  "theme_color": "#08090A",
   "icons": [
     {
       "src": "icons/icon.svg",

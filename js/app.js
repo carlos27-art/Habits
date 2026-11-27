@@ -1,116 +1,120 @@
 (function () {
 'use strict';
 
-// Habits: personal dashboard. Vanilla JS, no build step.
-// Data lives in localStorage under the original key 'vida3' so existing data is preserved.
+/* Habits v3: personal dashboard for iPhone & PC.
+   Sections: Habitos (editable + chart + heatmap + streaks), Agenda (Uni + tasks),
+   Cocina IA (pantry + weekly 2800-2900 kcal meal plan), Finanzas (Revolut X + trading + clipping + hustles).
+   Offline-first in localStorage with cloud sync via /api/state (Upstash Redis on Vercel). */
+
+const STORAGE_KEY = 'habits_v3';
+const LEGACY_KEY = 'vida3';
+const TOKEN_KEY = 'habits_dash_token';
+const BLACKBOARD_ICS_URL = 'https://ev.us.es/webapps/calendar/calendarFeed/b9711c0cbad84ef7b37f9addb1de62f4/learn.ics';
+const VIEWS = ['habitos', 'agenda', 'cocina', 'finanzas'];
+const DAYS = [
+  ['Lunes', 'L'],
+  ['Martes', 'M'],
+  ['Miércoles', 'X'],
+  ['Jueves', 'J'],
+  ['Viernes', 'V'],
+  ['Sábado', 'S'],
+  ['Domingo', 'D']
+];
+const IS_HOSTED = location.protocol.startsWith('http');
+const RING_CIRC = 2 * Math.PI * 52;
 
 /* =========================================================================
-   ICONS (lucide-style, stroke = currentColor)
+   ICONS (lucide-style inline SVG, stroke = currentColor)
    ========================================================================= */
 const I = {
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',
-  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
-  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>',
-  cap: '<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  chef: '<path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><path d="M6 17h12"/>',
   wallet: '<path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v3"/><path d="M3 5v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/>',
-  utensils: '<path d="M4 3v7a3 3 0 0 0 6 0V3"/><path d="M7 3v18"/><path d="M18 21V3a3 3 0 0 0-3 3v6h3"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
-  half: '<path d="M5 12h14"/>',
+  pencil: '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
   trash: '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/>',
   refresh: '<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5M3 21v-5h5"/>',
-  key: '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M17 6l3 3M14.5 8.5l2 2"/>',
-  external: '<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
-  camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3.5"/>',
+  sparkles: '<path d="m12 3 2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
   up: '<path d="M7 17 17 7M8 7h9v9"/>',
   down: '<path d="M7 7l10 10M17 8v9H8"/>',
-  pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  utensils: '<path d="M4 3v7a3 3 0 0 0 6 0V3"/><path d="M7 3v18"/><path d="M18 21V3a3 3 0 0 0-3 3v6h3"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',
+  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  dumbbell: '<path d="M6.5 6.5l11 11M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/>',
   timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>',
   book: '<path d="M2 4h7a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-7a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h8z"/>',
-  layers: '<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 12 10 5 10-5M2 17l10 5 10-5"/>',
-  dumbbell: '<path d="M6.5 6.5l11 11M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/>',
+  cap: '<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>',
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
   bed: '<path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/>',
-  sparkles: '<path d="m12 3 2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/>',
   pill: '<path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"/><path d="m8.5 8.5 7 7"/>',
   drop: '<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
-  alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>'
-};
-const svg = name => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${I[name] || ''}</svg>`;
-const icon = (name, cls = '') => `<span class="icon ${cls}">${svg(name)}</span>`;
-
-/* =========================================================================
-   SCHEDULE DATA (unchanged structure from the original dashboard)
-   ========================================================================= */
-const CT = {
-  m: ['sun', 'Mañana'], c: ['utensils', 'Nutrición'], u: ['book', 'Universidad'],
-  p: ['layers', 'Productividad'], s: ['dumbbell', 'Fuerza y salud'], n: ['moon', 'Noche'],
-  d: ['bed', 'Descanso'], o: ['sparkles', 'Social']
+  heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+  code: '<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',
+  target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'
 };
 
-const W = [
-  ['09:30', 'Despertar, estiramientos (YT) y ducha', 'm', 'Casa', ['Spray nasal', 'Calcio']],
-  ['10:00', 'Desayuno y aseo dental', 'c', 'Casa'],
-  ['10:30', 'Estudio profundo: 2-3 sesiones 50/10 (asignatura del día)', 'u', 'Escritorio'],
-  ['13:00', 'Almuerzo y tiempo libre', 'c', 'Casa'],
-  ['14:15', 'Repaso ligero (30-45 min)', 'u', 'Casa'],
-  ['15:00', 'Preparar mochila, ordenar cuarto y salir', 'p', 'Casa']
-];
-const C = (t, x, l, s) => [t, x, 'u', l, s || []];
-const N = ['19:30', 'Entrenamiento de cuello', 's', 'Casa'];
-const CE = ['20:00', 'Cena ligera (termina 75 min antes del gym)', 'c', 'Casa'];
-const G = x => ['21:15', 'Entrenamiento: ' + x, 's', 'Gimnasio'];
-const POST = (t, x) => [
-  [t, x || 'Llegada y estiramientos nocturnos', 'n', 'Casa', ['Creatina', 'Magnesio']],
-  ['23:30', 'Desconexión: pantallas fuera, luz baja', 'n', 'Casa'],
-  ['00:00', 'Dormir', 'd', 'Cama']
-];
-const WE = [
-  ['11:00', 'Despertar, estiramientos (YT) y ducha', 'm', 'Casa', ['Spray nasal', 'Calcio']],
-  ['11:30', 'Entrenamiento de cuello', 's', 'Casa'],
-  ['11:45', 'Desayuno y almuerzo unificado', 'c', 'Casa'],
-  ['13:00', 'Estudio y proyectos: sesiones 50/10', 'p', 'Casa'],
-  ['16:00', 'Ocio y ordenar cuarto', 'p', 'Casa'],
-  ['17:30', 'Merienda', 'c', 'Casa', ['Calcio']],
-  ['20:00', 'Cena', 'c', 'Casa']
+const HABIT_ICONS = [
+  ['dumbbell', 'Fuerza'],
+  ['timer', 'Estudio'],
+  ['sun', 'Manana'],
+  ['cap', 'Universidad'],
+  ['book', 'Lectura'],
+  ['code', 'Codigo'],
+  ['shield', 'Disciplina'],
+  ['heart', 'Salud'],
+  ['bed', 'Descanso'],
+  ['drop', 'Agua'],
+  ['pill', 'Suplemento'],
+  ['target', 'Objetivo']
 ];
 
-const D = [
-  ['Lunes', 'L', [...W, C('15:30', 'CIN (Cálculo infinitesimal)', 'H.012', ['Calcio']), C('17:40', 'MD1 (Matemática discreta 1)', 'H.012'), N, CE, G('Pierna'), ...POST('23:15')]],
-  ['Martes', 'M', [...W, C('15:30', 'AE (Administración de empresas)', 'H.012', ['Calcio']), C('17:40', 'FP1 (Fundamentos de prog. 1)', 'H.012'), CE, G('Torso'), ...POST('23:15')]],
-  ['Miércoles', 'X', [...W, C('15:30', 'CED (Circuitos electrónicos)', 'H.012 / G1.35', ['Calcio']), C('17:40', 'MD1 (Matemática discreta 1)', 'H.012 / B1.35'), N, ['20:00', 'Cena', 'c', 'Casa'], ['21:00', 'Proyectos personales (día sin gym)', 'p', 'Escritorio'], ...POST('22:45', 'Estiramientos nocturnos')]],
-  ['Jueves', 'J', [...W, C('15:30', 'FP1 (Fundamentos de prog. 1)', 'I2.31', ['Calcio']), C('17:40', 'CIN (Cálculo infinitesimal)', 'H.012 / B1.32'), CE, G('Pierna'), ...POST('23:15')]],
-  ['Viernes', 'V', [...W, C('15:30', 'CED (Circuitos electrónicos)', 'H0.12', ['Calcio']), C('17:40', 'AE (Administración de empresas)', 'H.012'), CE, G('Pull'), ['23:15', 'Llegada a casa y fiesta', 'o', 'Fuera', ['Creatina', 'Magnesio']]]],
-  ['Sábado', 'S', [...WE, G('Push'), ['23:15', 'Fiesta o descanso en casa', 'o', 'Fuera', ['Creatina', 'Magnesio']]]],
-  ['Domingo', 'D', [...WE, ['21:00', 'Relax de domingo', 'd', 'Casa', ['Creatina', 'Magnesio']], ['22:30', 'Planificación semanal (20 min)', 'p', 'Escritorio'], ...POST('23:30').slice(1)]]
-];
-
-const KEY_HABITS = [
-  { id: 'morning', icon: 'sun', short: 'Mañana', name: 'Rutina de mañana', match: b => b[2] === 'm' },
-  { id: 'study', icon: 'timer', short: 'Estudio', name: 'Estudio profundo 50/10', match: b => b[1].includes('Estudio') },
-  { id: 'uni', icon: 'cap', short: 'Clases', name: 'Clases universidad', match: b => b[3].includes('H.') || b[3].includes('I2.') || b[3].includes('H0.') },
-  { id: 'gym', icon: 'dumbbell', short: 'Gimnasio', name: 'Entrenamiento de fuerza', match: b => b[3] === 'Gimnasio' },
-  { id: 'neck', icon: 'shield', short: 'Cuello', name: 'Entreno de cuello', match: b => b[1].includes('cuello') },
-  { id: 'supps', icon: 'pill', short: 'Suplem.', name: 'Suplementación', isSupps: true },
-  { id: 'water', icon: 'drop', short: 'Agua', name: 'Hidratación 3 L', isWater: true }
-];
-
-const BLACKBOARD_ICS_URL = 'https://ev.us.es/webapps/calendar/calendarFeed/b9711c0cbad84ef7b37f9addb1de62f4/learn.ics';
-const YT_URL = 'https://www.youtube.com/@donmancuerna';
-const VIEWS = ['hoy', 'semana', 'uni', 'finanzas', 'nutricion'];
-const IS_HOSTED = location.protocol.startsWith('http');
+const svg = name => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${I[name] || I.flame}</svg>`;
+const icon = (name, cls = '') => `<span class="icon${cls ? ' ' + cls : ''}">${svg(name)}</span>`;
 
 /* =========================================================================
-   HELPERS
+   HELPERS & DATES
    ========================================================================= */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const mon = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d; };
-const wkKey = () => mon().toISOString().slice(0, 10) + '|' + mon().getDate();
-const mm = t => { const [h, m] = t.split(':').map(Number); const v = h * 60 + m; return v < 300 ? v + 1440 : v; };
-const nowv = () => { const d = new Date(); const v = d.getHours() * 60 + d.getMinutes(); return v < 300 ? v + 1440 : v; };
-const td = (new Date().getDay() + 6) % 7;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+function isoOf(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function parseIso(s) {
+  const [y, m, d] = String(s || '').split('-').map(Number);
+  return new Date(y || 2026, (m || 1) - 1, d || 1);
+}
+function todayDate() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+function addDays(d, delta) {
+  const c = new Date(d);
+  c.setDate(c.getDate() + delta);
+  return c;
+}
+function weekdayIdx(d) {
+  return (d.getDay() + 6) % 7;
+}
+function startOfWeek(d = todayDate()) {
+  return addDays(d, -weekdayIdx(d));
+}
+
 const eur = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
 const fmtMoney = n => eur.format(Number(n || 0));
 const fmtSigned = n => (n > 0 ? '+' : n < 0 ? '-' : '') + eur.format(Math.abs(Number(n || 0)));
@@ -123,74 +127,364 @@ const fmtPrice = n => {
 };
 const fmtQty = n => Number(n || 0).toLocaleString('es-ES', { maximumFractionDigits: 8 });
 const shortDate = () => new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-const uid = () => Date.now() + Math.floor(Math.random() * 100000);
-
-let S;
-let day = td;
-let onlyPending = false;
-let view = 'hoy';
-let resetArmed = null;
-let currentMealThumb = null;
-let tradeSide = 'LONG';
-let aiProvider = localStorage.getItem('nexora_ai_provider') || 'gemini';
-const REVX = { state: 'idle', data: null, error: '', timer: null };
 
 /* =========================================================================
-   STATE
+   STATE & MIGRATION
    ========================================================================= */
-function load() {
-  let r = {};
-  try { r = JSON.parse(localStorage.getItem('vida3') || '{}') || {}; } catch (e) { r = {}; }
-  const defaultProjects = { initialCapital: 500, trades: [], clipping: [], ytSubs: 0, sideHustles: [], revxCache: null };
-  const sameWeek = r.wk === wkKey();
-  S = {
-    wk: wkKey(),
-    c: sameWeek ? (r.c || {}) : {},
-    notes: sameWeek ? (r.notes || {}) : {},
-    calaiMeals: sameWeek ? (r.calaiMeals || {}) : {},
-    calaiGoals: Object.assign({ dailyKcal: 2600, dailyProt: 170 }, r.calaiGoals || {}),
-    exams: r.exams || [],
-    bbSyncedUids: r.bbSyncedUids || {},
-    projects: Object.assign({}, defaultProjects, r.projects || {})
+const DEFAULT_HABITS = () => [
+  { id: 'gym', name: 'Entrenamiento de fuerza', icon: 'dumbbell', days: [0, 1, 3, 4, 5] },
+  { id: 'study', name: 'Estudio profundo', icon: 'timer', days: [0, 1, 2, 3, 4, 5, 6] },
+  { id: 'morning', name: 'Rutina de mañana', icon: 'sun', days: [0, 1, 2, 3, 4, 5, 6] },
+  { id: 'uni', name: 'Clases universidad', icon: 'cap', days: [0, 1, 2, 3, 4] },
+  { id: 'neck', name: 'Movilidad y cuello', icon: 'shield', days: [0, 2, 5] }
+];
+
+const DEFAULT_SUPPS = () => [
+  { id: 'creatina', name: 'Creatina 5 g' },
+  { id: 'magnesio', name: 'Magnesio' },
+  { id: 'calcio', name: 'Calcio y vitamina D' }
+];
+
+let S = null;
+let view = 'habitos';
+let selectedIso = isoOf(todayDate());
+let chartRange = 7;
+let taskType = 'tarea';
+let agFilter = 'pend';
+let menuDay = weekdayIdx(todayDate());
+let pantryUnit = 'g';
+let prefMeals = 5;
+let tradeSide = 'LONG';
+let editingHabitId = null;
+let habitFormIcon = 'dumbbell';
+let habitFormDays = [0, 1, 2, 3, 4, 5, 6];
+let clearPantryTimer = null;
+let menuLoading = false;
+let swappingMealId = null;
+
+const REVX = { state: 'idle', data: null, error: '', timer: null };
+const SYNC = { state: 'idle', text: 'Guardado en este dispositivo', pushTimer: null, busy: false };
+
+function emptyState() {
+  return {
+    version: 3,
+    updatedAt: 0,
+    habits: DEFAULT_HABITS(),
+    supplements: DEFAULT_SUPPS(),
+    logs: {},
+    agenda: [],
+    bbSyncedUids: {},
+    kitchen: {
+      pantry: [],
+      prefs: {
+        minKcal: 2800,
+        maxKcal: 2900,
+        protein: 180,
+        mealsPerDay: 5,
+        notes: ''
+      },
+      menu: null,
+      eaten: {}
+    },
+    projects: {
+      initialCapital: 500,
+      trades: [],
+      clipping: [],
+      sideHustles: [],
+      revxCache: null
+    }
   };
+}
+
+function normalizeState(raw) {
+  const base = emptyState();
+  if (!raw || typeof raw !== 'object') return base;
+  return {
+    version: 3,
+    updatedAt: Number(raw.updatedAt || 0),
+    habits: Array.isArray(raw.habits) ? raw.habits : base.habits,
+    supplements: Array.isArray(raw.supplements) ? raw.supplements : base.supplements,
+    logs: raw.logs && typeof raw.logs === 'object' ? raw.logs : {},
+    agenda: Array.isArray(raw.agenda) ? raw.agenda : [],
+    bbSyncedUids: raw.bbSyncedUids && typeof raw.bbSyncedUids === 'object' ? raw.bbSyncedUids : {},
+    kitchen: {
+      pantry: Array.isArray(raw.kitchen?.pantry) ? raw.kitchen.pantry : [],
+      prefs: Object.assign({}, base.kitchen.prefs, raw.kitchen?.prefs || {}),
+      menu: raw.kitchen?.menu || null,
+      eaten: raw.kitchen?.eaten && typeof raw.kitchen.eaten === 'object' ? raw.kitchen.eaten : {}
+    },
+    projects: {
+      initialCapital: Number(raw.projects?.initialCapital ?? 500),
+      trades: Array.isArray(raw.projects?.trades) ? raw.projects.trades : [],
+      clipping: Array.isArray(raw.projects?.clipping) ? raw.projects.clipping : [],
+      sideHustles: Array.isArray(raw.projects?.sideHustles) ? raw.projects.sideHustles : [],
+      revxCache: raw.projects?.revxCache || null
+    }
+  };
+}
+
+function migrateLegacy() {
+  let legacy = null;
+  try { legacy = JSON.parse(localStorage.getItem(LEGACY_KEY) || 'null'); } catch (e) { legacy = null; }
+  const st = emptyState();
+  if (!legacy || typeof legacy !== 'object') return st;
+
+  if (Array.isArray(legacy.exams)) {
+    legacy.exams.forEach(x => {
+      if (x && x.name && x.date) {
+        st.agenda.push({
+          id: String(x.id || uid()),
+          text: String(x.name),
+          type: 'examen',
+          date: String(x.date),
+          time: '',
+          done: false,
+          fromBB: !!x.fromBB,
+          bbUid: x.bbUid || ''
+        });
+      }
+    });
+  }
+
+  if (legacy.notes && typeof legacy.notes === 'object') {
+    const mon = startOfWeek();
+    Object.keys(legacy.notes).forEach(k => {
+      const idx = Number(k);
+      if (Number.isNaN(idx) || idx < 0 || idx > 6) return;
+      const dStr = isoOf(addDays(mon, idx));
+      (legacy.notes[k] || []).forEach(n => {
+        if (n && n.text) {
+          st.agenda.push({
+            id: String(n.id || uid()),
+            text: String(n.text),
+            type: n.fromBB ? 'entrega' : 'tarea',
+            date: dStr,
+            time: '',
+            done: !!n.done,
+            fromBB: !!n.fromBB,
+            bbUid: n.bbUid || ''
+          });
+        }
+      });
+    });
+  }
+
+  if (legacy.bbSyncedUids && typeof legacy.bbSyncedUids === 'object') {
+    st.bbSyncedUids = { ...legacy.bbSyncedUids };
+  }
+
+  if (legacy.projects && typeof legacy.projects === 'object') {
+    st.projects.initialCapital = Number(legacy.projects.initialCapital ?? 500);
+    st.projects.trades = Array.isArray(legacy.projects.trades) ? legacy.projects.trades : [];
+    st.projects.clipping = Array.isArray(legacy.projects.clipping) ? legacy.projects.clipping : [];
+    st.projects.sideHustles = Array.isArray(legacy.projects.sideHustles) ? legacy.projects.sideHustles : [];
+    st.projects.revxCache = legacy.projects.revxCache || null;
+  }
+
+  st.updatedAt = Date.now();
+  return st;
+}
+
+function load() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { saved = null; }
+  S = saved ? normalizeState(saved) : migrateLegacy();
+  prefMeals = Number(S.kitchen.prefs.mealsPerDay || 5);
   if (S.projects.revxCache) REVX.data = S.projects.revxCache;
+  persistLocal();
 }
-function save() { try { localStorage.setItem('vida3', JSON.stringify(S)); } catch (e) { toast('No se pudo guardar en este dispositivo'); } }
 
-const tot = d => D[d][2].reduce((a, b) => a + 1 + (b[4] || []).length, 0) + 3;
-const keys = d => Object.keys(S.c).filter(k => S.c[k] && k.split('.')[0] == d);
-const done = d => keys(d).length;
-const dayPct = d => Math.round((done(d) / tot(d)) * 100);
+function persistLocal() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(S));
+  } catch (e) {
+    toast('No se pudo guardar en este dispositivo');
+  }
+}
 
-function habitKeys(dIdx, h) {
-  if (h.isWater) return [1, 2, 3].map(n => `${dIdx}.w${n}`);
-  const list = [];
-  if (h.isSupps) {
-    D[dIdx][2].forEach((b, i) => (b[4] || []).forEach((_, s) => list.push(`${dIdx}.${i}.${s}`)));
-    return list;
+function save(pushRemote = true) {
+  S.updatedAt = Date.now();
+  persistLocal();
+  if (pushRemote) scheduleCloudPush();
+}
+
+/* =========================================================================
+   CLOUD SYNC (Upstash Redis via /api/state)
+   ========================================================================= */
+function getDashToken() {
+  return localStorage.getItem(TOKEN_KEY) || '';
+}
+
+function setSyncStatus(state, text) {
+  SYNC.state = state;
+  SYNC.text = text;
+  $$('[data-sync-dot]').forEach(el => { el.dataset.state = state; });
+  $$('[data-sync-text]').forEach(el => { el.textContent = text; });
+  const foot = $('#foot-note');
+  if (foot) {
+    foot.textContent = state === 'ok'
+      ? 'Habits. Sincronizado entre iPhone y PC.'
+      : 'Habits. Tus datos se guardan en este dispositivo.';
   }
-  D[dIdx][2].forEach((b, i) => { if (h.match(b)) list.push(`${dIdx}.${i}`); });
-  return list;
 }
-function habitStatus(dIdx, h) {
-  const k = habitKeys(dIdx, h);
-  if (!k.length) return 'na';
-  const n = k.filter(x => S.c[x]).length;
-  return n === 0 ? 'none' : n === k.length ? 'done' : 'part';
+
+function scheduleCloudPush() {
+  if (!IS_HOSTED) return;
+  clearTimeout(SYNC.pushTimer);
+  SYNC.pushTimer = setTimeout(() => { pushCloudState(); }, 900);
 }
-function streak(h) {
-  let s = 0;
-  for (let i = td; i >= 0; i--) {
-    const st = habitStatus(i, h);
-    if (st === 'na') continue;
-    if (st === 'done') s++; else break;
+
+async function pullCloudState(manual = false) {
+  if (!IS_HOSTED) {
+    setSyncStatus('idle', 'Modo local en este dispositivo');
+    return;
   }
-  return s;
+  if (SYNC.busy) return;
+  SYNC.busy = true;
+  setSyncStatus('loading', 'Sincronizando...');
+  try {
+    const token = getDashToken();
+    const res = await fetch('/api/state', {
+      method: 'GET',
+      cache: 'no-store',
+      headers: token ? { 'x-dashboard-token': token } : {}
+    });
+    const json = await res.json().catch(() => null);
+    if (res.status === 503) {
+      setSyncStatus('idle', 'Nube opcional pendiente en Vercel');
+      if (manual) toast('Configura Upstash Redis en Vercel para sincronizar');
+      SYNC.busy = false;
+      return;
+    }
+    if (res.status === 401) {
+      setSyncStatus('error', 'Falta token en Ajustes');
+      if (manual) { toast('Introduce el token del panel en Ajustes'); openSettings(); }
+      SYNC.busy = false;
+      return;
+    }
+    if (!res.ok || !json) {
+      throw new Error(json?.error || 'Error de red');
+    }
+
+    const remote = json.state ? normalizeState(json.state) : null;
+    if (remote && remote.updatedAt > (S.updatedAt || 0)) {
+      S = remote;
+      prefMeals = Number(S.kitchen.prefs.mealsPerDay || 5);
+      if (S.projects.revxCache && !REVX.data) REVX.data = S.projects.revxCache;
+      persistLocal();
+      render();
+      if (manual) toast('Datos actualizados desde la nube');
+    } else if (!remote || (S.updatedAt || 0) > (remote.updatedAt || 0)) {
+      SYNC.busy = false;
+      await pushCloudState(manual);
+      return;
+    }
+    setSyncStatus('ok', 'Sincronizado iPhone y PC');
+    if (manual && remote && remote.updatedAt === S.updatedAt) toast('Ya estaba todo sincronizado');
+  } catch (e) {
+    setSyncStatus('error', 'Sin conexion con la nube');
+    if (manual) toast('No se pudo sincronizar ahora');
+  }
+  SYNC.busy = false;
 }
-function currentBlock(d) {
-  let cur = -1;
-  if (d === td) D[d][2].forEach((b, i) => { if (mm(b[0]) <= nowv()) cur = i; });
-  return cur;
+
+async function pushCloudState(manual = false) {
+  if (!IS_HOSTED || SYNC.busy) return;
+  SYNC.busy = true;
+  setSyncStatus('loading', 'Guardando en la nube...');
+  try {
+    const token = getDashToken();
+    const res = await fetch('/api/state', {
+      method: 'PUT',
+      headers: Object.assign(
+        { 'Content-Type': 'application/json' },
+        token ? { 'x-dashboard-token': token } : {}
+      ),
+      body: JSON.stringify({ state: S })
+    });
+    const json = await res.json().catch(() => null);
+    if (res.status === 503) {
+      setSyncStatus('idle', 'Guardado local (sin base en Vercel)');
+    } else if (res.status === 401) {
+      setSyncStatus('error', 'Falta token en Ajustes');
+    } else if (!res.ok) {
+      setSyncStatus('error', 'Error al sincronizar');
+    } else {
+      setSyncStatus('ok', 'Sincronizado iPhone y PC');
+      if (manual) toast('Sincronizado con la nube');
+    }
+  } catch (e) {
+    setSyncStatus('error', 'Guardado local (sin red)');
+  }
+  SYNC.busy = false;
+}
+
+/* =========================================================================
+   HABIT METRICS & STREAKS
+   ========================================================================= */
+function ensureDayLog(iso) {
+  if (!S.logs[iso]) S.logs[iso] = { habits: {}, water: 0, supps: {} };
+  if (!S.logs[iso].habits) S.logs[iso].habits = {};
+  if (!S.logs[iso].supps) S.logs[iso].supps = {};
+  return S.logs[iso];
+}
+
+function isScheduledOn(habit, dObj) {
+  const days = Array.isArray(habit.days) && habit.days.length ? habit.days : [0, 1, 2, 3, 4, 5, 6];
+  return days.includes(weekdayIdx(dObj));
+}
+
+function dayHabitSummary(iso) {
+  const dObj = parseIso(iso);
+  const log = S.logs[iso];
+  const scheduled = S.habits.filter(h => isScheduledOn(h, dObj));
+  const total = scheduled.length;
+  const doneCount = scheduled.filter(h => log?.habits?.[h.id]).length;
+  const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+  return { scheduled, total, done: doneCount, pct };
+}
+
+function habitCurrentStreak(habit) {
+  const t = todayDate();
+  let count = 0;
+  for (let back = 0; back < 365; back++) {
+    const d = addDays(t, -back);
+    if (!isScheduledOn(habit, d)) continue;
+    const iso = isoOf(d);
+    const done = !!S.logs[iso]?.habits?.[habit.id];
+    if (done) {
+      count++;
+    } else {
+      if (back === 0) continue;
+      break;
+    }
+  }
+  return count;
+}
+
+function habitBestStreak(habit) {
+  const t = todayDate();
+  let best = 0;
+  let run = 0;
+  for (let back = 180; back >= 0; back--) {
+    const d = addDays(t, -back);
+    if (!isScheduledOn(habit, d)) continue;
+    const iso = isoOf(d);
+    if (S.logs[iso]?.habits?.[habit.id]) {
+      run++;
+      if (run > best) best = run;
+    } else if (back > 0) {
+      run = 0;
+    }
+  }
+  return Math.max(best, habitCurrentStreak(habit));
+}
+
+function formatDaysRule(days) {
+  if (!Array.isArray(days) || days.length === 7) return 'Todos los días';
+  if (days.length === 5 && [0, 1, 2, 3, 4].every(d => days.includes(d))) return 'Lun a Vie';
+  if (days.length === 2 && days.includes(5) && days.includes(6)) return 'Fin de semana';
+  return days.slice().sort((a, b) => a - b).map(i => DAYS[i][1]).join(' · ');
 }
 
 /* =========================================================================
@@ -204,237 +498,726 @@ function toast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
 }
+
 function hydrateIcons(root = document) {
-  root.querySelectorAll('.icon[data-icon]').forEach(el => { el.innerHTML = svg(el.dataset.icon); });
-}
-function setTheme(t) {
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('habits_theme', t);
-  $$('[data-action="toggle-theme"]').forEach(b => {
-    b.querySelector('.icon').innerHTML = svg(t === 'dark' ? 'sun' : 'moon');
-    const l = b.querySelector('.theme-label');
-    if (l) l.textContent = t === 'dark' ? 'Tema claro' : 'Tema oscuro';
-    b.setAttribute('aria-label', t === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+  root.querySelectorAll('.icon[data-icon]').forEach(el => {
+    el.innerHTML = svg(el.dataset.icon);
   });
-  const meta = document.querySelectorAll('meta[name="theme-color"]');
-  meta.forEach(m => m.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim()));
-  renderCharts();
 }
+
+function setRadio(group, attr, value) {
+  if (!group) return;
+  const radios = [...group.querySelectorAll('[role="radio"]')];
+  let matched = false;
+  radios.forEach(b => {
+    const on = String(b.dataset[attr]) === String(value);
+    if (on) matched = true;
+    b.setAttribute('aria-checked', String(on));
+    b.tabIndex = on ? 0 : -1;
+  });
+  if (!matched && radios.length) {
+    radios[0].setAttribute('aria-checked', 'true');
+    radios[0].tabIndex = 0;
+  }
+}
+
 function setView(v, push = true) {
-  if (!VIEWS.includes(v)) v = 'hoy';
+  if (!VIEWS.includes(v)) v = 'habitos';
   view = v;
   VIEWS.forEach(id => { $('#view-' + id).hidden = id !== v; });
   $$('.nav-item[data-view], .tab[data-view]').forEach(b => {
-    if (b.dataset.view === v) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    if (b.dataset.view === v) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
   });
   if (push && location.hash !== '#' + v) history.replaceState(null, '', '#' + v);
   window.scrollTo({ top: 0 });
   if (v === 'finanzas') { revxFetch(); startRevxPolling(); } else stopRevxPolling();
   renderCharts();
 }
-function setRadio(group, attr, value) {
-  group.querySelectorAll('[role="radio"]').forEach(b => {
-    const on = b.dataset[attr] === value;
-    b.setAttribute('aria-checked', String(on));
-    b.tabIndex = on ? 0 : -1;
-  });
-}
 
 /* =========================================================================
-   RENDER: HOY
+   RENDER: HÁBITOS
    ========================================================================= */
-function renderStrips() {
-  const kcalDay = i => (S.calaiMeals[i] || []).reduce((a, m) => a + Number(m.kcal || 0), 0);
-  $$('[data-strip]').forEach(el => {
-    const nutri = el.dataset.strip === 'nutri';
-    el.innerHTML = D.map((d, i) => `
-      <button type="button" class="day-btn${i === td ? ' is-today' : ''}" data-day="${i}" aria-pressed="${i === day}"
-        aria-label="${d[0]}${i === td ? ' (hoy)' : ''}: ${nutri ? fmtNum(kcalDay(i)) + ' kcal' : dayPct(i) + ' % completado'}">
-        <b>${d[1]}</b><small>${nutri ? fmtNum(kcalDay(i) / 1000, 1) + 'k' : dayPct(i) + '%'}</small>
-      </button>`).join('');
-  });
-  $('#go-today').hidden = day === td;
-}
+function renderHabits() {
+  const today = todayDate();
+  const todayIso = isoOf(today);
+  const selDate = parseIso(selectedIso);
+  const isToday = selectedIso === todayIso;
 
-function renderToday() {
-  const now = new Date();
-  $('#today-label').textContent = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, c => c.toUpperCase());
-  $('#h-hoy').textContent = day === td ? 'Tu día' : D[day][0];
+  $('#h-eyebrow').textContent = selDate.toLocaleDateString('es-ES', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  }).replace(/^./, c => c.toUpperCase());
+  $('#h-title').textContent = isToday ? 'Hoy' : DAYS[weekdayIdx(selDate)][0];
 
-  const pct = dayPct(day);
-  $('#day-pct').textContent = pct;
-  $('#day-count').textContent = `${done(day)} de ${tot(day)} objetivos`;
-  $('#day-bar').style.inlineSize = pct + '%';
+  const sum = dayHabitSummary(selectedIso);
+  $('#day-pct').textContent = sum.pct;
+  $('#day-count').textContent = sum.total
+    ? `${sum.done} de ${sum.total} completados`
+    : 'Sin hábitos programados este día';
+  const offset = RING_CIRC * (1 - sum.pct / 100);
+  $('#ring-fg').style.strokeDashoffset = offset.toFixed(2);
 
-  // Now card
-  const blocks = D[day][2];
-  const cur = currentBlock(day);
-  let idx = cur;
-  let label = 'Ahora';
-  if (idx < 0 || S.c[`${day}.${idx}`]) {
-    idx = blocks.findIndex((_, i) => !S.c[`${day}.${i}`] && (day !== td || i >= cur));
-    label = day === td ? 'Siguiente' : 'Primer pendiente';
-  }
-  const nc = $('#now-card');
-  if (idx < 0) {
-    nc.innerHTML = `<p class="label">Bloques</p><p class="now-title">Todo hecho por ${day === td ? 'hoy' : 'este día'}.</p><p class="now-meta">Buen trabajo. Revisa la semana para ver tus rachas.</p>`;
+  const ranked = S.habits.map(h => ({
+    h,
+    cur: habitCurrentStreak(h),
+    best: habitBestStreak(h)
+  })).sort((a, b) => (b.cur - a.cur) || (b.best - a.best));
+
+  const top = ranked[0];
+  if (top && top.cur > 0) {
+    $('#best-streak').textContent = top.cur;
+    $('#best-streak-unit').textContent = top.cur === 1 ? 'día en racha' : 'días en racha';
+    $('#best-streak-name').textContent = top.h.name;
   } else {
-    const b = blocks[idx];
-    nc.innerHTML = `
-      <div class="now-top"><p class="label">${label}</p><span class="tag tag-accent">${esc(b[0])}</span></div>
-      <p class="now-title">${esc(b[1])}</p>
-      <p class="now-meta">${esc(CT[b[2]][1])}, ${esc(b[3])}</p>
-      <div><button type="button" class="btn btn-primary" data-k="${day}.${idx}" data-force="1">${icon('check')}<span>Marcar como hecho</span></button></div>`;
+    $('#best-streak').textContent = '0';
+    $('#best-streak-unit').textContent = 'días';
+    $('#best-streak-name').textContent = S.habits.length
+      ? 'Marca tus hábitos de hoy para encender la racha'
+      : 'Añade tu primer hábito para empezar';
   }
 
-  // Timeline
-  $('#agenda-sub').textContent = `${D[day][0]}: ${blocks.length} bloques`;
-  const items = blocks.map((b, i) => {
-    const k = `${day}.${i}`;
-    const isDone = !!S.c[k];
-    if (onlyPending && isDone) return '';
-    const chips = (b[4] || []).map((s, j) => {
-      const kk = `${k}.${j}`;
-      return `<button type="button" class="chip" data-k="${kk}" aria-pressed="${!!S.c[kk]}">${icon('pill')}<span>${esc(s)}</span></button>`;
-    }).join('');
+  // Week day strip (Monday to Sunday of current week)
+  const mon = startOfWeek(today);
+  $('#habit-strip').innerHTML = DAYS.map((d, i) => {
+    const cellDate = addDays(mon, i);
+    const cellIso = isoOf(cellDate);
+    const future = cellDate > today;
+    const cellSum = dayHabitSummary(cellIso);
     return `
-      <li class="t-item${isDone ? ' is-done' : ''}${i === cur ? ' is-now' : ''}">
-        <span class="t-time">${esc(b[0])}</span>
-        <div class="t-body">
-          <p class="t-title">${esc(b[1])}</p>
-          <p class="t-meta">${icon(CT[b[2]][0])}<span>${esc(CT[b[2]][1])}, ${esc(b[3])}</span>${i === cur ? '<span class="tag tag-accent">Ahora</span>' : ''}</p>
-          ${chips ? `<div class="chips" role="group" aria-label="Suplementos">${chips}</div>` : ''}
-        </div>
-        <button type="button" class="check" data-k="${k}" aria-pressed="${isDone}" aria-label="${isDone ? 'Desmarcar' : 'Marcar'}: ${esc(b[1])}">
-          <span class="check-box">${icon('check')}</span>
-        </button>
-      </li>`;
+      <button type="button" class="day-btn${cellIso === todayIso ? ' is-today' : ''}"
+        data-iso="${cellIso}" aria-pressed="${cellIso === selectedIso}" ${future ? 'disabled' : ''}
+        aria-label="${d[0]} ${cellDate.getDate()}${cellIso === todayIso ? ' (hoy)' : ''}: ${cellSum.pct} %">
+        <span class="day-wd">${d[1]}</span>
+        <span class="day-num">${cellDate.getDate()}</span>
+        <span class="day-meter" aria-hidden="true"><span style="inline-size:${cellSum.pct}%"></span></span>
+      </button>`;
   }).join('');
-  $('#task-list').innerHTML = items || `<li class="empty">Todo completado. No quedan bloques pendientes.</li>`;
-  $('#pending-switch').setAttribute('aria-checked', String(onlyPending));
+
+  // Habits list
+  const log = S.logs[selectedIso] || { habits: {}, water: 0, supps: {} };
+  $('#h-list-sub').textContent = isToday
+    ? 'Pulsa un hábito para marcarlo hoy'
+    : `Registro del ${DAYS[weekdayIdx(selDate)][0].toLowerCase()} ${selDate.getDate()}`;
+
+  if (!S.habits.length) {
+    $('#habit-list').innerHTML = `
+      <li class="empty-block">
+        ${icon('flame')}
+        <p class="empty-title">Crea tu lista de hábitos</p>
+        <p>Añade los hábitos que quieras seguir cada día y mide tus rachas reales.</p>
+      </li>`;
+  } else {
+    const sortedHabits = [...S.habits].sort((a, b) => {
+      const sa = isScheduledOn(a, selDate) ? 0 : 1;
+      const sb = isScheduledOn(b, selDate) ? 0 : 1;
+      return sa - sb;
+    });
+    $('#habit-list').innerHTML = sortedHabits.map(h => {
+      const scheduled = isScheduledOn(h, selDate);
+      const isDone = !!(log.habits && log.habits[h.id]);
+      const st = habitCurrentStreak(h);
+      return `
+        <li class="habit${scheduled ? '' : ' is-off'}">
+          <button type="button" class="habit-hit" data-toggle-habit="${esc(h.id)}" aria-pressed="${isDone}">
+            <span class="habit-icon">${icon(h.icon || 'flame')}</span>
+            <span class="habit-text">
+              <span class="habit-name">${esc(h.name)}</span>
+              <span class="habit-meta">
+                <span class="habit-streak">${icon('flame', 'i-sm')}<span>${st} ${st === 1 ? 'día' : 'días'}</span></span>
+                <span class="habit-days">${scheduled ? formatDaysRule(h.days) : 'Descanso hoy'}</span>
+              </span>
+            </span>
+            <span class="check-box" aria-hidden="true">${icon('check')}</span>
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm btn-icon" data-edit-habit="${esc(h.id)}" aria-label="Editar ${esc(h.name)}">
+            ${icon('pencil')}
+          </button>
+        </li>`;
+    }).join('');
+  }
 
   // Water
-  const wDone = [1, 2, 3].filter(n => S.c[`${day}.w${n}`]).length;
-  $('#water-status').textContent = `${wDone} / 3 L`;
+  const wVal = Number(log.water || 0);
+  $('#water-status').textContent = `${wVal} / 3 L`;
   $('#water-row').innerHTML = [1, 2, 3].map(n => `
-    <button type="button" data-k="${day}.w${n}" aria-pressed="${!!S.c[`${day}.w${n}`]}">${n} L</button>`).join('');
+    <button type="button" class="water-btn" data-water="${n}" aria-pressed="${wVal >= n}" aria-label="Agua ${n} litros">
+      ${icon('drop')}
+      <span>${n} L</span>
+    </button>`).join('');
 
-  // Tasks
-  const notes = S.notes[day] || [];
-  const pending = notes.filter(x => !x.done).length;
-  $('#notes-counter').textContent = `${pending} pendiente${pending === 1 ? '' : 's'}`;
-  $('#custom-tasks-list').innerHTML = notes.length ? notes.map(n => `
-    <li class="${n.done ? 'is-done' : ''}">
-      <button type="button" class="check check-sq" data-note="${n.id}" aria-pressed="${!!n.done}" aria-label="${n.done ? 'Desmarcar' : 'Marcar'}: ${esc(n.text)}">
+  // Supplements
+  const supps = S.supplements || [];
+  const supDone = supps.filter(s => log.supps && log.supps[s.id]).length;
+  $('#supps-status').textContent = `${supDone} / ${supps.length}`;
+  $('#supps-row').innerHTML = supps.length ? supps.map(s => {
+    const on = !!(log.supps && log.supps[s.id]);
+    return `<button type="button" class="chip" data-supp="${esc(s.id)}" aria-pressed="${on}">${icon('pill')}<span>${esc(s.name)}</span></button>`;
+  }).join('') : `<p class="muted small">Sin suplementos configurados.</p>`;
+
+  $('#supps-edit').innerHTML = supps.map(s => `
+    <li class="row">
+      <span class="row-title">${esc(s.name)}</span>
+      <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="supp" data-id="${esc(s.id)}" aria-label="Eliminar ${esc(s.name)}">${icon('trash')}</button>
+    </li>`).join('');
+
+  // Range stats (7 or 30 days)
+  let pctSum = 0, perfect = 0, totalDone = 0;
+  for (let i = chartRange - 1; i >= 0; i--) {
+    const dIso = isoOf(addDays(today, -i));
+    const ds = dayHabitSummary(dIso);
+    pctSum += ds.pct;
+    if (ds.total > 0 && ds.done === ds.total) perfect++;
+    totalDone += ds.done;
+  }
+  $('#progress-sub').textContent = `Últimos ${chartRange} días`;
+  $('#st-avg').textContent = `${Math.round(pctSum / chartRange)} %`;
+  $('#st-perfect').textContent = fmtNum(perfect);
+  $('#st-done').textContent = fmtNum(totalDone);
+
+  // 16-week consistency heatmap
+  renderHeatmap(today, todayIso);
+
+  // Streaks ranking
+  const maxBest = Math.max(7, ...ranked.map(r => r.best));
+  $('#streaks-list').innerHTML = ranked.length ? ranked.map(({ h, cur, best }) => `
+    <li class="rank-item${cur > 0 ? ' is-hot' : ''}">
+      <span class="rank-icon">${icon(h.icon || 'flame')}</span>
+      <span class="rank-name">${esc(h.name)}</span>
+      <span class="rank-val">${icon('flame', 'i-sm')}<span>${cur} ${cur === 1 ? 'día' : 'días'}</span></span>
+      <div class="rank-bar">
+        <span class="rank-track" aria-hidden="true"><span style="inline-size:${Math.round((cur / maxBest) * 100)}%"></span></span>
+        <span class="rank-best">Mejor: ${best}</span>
+      </div>
+    </li>`).join('') : `<li class="empty">Añade hábitos para registrar tus rachas.</li>`;
+}
+
+function renderHeatmap(today, todayIso) {
+  const curMon = startOfWeek(today);
+  const firstMon = addDays(curMon, -23 * 7);
+  const cells = [];
+  for (let w = 0; w < 24; w++) {
+    for (let d = 0; d < 7; d++) {
+      const cellDate = addDays(firstMon, w * 7 + d);
+      const iso = isoOf(cellDate);
+      if (cellDate > today) {
+        cells.push(`<span class="heat-cell" data-level="future" aria-hidden="true"></span>`);
+        continue;
+      }
+      const { pct } = dayHabitSummary(iso);
+      const level = pct === 0 ? 0 : pct < 35 ? 1 : pct < 65 ? 2 : pct < 100 ? 3 : 4;
+      const label = `${cellDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}: ${pct} %`;
+      cells.push(`<span class="heat-cell${iso === todayIso ? ' is-today' : ''}" data-level="${level}" title="${esc(label)}"></span>`);
+    }
+  }
+  $('#heatmap').innerHTML = `
+    <div class="heat-days" aria-hidden="true">
+      <span>L</span><span></span><span>X</span><span></span><span>V</span><span></span><span>D</span>
+    </div>
+    <div class="heat-grid" role="img" aria-label="Mapa de constancia de las últimas 24 semanas">${cells.join('')}</div>`;
+}
+
+/* =========================================================================
+   RENDER: AGENDA (Universidad + tareas diarias unificadas)
+   ========================================================================= */
+function typeMeta(type) {
+  if (type === 'examen') return { label: 'Examen', cls: 'tag-accent' };
+  if (type === 'entrega') return { label: 'Entrega', cls: '' };
+  return { label: 'Tarea', cls: '' };
+}
+
+function countdownBadge(diff) {
+  const txt = diff < 0
+    ? `Hace ${Math.abs(diff)} ${Math.abs(diff) === 1 ? 'día' : 'días'}`
+    : diff === 0 ? 'Hoy' : diff === 1 ? 'Mañana' : `En ${diff} días`;
+  const state = diff < 0 ? 'urgent' : diff <= 3 ? 'urgent' : '';
+  return `<span class="countdown"${state ? ` data-state="${state}"` : ''}>${txt}</span>`;
+}
+
+function renderAgenda() {
+  const today = todayDate();
+  const todayIso = isoOf(today);
+  const weekLimitIso = isoOf(addDays(today, 7));
+
+  const enriched = (S.agenda || []).map(item => {
+    const dt = parseIso(item.date || todayIso);
+    const diff = Math.round((dt - today) / 86400000);
+    return { ...item, dt, diff };
+  }).sort((a, b) => (a.date + (a.time || '99:99')).localeCompare(b.date + (b.time || '99:99')));
+
+  const pendToday = enriched.filter(x => !x.done && x.date <= todayIso).length;
+  const pendWeek = enriched.filter(x => !x.done && x.date >= todayIso && x.date <= weekLimitIso).length;
+  $('#ag-today').textContent = fmtNum(pendToday);
+  $('#ag-week').textContent = fmtNum(pendWeek);
+
+  const nextMilestone = enriched.find(x => !x.done && x.diff >= 0 && (x.type === 'examen' || x.type === 'entrega'))
+    || enriched.find(x => !x.done && x.diff >= 0);
+
+  $('#agenda-lead').innerHTML = nextMilestone ? `
+    <p class="label">${nextMilestone.type === 'examen' ? 'Próximo examen' : nextMilestone.type === 'entrega' ? 'Próxima entrega' : 'Próxima tarea'}</p>
+    <p class="hero-num">${nextMilestone.diff}<span class="hero-unit">${nextMilestone.diff === 1 ? 'día' : 'días'}</span></p>
+    <p class="lead-line">${esc(nextMilestone.text)}</p>
+    <p class="muted small">${nextMilestone.dt.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}${nextMilestone.time ? ' · ' + esc(nextMilestone.time) : ''}</p>` : `
+    <p class="label">Agenda al día</p>
+    <p class="hero-num">0<span class="hero-unit">pendientes</span></p>
+    <p class="muted small">Añade tus tareas, entregas o sincroniza Blackboard para tenerlo todo en un mismo sitio.</p>`;
+
+  const dateInput = $('#task-date');
+  if (dateInput && !dateInput.value) dateInput.value = todayIso;
+
+  const filtered = enriched.filter(x => {
+    if (agFilter === 'pend') return !x.done;
+    if (agFilter === 'exam') return x.type === 'examen' || x.type === 'entrega';
+    return true;
+  });
+
+  if (!filtered.length) {
+    $('#agenda-list').innerHTML = `<li class="empty">No hay elementos en esta vista.</li>`;
+    return;
+  }
+
+  const groups = new Map();
+  filtered.forEach(item => {
+    const key = !item.done && item.diff < 0 ? 'overdue' : item.date;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  });
+
+  const html = [];
+  for (const [key, items] of groups.entries()) {
+    let heading = '';
+    let hCls = '';
+    if (key === 'overdue') {
+      heading = 'Atrasadas';
+      hCls = ' is-overdue';
+    } else if (key === todayIso) {
+      heading = 'Hoy';
+      hCls = ' is-today';
+    } else if (key === isoOf(addDays(today, 1))) {
+      heading = 'Mañana';
+    } else {
+      const d = parseIso(key);
+      heading = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+    html.push(`
+      <li class="ag-group">
+        <div class="ag-head${hCls}">
+          <span>${esc(heading)}</span>
+          <span>${items.length}</span>
+        </div>
+        <div class="ag-items">
+          ${items.map(item => {
+            const tm = typeMeta(item.type);
+            return `
+              <div class="task${item.done ? ' is-done' : ''}${item.type === 'examen' ? ' is-exam' : ''}">
+                <button type="button" class="check" data-toggle-task="${esc(item.id)}" aria-pressed="${!!item.done}" aria-label="${item.done ? 'Desmarcar' : 'Completar'}: ${esc(item.text)}">
+                  <span class="check-box">${icon('check')}</span>
+                </button>
+                <div class="task-body">
+                  <p class="task-title">${esc(item.text)}</p>
+                  <p class="task-meta">
+                    <span class="tag ${tm.cls}">${tm.label}</span>
+                    ${item.fromBB ? '<span class="tag">Blackboard</span>' : ''}
+                    ${item.time ? `<span class="task-time">${icon('clock', 'i-sm')}${esc(item.time)}</span>` : ''}
+                  </p>
+                </div>
+                <div class="row-end">
+                  ${!item.done ? countdownBadge(item.diff) : ''}
+                  <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="task" data-id="${esc(item.id)}" aria-label="Eliminar ${esc(item.text)}">${icon('trash')}</button>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+      </li>`);
+  }
+  $('#agenda-list').innerHTML = html.join('');
+}
+
+/* =========================================================================
+   RENDER: COCINA IA (Despensa + Menú semanal 2800-2900 kcal)
+   ========================================================================= */
+function dayDateForMenuIdx(idx) {
+  return isoOf(addDays(startOfWeek(todayDate()), idx));
+}
+
+function renderKitchen() {
+  const k = S.kitchen;
+  const prefs = k.prefs;
+  const menu = k.menu;
+  const todayIdx = weekdayIdx(todayDate());
+
+  $('#k-eyebrow').textContent = `Superávit calórico: ${fmtNum(prefs.minKcal)} a ${fmtNum(prefs.maxKcal)} kcal diarias`;
+  $('#k-day-label').textContent = menuDay === todayIdx ? `Plan de hoy (${DAYS[menuDay][0]})` : `Plan del ${DAYS[menuDay][0].toLowerCase()}`;
+
+  const dayPlan = menu && Array.isArray(menu.days) ? (menu.days[menuDay] || menu.days[0]) : null;
+  const meals = dayPlan && Array.isArray(dayPlan.meals) ? dayPlan.meals : [];
+  const totals = meals.reduce((acc, m) => ({
+    kcal: acc.kcal + Number(m.kcal || 0),
+    p: acc.p + Number(m.protein || 0),
+    c: acc.c + Number(m.carbs || 0),
+    f: acc.f + Number(m.fat || 0)
+  }), { kcal: 0, p: 0, c: 0, f: 0 });
+
+  $('#k-kcal').textContent = fmtNum(totals.kcal);
+
+  const statusEl = $('#k-target-status');
+  if (!meals.length) {
+    statusEl.innerHTML = `<span class="tag">Meta: ${fmtNum(prefs.minKcal)} a ${fmtNum(prefs.maxKcal)} kcal</span>`;
+  } else if (totals.kcal >= prefs.minKcal && totals.kcal <= prefs.maxKcal) {
+    statusEl.innerHTML = `<span class="pill" data-state="ok"><span class="status-dot" aria-hidden="true"></span><span>En objetivo (${fmtNum(prefs.minKcal)} a ${fmtNum(prefs.maxKcal)} kcal)</span></span>`;
+  } else {
+    const diff = totals.kcal < prefs.minKcal ? prefs.minKcal - totals.kcal : totals.kcal - prefs.maxKcal;
+    const msg = totals.kcal < prefs.minKcal ? `Faltan ${fmtNum(diff)} kcal para el mínimo` : `${fmtNum(diff)} kcal sobre el rango`;
+    statusEl.innerHTML = `<span class="pill" data-state="loading"><span class="status-dot" aria-hidden="true"></span><span>${msg}</span></span>`;
+  }
+
+  const targetKcalMid = Math.round((prefs.minKcal + prefs.maxKcal) / 2);
+  const restKcal = Math.max(0, targetKcalMid - prefs.protein * 4);
+  const goalC = Math.round((restKcal * 0.58) / 4);
+  const goalF = Math.round((restKcal * 0.42) / 9);
+  const macroBar = (name, val, goal, cls) => `
+    <li class="macro-item">
+      <span class="macro-name">${name}</span>
+      <span class="macro-val">${fmtNum(val)} / ${fmtNum(goal)} g</span>
+      <div class="progress ${cls}" aria-hidden="true"><span style="inline-size:${Math.min(100, Math.round((val / (goal || 1)) * 100))}%"></span></div>
+    </li>`;
+  $('#k-macros').innerHTML = macroBar('Proteína', totals.p, prefs.protein, '')
+    + macroBar('Carbohidratos', totals.c, goalC, 'is-c')
+    + macroBar('Grasas', totals.f, goalF, 'is-f');
+
+  // Eaten progress for the selected day
+  const dayIso = dayDateForMenuIdx(menuDay);
+  const eatenMap = k.eaten[dayIso] || {};
+  const eatenKcal = meals.filter(m => eatenMap[m.id]).reduce((a, m) => a + Number(m.kcal || 0), 0);
+  const denom = totals.kcal || targetKcalMid;
+  $('#k-eaten').textContent = `${fmtNum(eatenKcal)} / ${fmtNum(denom)} kcal`;
+  $('#k-eaten-bar').style.inlineSize = `${Math.min(100, Math.round((eatenKcal / denom) * 100))}%`;
+
+  // Menu week strip
+  $('#menu-strip').innerHTML = DAYS.map((d, i) => {
+    const dm = menu?.days?.[i]?.meals || [];
+    const dk = dm.reduce((a, m) => a + Number(m.kcal || 0), 0);
+    return `
+      <button type="button" class="day-btn${i === todayIdx ? ' is-today' : ''}" data-mday="${i}" aria-pressed="${i === menuDay}"
+        aria-label="${d[0]}: ${dk ? fmtNum(dk) + ' kcal' : 'sin menú'}">
+        <span class="day-wd">${d[1]}</span>
+        <span class="day-sub">${dk ? fmtNum(dk / 1000, 1) + 'k' : '--'}</span>
+      </button>`;
+  }).join('');
+
+  // Generate button & meta
+  const genBtn = $('#gen-btn');
+  genBtn.disabled = menuLoading;
+  genBtn.setAttribute('aria-busy', String(menuLoading));
+  $('#gen-label').textContent = menuLoading ? 'Cocinando menú con IA...' : (menu ? 'Regenerar menú semanal' : 'Generar menú semanal');
+  $('#menu-meta').textContent = menuLoading
+    ? 'Calculando recetas y macros para los 7 días...'
+    : menu?.generatedAt
+      ? `Generado el ${new Date(menu.generatedAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}${menu.summary ? ' · ' + menu.summary : ''}`
+      : 'Añade lo que tienes en casa y pulsa Generar menú semanal';
+
+  // Meals of the selected day
+  $('#meals-sub').textContent = meals.length
+    ? `${DAYS[menuDay][0]}: ${meals.length} comidas · ${fmtNum(totals.kcal)} kcal totales`
+    : 'Recetas ajustadas a tu superávit diario';
+
+  if (!meals.length) {
+    $('#meal-list').innerHTML = `
+      <li class="empty-block">
+        ${icon('chef')}
+        <p class="empty-title">Sin menú para esta semana</p>
+        <p>Apunta tus ingredientes en la despensa y genera un plan semanal de ${fmtNum(prefs.minKcal)} a ${fmtNum(prefs.maxKcal)} kcal al día con Gemini, o carga una plantilla base al instante.</p>
+        <button class="btn btn-secondary" type="button" data-action="generate-local-menu">
+          ${icon('utensils')}<span>Cargar menú base (${fmtNum(targetKcalMid)} kcal)</span>
+        </button>
+      </li>`;
+  } else {
+    $('#meal-list').innerHTML = meals.map((m, idx) => {
+      const eaten = !!eatenMap[m.id];
+      const busySwap = swappingMealId === m.id;
+      const ings = Array.isArray(m.ingredients) ? m.ingredients : [];
+      const steps = Array.isArray(m.steps) ? m.steps : [];
+      return `
+        <li class="meal${eaten ? ' is-eaten' : ''}">
+          <div class="meal-top">
+            <div class="head-actions">
+              <span class="tag tag-accent">${esc(m.slot || `Comida ${idx + 1}`)}</span>
+              ${m.prepMin ? `<span class="tag">${icon('clock')}<span>${fmtNum(m.prepMin)} min</span></span>` : ''}
+            </div>
+            <span class="meal-kcal">${fmtNum(m.kcal)} kcal</span>
+          </div>
+          <h3 class="meal-name">${esc(m.name)}</h3>
+          <div class="meal-macros">
+            <span>Proteína <b>${fmtNum(m.protein)} g</b></span>
+            <span>Carbos <b>${fmtNum(m.carbs)} g</b></span>
+            <span>Grasas <b>${fmtNum(m.fat)} g</b></span>
+          </div>
+          <details class="disclosure recipe">
+            <summary>${icon('chevron')}<span>Ingredientes y preparación (${ings.length})</span></summary>
+            <div class="disclosure-body">
+              <ul class="ing-list">
+                ${ings.map(ing => `<li><span>${esc(ing.name)}</span><span class="ing-qty">${esc(ing.qty || '')}</span></li>`).join('')}
+              </ul>
+              <ol class="step-list">
+                ${steps.map(st => `<li>${esc(st)}</li>`).join('')}
+              </ol>
+            </div>
+          </details>
+          <div class="meal-actions">
+            <button type="button" class="btn btn-secondary btn-sm" data-eat-meal="${esc(m.id)}" aria-pressed="${eaten}">
+              ${icon('check')}<span>${eaten ? 'Comido' : 'Marcar comido'}</span>
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" data-swap-meal="${esc(m.id)}" ${busySwap ? 'disabled aria-busy="true"' : ''}>
+              ${icon('refresh')}<span>${busySwap ? 'Cambiando...' : 'Otra receta'}</span>
+            </button>
+          </div>
+        </li>`;
+    }).join('');
+  }
+
+  // Pantry list
+  const pantry = k.pantry || [];
+  $('#pantry-count').textContent = `${pantry.length} ${pantry.length === 1 ? 'producto' : 'productos'}`;
+  $('#clear-pantry').hidden = pantry.length === 0;
+  $('#pantry-list').innerHTML = pantry.length ? pantry.map(p => `
+    <li class="row">
+      <div class="row-text">
+        <span class="row-title">${esc(p.name)}</span>
+        ${p.qty ? `<span class="row-sub">${fmtNum(p.qty, p.qty % 1 ? 1 : 0)} ${esc(p.unit || '')}</span>` : '<span class="row-sub">Disponible</span>'}
+      </div>
+      <div class="row-end">
+        <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="pantry" data-id="${esc(p.id)}" aria-label="Eliminar ${esc(p.name)}">${icon('trash')}</button>
+      </div>
+    </li>`).join('') : `<li class="empty">Tu despensa está vacía. Añade arroz, pollo, huevos, pasta, leche, avena o lo que tengas hoy.</li>`;
+
+  // Shopping list
+  const shop = menu && Array.isArray(menu.shoppingList) ? menu.shoppingList : [];
+  const shopPending = shop.filter(x => !x.done).length;
+  $('#shop-count').textContent = fmtNum(shopPending);
+  $('#shop-list').innerHTML = shop.length ? shop.map(item => `
+    <li class="${item.done ? 'is-done' : ''}">
+      <button type="button" class="check" data-toggle-shop="${esc(item.id)}" aria-pressed="${!!item.done}" aria-label="${item.done ? 'Desmarcar' : 'Comprado'}: ${esc(item.name)}">
         <span class="check-box">${icon('check')}</span>
       </button>
-      <span class="ct-text">${esc(n.text)}${n.fromBB ? ' <span class="tag">Blackboard</span>' : ''}</span>
-      <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="note" data-id="${n.id}" aria-label="Eliminar tarea: ${esc(n.text)}">${icon('trash')}</button>
-    </li>`).join('') : `<li class="empty">Sin tareas para el ${D[day][0].toLowerCase()}.</li>`;
+      <span class="ct-text">${esc(item.name)}</span>
+      ${item.qty ? `<span class="ct-qty">${esc(item.qty)}</span>` : ''}
+      <button type="button" class="btn btn-ghost btn-sm" data-shop-to-pantry="${esc(item.id)}" aria-label="Mover ${esc(item.name)} a la despensa">+ Despensa</button>
+    </li>`).join('') : `<li class="empty">Cuando generes el menú aparecerá aquí solo lo que te falte comprar.</li>`;
 
-  // Next exam
-  const nx = upcomingExams()[0];
-  $('#next-exam').innerHTML = nx ? `
-    <div class="next-exam">
-      <p class="next-exam-name">${esc(nx.name)}</p>
-      <p class="muted small">${nx.dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-      <div>${countdown(nx.diff)}</div>
-    </div>` : `<p class="muted small">No hay exámenes próximos.</p>`;
+  // Sync prefs inputs when not focused
+  const pMin = $('#pref-min'), pMax = $('#pref-max'), pProt = $('#pref-prot'), pNotes = $('#pref-notes');
+  if (document.activeElement !== pMin) pMin.value = prefs.minKcal;
+  if (document.activeElement !== pMax) pMax.value = prefs.maxKcal;
+  if (document.activeElement !== pProt) pProt.value = prefs.protein;
+  if (document.activeElement !== pNotes) pNotes.value = prefs.notes || '';
+  setRadio($('#pref-meals'), 'meals', prefMeals);
 }
 
 /* =========================================================================
-   RENDER: SEMANA
+   AI MENU GENERATION (/api/chef + smart offline fallback)
    ========================================================================= */
-function renderWeek() {
-  const m = mon();
-  const e = new Date(m); e.setDate(e.getDate() + 6);
-  const f = x => x.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-  $('#week-label').textContent = `Semana del ${f(m)} al ${f(e)}`;
+function normalizeGeneratedMenu(raw) {
+  const daysIn = Array.isArray(raw?.days) ? raw.days : [];
+  const days = DAYS.map((d, idx) => {
+    const match = daysIn[idx] || daysIn.find(x => String(x?.day || '').toLowerCase().startsWith(d[0].slice(0, 3).toLowerCase())) || {};
+    const meals = Array.isArray(match.meals) ? match.meals.map((m, mi) => ({
+      id: m.id || `d${idx}_m${mi}_${uid()}`,
+      slot: String(m.slot || `Comida ${mi + 1}`),
+      name: String(m.name || 'Plato casero'),
+      prepMin: Number(m.prepMin || 15),
+      kcal: Math.round(Number(m.kcal || 0)),
+      protein: Math.round(Number(m.protein || 0)),
+      carbs: Math.round(Number(m.carbs || 0)),
+      fat: Math.round(Number(m.fat || 0)),
+      ingredients: Array.isArray(m.ingredients) ? m.ingredients.map(i => ({
+        name: String(i.name || i),
+        qty: String(i.qty || '')
+      })) : [],
+      steps: Array.isArray(m.steps) ? m.steps.map(s => String(s)) : []
+    })) : [];
+    return { day: d[0], meals };
+  });
 
-  let tw = 0, dw = 0;
-  D.forEach((_, i) => { tw += tot(i); dw += done(i); });
-  $('#week-pct').textContent = Math.round((dw / tw) * 100);
-  $('#kpi-done').textContent = fmtNum(dw);
+  const shoppingList = Array.isArray(raw?.shoppingList) ? raw.shoppingList.map(item => ({
+    id: uid(),
+    name: String(item.name || item),
+    qty: String(item.qty || ''),
+    done: false
+  })) : [];
 
-  const ks = keys(day);
-  const supTotal = D[day][2].reduce((a, b) => a + (b[4] || []).length, 0);
-  const supDone = ks.filter(k => k.split('.').length === 3).length;
-  const wDone = ks.filter(k => k.includes('.w')).length;
-  $('#kpi-supps').textContent = `${supDone + wDone}/${supTotal + 3}`;
+  return {
+    generatedAt: Date.now(),
+    summary: String(raw?.summary || 'Superávit limpio adaptado a tu despensa'),
+    days,
+    shoppingList
+  };
+}
 
-  // Matrix
-  const head = `<thead><tr><th scope="col"><span class="sr-only">Hábito</span></th>${D.map((d, i) => `<th scope="col" class="${i === day ? 'is-active' : ''}"><abbr title="${d[0]}">${d[1]}</abbr></th>`).join('')}</tr></thead>`;
-  const body = KEY_HABITS.map(h => `
-    <tr>
-      <th scope="row">${esc(h.short)}</th>
-      ${D.map((d, i) => {
-        const st = habitStatus(i, h);
-        if (st === 'na') return `<td><span class="m-na" aria-label="${d[0]}: no aplica">${icon('half')}</span></td>`;
-        const word = st === 'done' ? 'hecho' : st === 'part' ? 'parcial' : 'pendiente';
-        return `<td><button type="button" class="m-cell" data-habit="${h.id}" data-hday="${i}" data-state="${st}" aria-label="${esc(h.name)}, ${d[0]}: ${word}">${st === 'done' ? icon('check') : st === 'part' ? icon('half') : ''}</button></td>`;
-      }).join('')}
-    </tr>`).join('');
-  $('#matrix-table').innerHTML = `<caption class="sr-only">Estado de cada hábito por día de la semana</caption>${head}<tbody>${body}</tbody>`;
+function buildLocalSurplusMenu(pantry, prefs) {
+  const target = Math.round(((Number(prefs.minKcal) || 2800) + (Number(prefs.maxKcal) || 2900)) / 2);
+  const scale = target / 2850;
+  const sc = n => Math.round(n * scale);
+  const pantryNames = new Set((pantry || []).map(p => p.name.toLowerCase()));
 
-  // Streaks, ranked
-  const st = KEY_HABITS.map(h => ({ h, s: streak(h) })).sort((a, b) => b.s - a.s);
-  $('#streaks-list').innerHTML = st.map(({ h, s }) => `
-    <li class="rank-item">
-      ${icon(h.icon)}
-      <span class="rank-name">${esc(h.name)}</span>
-      <span class="rank-val">${s} ${s === 1 ? 'día' : 'días'}</span>
-      <span class="rank-bar" aria-hidden="true"><span style="inline-size:${Math.round((s / 7) * 100)}%"></span></span>
-    </li>`).join('');
+  const templates = [
+    [
+      { slot: 'Desayuno', name: 'Gachas cremosas de avena, leche entera, plátano y crema de cacahuete', prepMin: 8, kcal: 710, protein: 32, carbs: 94, fat: 22, ingredients: [{ name: 'Copos de avena', qty: '100 g' }, { name: 'Leche entera', qty: '300 ml' }, { name: 'Plátano', qty: '1 ud' }, { name: 'Crema de cacahuete', qty: '25 g' }], steps: ['Calienta la leche con la avena durante 4 minutos removiendo.', 'Añade el plátano troceado y la crema de cacahuete por encima.'] },
+      { slot: 'Media mañana', name: 'Bocadillo integral de pavo, queso fresco y aceite de oliva', prepMin: 5, kcal: 460, protein: 30, carbs: 50, fat: 15, ingredients: [{ name: 'Pan integral', qty: '110 g' }, { name: 'Pechuga de pavo', qty: '100 g' }, { name: 'Queso fresco', qty: '60 g' }, { name: 'Aceite de oliva', qty: '10 ml' }], steps: ['Tuesta ligeramente el pan con el aceite de oliva.', 'Rellena con el pavo y el queso fresco en láminas.'] },
+      { slot: 'Almuerzo', name: 'Pollo salteado al ajillo con arroz jazmín y aguacate', prepMin: 20, kcal: 820, protein: 58, carbs: 92, fat: 24, ingredients: [{ name: 'Pechuga de pollo', qty: '220 g' }, { name: 'Arroz en crudo', qty: '115 g' }, { name: 'Aguacate', qty: '70 g' }, { name: 'Aceite de oliva', qty: '12 ml' }], steps: ['Cuece el arroz en agua con sal durante 14 minutos.', 'Dora el pollo en dados con ajo laminado y sirve junto al arroz y el aguacate.'] },
+      { slot: 'Merienda', name: 'Yogur griego natural con miel, nueces y fruta', prepMin: 4, kcal: 360, protein: 20, carbs: 34, fat: 16, ingredients: [{ name: 'Yogur griego', qty: '200 g' }, { name: 'Nueces', qty: '20 g' }, { name: 'Miel', qty: '15 g' }], steps: ['Sirve el yogur griego en un bol.', 'Añade las nueces picadas y un hilo de miel.'] },
+      { slot: 'Cena', name: 'Tortilla francesa de 3 huevos con patata asada y atún', prepMin: 18, kcal: 500, protein: 42, carbs: 40, fat: 19, ingredients: [{ name: 'Huevos', qty: '3 ud' }, { name: 'Patata', qty: '220 g' }, { name: 'Atún al natural', qty: '1 lata' }], steps: ['Cuece o haz al microondas la patata cortada en dados durante 8 minutos.', 'Cuaja la tortilla de tres huevos y acompaña con la patata aliñada y el atún.'] }
+    ],
+    [
+      { slot: 'Desayuno', name: 'Tostadas rústicas con huevos revueltos, jamón serrano y vaso de leche', prepMin: 10, kcal: 680, protein: 38, carbs: 62, fat: 29, ingredients: [{ name: 'Pan de hogaza', qty: '120 g' }, { name: 'Huevos', qty: '3 ud' }, { name: 'Jamón serrano', qty: '45 g' }, { name: 'Leche entera', qty: '250 ml' }], steps: ['Tuesta el pan y haz los huevos revueltos a fuego suave.', 'Coloca el jamón encima y acompaña con la leche.'] },
+      { slot: 'Media mañana', name: 'Batido casero hipercalórico de leche, avena, plátano y cacao', prepMin: 4, kcal: 510, protein: 24, carbs: 76, fat: 12, ingredients: [{ name: 'Leche entera', qty: '350 ml' }, { name: 'Copos de avena', qty: '60 g' }, { name: 'Plátano', qty: '1 ud' }, { name: 'Cacao puro', qty: '10 g' }], steps: ['Tritura todos los ingredientes 40 segundos hasta que quede fino.'] },
+      { slot: 'Almuerzo', name: 'Pasta rigatoni con carne picada magra de ternera y tomate casero', prepMin: 22, kcal: 840, protein: 56, carbs: 98, fat: 24, ingredients: [{ name: 'Pasta seca', qty: '125 g' }, { name: 'Carne picada magra', qty: '200 g' }, { name: 'Tomate triturado', qty: '160 g' }, { name: 'Aceite de oliva', qty: '12 ml' }], steps: ['Hierve la pasta al dente.', 'Sofríe la carne con tomate triturado y orégano 12 minutos y mezcla con la pasta.'] },
+      { slot: 'Merienda', name: 'Queso batido proteico con avena crujiente y frutos rojos', prepMin: 4, kcal: 340, protein: 28, carbs: 42, fat: 6, ingredients: [{ name: 'Queso fresco batido', qty: '250 g' }, { name: 'Copos de avena', qty: '45 g' }, { name: 'Fruta', qty: '100 g' }], steps: ['Mezcla el queso batido con la avena y la fruta troceada.'] },
+      { slot: 'Cena', name: 'Salmón a la plancha con arroz basmati y calabacín', prepMin: 16, kcal: 490, protein: 38, carbs: 44, fat: 18, ingredients: [{ name: 'Lomo de salmón', qty: '160 g' }, { name: 'Arroz basmati', qty: '65 g' }, { name: 'Calabacín', qty: '150 g' }], steps: ['Cuece el arroz basmati y saltea el calabacín en rodajas.', 'Marca el salmón 3 minutos por lado a fuego medio-alto.'] }
+    ]
+  ];
+
+  const needed = new Map();
+  const days = DAYS.map((d, idx) => {
+    const baseMeals = templates[idx % templates.length];
+    const count = Math.max(3, Math.min(5, Number(prefs.mealsPerDay) || 5));
+    const factor = 5 / count;
+    const picked = baseMeals.slice(0, count).map((m, mi) => {
+      m.ingredients.forEach(ing => {
+        const key = ing.name.toLowerCase();
+        const inPantry = [...pantryNames].some(pn => pn.includes(key) || key.includes(pn));
+        if (!inPantry && !needed.has(ing.name)) needed.set(ing.name, ing.qty);
+      });
+      return {
+        id: `loc_${idx}_${mi}_${uid()}`,
+        slot: m.slot,
+        name: m.name,
+        prepMin: m.prepMin,
+        kcal: sc(m.kcal * factor),
+        protein: Math.round(m.protein * scale * factor),
+        carbs: Math.round(m.carbs * scale * factor),
+        fat: Math.round(m.fat * scale * factor),
+        ingredients: m.ingredients,
+        steps: m.steps
+      };
+    });
+    return { day: d[0], meals: picked };
+  });
+
+  return {
+    generatedAt: Date.now(),
+    summary: `Plantilla base de ${fmtNum(target)} kcal diarias`,
+    days,
+    shoppingList: [...needed.entries()].slice(0, 14).map(([name, qty]) => ({ id: uid(), name, qty, done: false }))
+  };
+}
+
+async function generateWeeklyMenu() {
+  if (menuLoading) return;
+  if (!IS_HOSTED) {
+    S.kitchen.menu = buildLocalSurplusMenu(S.kitchen.pantry, S.kitchen.prefs);
+    S.kitchen.eaten = {};
+    save();
+    renderKitchen();
+    toast('Menú base cargado (conecta Vercel para IA con Gemini)');
+    return;
+  }
+
+  menuLoading = true;
+  renderKitchen();
+  try {
+    const token = getDashToken();
+    const res = await fetch('/api/chef', {
+      method: 'POST',
+      headers: Object.assign(
+        { 'Content-Type': 'application/json' },
+        token ? { 'x-dashboard-token': token } : {}
+      ),
+      body: JSON.stringify({
+        mode: 'week',
+        pantry: S.kitchen.pantry,
+        prefs: S.kitchen.prefs
+      })
+    });
+    const json = await res.json().catch(() => null);
+    if (res.status === 401) {
+      toast('Introduce el token del panel en Ajustes');
+      openSettings();
+    } else if (res.status === 503) {
+      toast(json?.error || 'Configura GEMINI_API_KEY en Vercel');
+    } else if (!res.ok || !json) {
+      toast(json?.error || 'No se pudo generar el menú con IA');
+    } else {
+      S.kitchen.menu = normalizeGeneratedMenu(json);
+      S.kitchen.eaten = {};
+      save();
+      toast('Menú semanal generado con IA');
+    }
+  } catch (e) {
+    toast('Sin conexión con el servidor de IA');
+  }
+  menuLoading = false;
+  renderKitchen();
+}
+
+async function swapSingleMeal(mealId) {
+  const dayPlan = S.kitchen.menu?.days?.[menuDay];
+  if (!dayPlan || swappingMealId) return;
+  const idx = dayPlan.meals.findIndex(m => m.id === mealId);
+  if (idx < 0) return;
+  const cur = dayPlan.meals[idx];
+
+  if (!IS_HOSTED) {
+    toast('Despliega en Vercel con GEMINI_API_KEY para pedir nuevas recetas a la IA');
+    return;
+  }
+
+  swappingMealId = mealId;
+  renderKitchen();
+  try {
+    const token = getDashToken();
+    const res = await fetch('/api/chef', {
+      method: 'POST',
+      headers: Object.assign(
+        { 'Content-Type': 'application/json' },
+        token ? { 'x-dashboard-token': token } : {}
+      ),
+      body: JSON.stringify({
+        mode: 'swap',
+        pantry: S.kitchen.pantry,
+        prefs: S.kitchen.prefs,
+        currentMeal: cur,
+        dayName: DAYS[menuDay][0],
+        targetKcal: cur.kcal
+      })
+    });
+    const json = await res.json().catch(() => null);
+    if (res.ok && json?.meal) {
+      const m = json.meal;
+      dayPlan.meals[idx] = {
+        id: uid(),
+        slot: String(m.slot || cur.slot),
+        name: String(m.name || 'Alternativa casera'),
+        prepMin: Number(m.prepMin || 15),
+        kcal: Math.round(Number(m.kcal || cur.kcal)),
+        protein: Math.round(Number(m.protein || cur.protein)),
+        carbs: Math.round(Number(m.carbs || cur.carbs)),
+        fat: Math.round(Number(m.fat || cur.fat)),
+        ingredients: Array.isArray(m.ingredients) ? m.ingredients : [],
+        steps: Array.isArray(m.steps) ? m.steps : []
+      };
+      save();
+      toast('Receta actualizada');
+    } else {
+      toast(json?.error || 'No se pudo cambiar la receta');
+    }
+  } catch (e) {
+    toast('Error de conexión con la IA');
+  }
+  swappingMealId = null;
+  renderKitchen();
 }
 
 /* =========================================================================
-   RENDER: UNIVERSIDAD
-   ========================================================================= */
-function upcomingExams() {
-  const t0 = new Date(); t0.setHours(0, 0, 0, 0);
-  return (S.exams || []).map(x => {
-    const dateObj = new Date(x.date + 'T00:00:00');
-    return { ...x, dateObj, diff: Math.ceil((dateObj - t0) / 86400000) };
-  }).filter(x => x.diff >= 0).sort((a, b) => a.diff - b.diff);
-}
-function countdown(diff) {
-  const txt = diff === 0 ? 'Es hoy' : diff === 1 ? 'Mañana' : diff > 0 ? `En ${diff} días` : 'Finalizado';
-  const state = diff < 0 ? 'past' : diff <= 3 ? 'urgent' : '';
-  return `<span class="countdown" ${state ? `data-state="${state}"` : ''}>${txt}</span>`;
-}
-function renderUni() {
-  const exams = [...(S.exams || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
-  const t0 = new Date(); t0.setHours(0, 0, 0, 0);
-  $('#exams-counter').textContent = `${exams.length} programado${exams.length === 1 ? '' : 's'}`;
-  $('#exams-list').innerHTML = exams.length ? exams.map(x => {
-    const dt = new Date(x.date + 'T00:00:00');
-    const diff = Math.ceil((dt - t0) / 86400000);
-    return `
-      <li class="row">
-        <div class="row-text">
-          <span class="row-title">${esc(x.name)}${x.fromBB ? ' <span class="tag">Blackboard</span>' : ''}</span>
-          <span class="row-sub">${dt.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-        </div>
-        <div class="row-end">
-          ${countdown(diff)}
-          <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="exam" data-id="${x.id}" aria-label="Eliminar ${esc(x.name)}">${icon('trash')}</button>
-        </div>
-      </li>`;
-  }).join('') : `<li class="empty">No hay exámenes registrados. Añade uno o sincroniza Blackboard.</li>`;
-
-  const nx = upcomingExams()[0];
-  $('#uni-lead').innerHTML = nx ? `
-    <p class="label">Próximo examen</p>
-    <p class="hero-num">${nx.diff}<span class="hero-unit">${nx.diff === 1 ? 'día' : 'días'}</span></p>
-    <p class="strong">${esc(nx.name)}</p>
-    <p class="muted small">${nx.dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</p>` : `
-    <p class="label">Próximo examen</p>
-    <p class="hero-num">0<span class="hero-unit">pendientes</span></p>
-    <p class="muted small">Cuando añadas un examen verás aquí la cuenta atrás.</p>`;
-}
-
-/* =========================================================================
-   RENDER: FINANZAS
+   RENDER: FINANZAS (Revolut X + Diario de trading + Clipping + Ingresos extra)
    ========================================================================= */
 function financeTotals() {
   const p = S.projects;
@@ -453,7 +1236,10 @@ function renderFinance() {
   const p = S.projects;
 
   $('#wealth-total').textContent = fmtMoney(t.total);
-  $('#wealth-sub').textContent = t.revx !== null ? 'Revolut X en vivo, clipping e ingresos extra' : 'Diario de trading, clipping e ingresos extra';
+  $('#wealth-sub').textContent = t.revx !== null
+    ? 'Revolut X en vivo, clipping e ingresos extra'
+    : 'Diario de trading, clipping e ingresos extra';
+
   const parts = [
     { name: t.revx !== null ? 'Revolut X' : 'Inversiones', v: Math.max(0, t.invest), cls: 'seg-1' },
     { name: 'Clipping', v: Math.max(0, t.clip), cls: 'seg-2' },
@@ -467,40 +1253,37 @@ function renderFinance() {
 
   renderRevx();
 
-  // Trading journal
   const wins = t.trades.filter(x => Number(x.profit) > 0).length;
-  const rrT = t.trades.filter(x => x.rr !== null && x.rr !== undefined && !isNaN(x.rr));
+  const rrT = t.trades.filter(x => x.rr !== null && x.rr !== undefined && !Number.isNaN(Number(x.rr)));
   const base = Number(p.initialCapital || 0);
   $('#trading-total-val').textContent = fmtMoney(t.journal);
   $('#trading-winrate').textContent = (t.trades.length ? Math.round((wins / t.trades.length) * 100) : 0) + '%';
   $('#trading-avg-rr').textContent = (rrT.length ? (rrT.reduce((a, b) => a + Number(b.rr), 0) / rrT.length) : 0).toFixed(2) + 'R';
   $('#trading-ops-count').textContent = t.trades.length;
+
   const badge = $('#trading-pnl-badge');
   badge.dataset.trend = t.pnl >= 0 ? 'up' : 'down';
   badge.innerHTML = `${icon(t.pnl >= 0 ? 'up' : 'down')}<span>${fmtSigned(t.pnl)} (${base > 0 ? fmtPct((t.pnl / base) * 100) : '0 %'})</span>`;
+
   const cap = $('#initial-cap-input');
   if (document.activeElement !== cap) cap.value = base;
 
   $('#trades-list').innerHTML = t.trades.length ? [...t.trades].reverse().map(x => {
     const up = Number(x.profit) >= 0;
-    const rr = x.rr !== null && x.rr !== undefined && !isNaN(x.rr) ? `${Number(x.rr) >= 0 ? '+' : ''}${x.rr}R` : '';
+    const rr = x.rr !== null && x.rr !== undefined && !Number.isNaN(Number(x.rr)) ? `${Number(x.rr) >= 0 ? '+' : ''}${x.rr}R` : '';
     return `
       <li class="row">
         <div class="row-text">
           <span class="row-title">${esc(x.label)} <span class="tag">${x.side === 'SHORT' ? 'Short' : 'Long'}</span>${rr ? ` <span class="tag">${rr}</span>` : ''}</span>
-          <span class="row-sub">${esc(x.date)}${x.buyPrice !== undefined ? ` . ${x.buyPrice} a ${x.sellPrice}` : ''}${x.slPrice ? ` . SL ${x.slPrice}` : ''}${x.qty ? ` . ${x.qty} uds` : ''}</span>
+          <span class="row-sub">${esc(x.date)}${x.buyPrice !== undefined ? ` · ${x.buyPrice} a ${x.sellPrice}` : ''}${x.slPrice ? ` · SL ${x.slPrice}` : ''}${x.qty ? ` · ${x.qty} uds` : ''}</span>
         </div>
         <div class="row-end">
           <span class="amount ${up ? 'amount-up' : 'amount-down'}">${fmtSigned(x.profit)}</span>
-          <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="trade" data-id="${x.id}" aria-label="Eliminar operación ${esc(x.label)}">${icon('trash')}</button>
+          <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="trade" data-id="${esc(x.id)}" aria-label="Eliminar operación ${esc(x.label)}">${icon('trash')}</button>
         </div>
       </li>`;
   }).join('') : `<li class="empty">Aún no hay operaciones registradas.</li>`;
 
-  // YouTube
-  $('#yt-subs').textContent = fmtNum(p.ytSubs || 0);
-
-  // Clipping
   const clips = p.clipping || [];
   const views = clips.reduce((a, c) => a + Number(c.views || 0), 0);
   $('#clip-money-total').textContent = fmtMoney(t.clip);
@@ -509,25 +1292,21 @@ function renderFinance() {
   $('#clip-rpm').textContent = 'RPM ' + fmtMoney(views > 0 ? t.clip / (views / 1000) : 0);
   $('#clip-list').innerHTML = clips.length ? [...clips].reverse().map(c => `
     <li class="row">
-      <div class="row-text"><span class="row-title">${esc(c.title)}</span><span class="row-sub">${fmtNum(c.views)} views . ${esc(c.date)}</span></div>
+      <div class="row-text"><span class="row-title">${esc(c.title)}</span><span class="row-sub">${fmtNum(c.views)} views · ${esc(c.date)}</span></div>
       <div class="row-end"><span class="amount">${fmtMoney(c.money)}</span>
-        <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="clip" data-id="${c.id}" aria-label="Eliminar ${esc(c.title)}">${icon('trash')}</button></div>
+        <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="clip" data-id="${esc(c.id)}" aria-label="Eliminar ${esc(c.title)}">${icon('trash')}</button></div>
     </li>`).join('') : `<li class="empty">Sin lotes registrados.</li>`;
 
-  // Hustles
   const hs = p.sideHustles || [];
   $('#hustles-total').textContent = fmtMoney(t.hustle);
   $('#hustle-list').innerHTML = hs.length ? [...hs].reverse().map(h => `
     <li class="row">
       <div class="row-text"><span class="row-title">${esc(h.name)}</span><span class="row-sub">${esc(h.date)}</span></div>
       <div class="row-end"><span class="amount">${fmtMoney(h.amount)}</span>
-        <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="hustle" data-id="${h.id}" aria-label="Eliminar ${esc(h.name)}">${icon('trash')}</button></div>
+        <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="hustle" data-id="${esc(h.id)}" aria-label="Eliminar ${esc(h.name)}">${icon('trash')}</button></div>
     </li>`).join('') : `<li class="empty">Sin ingresos extra apuntados.</li>`;
 }
 
-/* =========================================================================
-   REVOLUT X (live, via /api/revolutx on Vercel)
-   ========================================================================= */
 function renderRevx() {
   const st = $('#revx-status');
   const d = REVX.data;
@@ -549,7 +1328,10 @@ function renderRevx() {
     const up = d.change24hEur >= 0;
     ch.dataset.trend = up ? 'up' : 'down';
     ch.innerHTML = `${icon(up ? 'up' : 'down')}<span>${fmtSigned(d.change24hEur)} (${fmtPct(d.change24hPct || 0)}) en 24 h</span>`;
-  } else { ch.innerHTML = ''; delete ch.dataset.trend; }
+  } else {
+    ch.innerHTML = '';
+    delete ch.dataset.trend;
+  }
 
   const rows = d && Array.isArray(d.holdings) ? d.holdings : [];
   $('#revx-rows').innerHTML = rows.length ? rows.map(h => {
@@ -558,12 +1340,12 @@ function renderRevx() {
     return `
       <tr>
         <td><div class="asset"><span class="asset-mark" aria-hidden="true">${esc(h.currency.slice(0, 3))}</span>
-          <div class="asset-text"><b>${esc(h.currency)}</b><small>${fmtQty(h.amount)}${h.staked ? ` . ${fmtQty(h.staked)} en staking` : ''}</small></div></div></td>
+          <div class="asset-text"><b>${esc(h.currency)}</b><small>${fmtQty(h.amount)}${h.staked ? ` · ${fmtQty(h.staked)} en staking` : ''}</small></div></div></td>
         <td class="num">${h.priceEur ? fmtPrice(h.priceEur) : '--'}</td>
         <td class="num col-hide-sm">${hasChg ? `<span class="chg" data-trend="${up ? 'up' : 'down'}">${icon(up ? 'up' : 'down')}${fmtPct(h.change24hPct)}</span>` : '--'}</td>
         <td class="num"><b>${h.valueEur !== null && h.valueEur !== undefined ? fmtMoney(h.valueEur) : '--'}</b></td>
       </tr>`;
-  }).join('') : `<tr><td colspan="4" class="empty">${IS_HOSTED ? 'Conecta tu cuenta en Vercel para ver tus posiciones.' : 'Las posiciones aparecerán cuando la app esté desplegada en Vercel.'}</td></tr>`;
+  }).join('') : `<tr><td colspan="4" class="empty">${IS_HOSTED ? 'Configura las claves de Revolut X en Vercel para ver tus posiciones.' : 'Las posiciones aparecerán cuando la app esté desplegada en Vercel.'}</td></tr>`;
 }
 
 async function revxFetch(manual = false) {
@@ -572,19 +1354,18 @@ async function revxFetch(manual = false) {
   REVX.state = 'loading';
   renderRevx();
   try {
-    const token = localStorage.getItem('habits_dash_token') || '';
+    const token = getDashToken();
     const res = await fetch('/api/revolutx', { cache: 'no-store', headers: token ? { 'x-dashboard-token': token } : {} });
     const json = await res.json().catch(() => null);
     if (!res.ok || !json) {
       REVX.state = 'error';
       REVX.error = (json && json.error) || `No se pudo conectar (código ${res.status})`;
-      if (res.status === 401) $('#revx-config').open = true;
     } else {
       REVX.state = 'ok';
       REVX.error = '';
       REVX.data = json;
       S.projects.revxCache = json;
-      save();
+      persistLocal();
       if (manual) toast('Revolut X actualizado');
     }
   } catch (e) {
@@ -593,6 +1374,7 @@ async function revxFetch(manual = false) {
   }
   renderFinance();
 }
+
 function startRevxPolling() {
   stopRevxPolling();
   if (!IS_HOSTED) return;
@@ -601,108 +1383,77 @@ function startRevxPolling() {
 function stopRevxPolling() { if (REVX.timer) clearInterval(REVX.timer); REVX.timer = null; }
 
 /* =========================================================================
-   RENDER: NUTRICIÓN
-   ========================================================================= */
-function dayTotals() {
-  return D.map((_, i) => {
-    const l = S.calaiMeals[i] || [];
-    const s = k => l.reduce((a, m) => a + Number(m[k] || 0), 0);
-    return { k: s('kcal'), p: s('prot'), c: s('carbs'), f: s('fat'), n: l.length };
-  });
-}
-function renderNutri() {
-  const g = S.calaiGoals;
-  const dt = dayTotals();
-  const cur = dt[day];
-  $('#nutri-day-label').textContent = day === td ? 'Hoy' : D[day][0];
-  $('#kcal-day').textContent = fmtNum(cur.k);
-  $('#kcal-goal').textContent = `/ ${fmtNum(g.dailyKcal)} kcal`;
-  $('#kcal-bar').style.inlineSize = Math.min(100, Math.round((cur.k / g.dailyKcal) * 100)) + '%';
-  const wk = dt.reduce((a, x) => ({ k: a.k + x.k, p: a.p + x.p, c: a.c + x.c, f: a.f + x.f }), { k: 0, p: 0, c: 0, f: 0 });
-  $('#kcal-week').textContent = `${fmtNum(wk.k)} kcal esta semana de ${fmtNum(g.dailyKcal * 7)}`;
-  $('#wk-prot').textContent = fmtNum(wk.p) + ' g';
-  $('#wk-carbs').textContent = fmtNum(wk.c) + ' g';
-  $('#wk-fat').textContent = fmtNum(wk.f) + ' g';
-  $('#nutri-goal-tag').textContent = `Meta ${fmtNum(g.dailyKcal)} kcal`;
-
-  // Macro goals: protein from settings, carbs and fat derived from the remaining kcal (50/50 split).
-  const restKcal = Math.max(0, g.dailyKcal - g.dailyProt * 4);
-  const goalC = Math.round((restKcal * 0.5) / 4);
-  const goalF = Math.round((restKcal * 0.5) / 9);
-  const macro = (name, v, goal, cls) => `
-    <li class="macro-item">
-      <span class="macro-name">${name}</span>
-      <span class="macro-val">${fmtNum(v)} / ${fmtNum(goal)} g</span>
-      <div class="progress ${cls}" aria-hidden="true"><span style="inline-size:${Math.min(100, Math.round((v / (goal || 1)) * 100))}%"></span></div>
-    </li>`;
-  $('#macro-list').innerHTML = macro('Proteína', cur.p, g.dailyProt, '') + macro('Carbohidratos', cur.c, goalC, 'is-c') + macro('Grasas', cur.f, goalF, 'is-f');
-
-  // AI status
-  const hasKey = !!localStorage.getItem('nexora_ai_key');
-  const ai = $('#ai-status');
-  ai.dataset.state = hasKey ? 'ok' : '';
-  ai.querySelector('span:last-child').textContent = hasKey ? `IA activa (${aiProvider === 'openai' ? 'OpenAI' : 'Gemini'})` : 'IA sin configurar';
-
-  if (!currentMealThumb && !$('#dropzone').dataset.state) resetDropzone();
-
-  const meals = S.calaiMeals[day] || [];
-  $('#meals-list').innerHTML = meals.length ? [...meals].reverse().map(m => `
-    <li class="row">
-      <div class="row-main">
-        ${m.thumb ? `<img class="thumb" src="${m.thumb}" alt="">` : `<span class="thumb thumb-icon">${icon('utensils')}</span>`}
-        <div class="row-text"><span class="row-title">${esc(m.name)}</span>
-          <span class="row-sub">${esc(m.time)} . ${m.prot} g P . ${m.carbs} g C . ${m.fat} g G</span></div>
-      </div>
-      <div class="row-end"><span class="amount">${fmtNum(m.kcal)} kcal</span>
-        <button type="button" class="btn btn-ghost btn-sm btn-icon btn-del" data-del="meal" data-id="${m.id}" aria-label="Eliminar ${esc(m.name)}">${icon('trash')}</button></div>
-    </li>`).join('') : `<li class="empty">Sin comidas el ${D[day][0].toLowerCase()}.</li>`;
-}
-function resetDropzone() {
-  const dz = $('#dropzone');
-  delete dz.dataset.state;
-  $('#dropzone-inner').innerHTML = `${icon('camera')}<span class="dropzone-title">Hacer foto o elegir imagen</span><span class="muted small" id="ai-scan-status">La IA estimará calorías y macros</span>`;
-}
-
-/* =========================================================================
-   CHARTS (inline SVG sized to the real container width, no library)
+   CHARTS (inline SVG with gradient fill, responsive to container width)
    ========================================================================= */
 function smoothPath(pts) {
   if (pts.length < 2) return pts.length ? `M${pts[0].x},${pts[0].y}` : '';
   let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
   for (let i = 0; i < pts.length - 1; i++) {
-    const a = pts[i], b = pts[i + 1], dx = (b.x - a.x) * 0.45;
+    const a = pts[i], b = pts[i + 1], dx = (b.x - a.x) * 0.42;
     d += ` C${(a.x + dx).toFixed(1)},${a.y.toFixed(1)} ${(b.x - dx).toFixed(1)},${b.y.toFixed(1)} ${b.x.toFixed(1)},${b.y.toFixed(1)}`;
   }
   return d;
 }
+
 function chartBox(el) {
   const w = Math.max(240, Math.round(el.clientWidth || 600));
   const probe = el.querySelector('svg');
   const h = probe ? Math.round(probe.getBoundingClientRect().height) || 176 : 176;
   return { w, h };
 }
-function renderWeekChart() {
-  const el = $('#week-chart');
+
+function renderProgressChart() {
+  const el = $('#progress-chart');
   if (!el || el.closest('[hidden]')) return;
-  const pcts = D.map((_, i) => dayPct(i));
+  const today = todayDate();
+  const series = [];
+  for (let i = chartRange - 1; i >= 0; i--) {
+    const d = addDays(today, -i);
+    const iso = isoOf(d);
+    const s = dayHabitSummary(iso);
+    series.push({ d, iso, pct: s.pct });
+  }
   if (!el.querySelector('svg')) el.innerHTML = '<svg></svg>';
   const { w, h } = chartBox(el);
-  const pad = 8, col = w / 7;
-  const pts = pcts.map((v, i) => ({ x: col * i + col / 2, y: pad + (h - pad * 2) * (1 - v / 100) }));
+  const pad = 10;
+  const n = series.length;
+  const pts = series.map((item, i) => ({
+    x: n === 1 ? w / 2 : pad + (w - pad * 2) * (i / (n - 1)),
+    y: pad + (h - pad * 2) * (1 - item.pct / 100),
+    ...item
+  }));
   const line = smoothPath(pts);
-  const area = `${line} L${pts[6].x},${h} L${pts[0].x},${h} Z`;
-  const avg = Math.round(pcts.reduce((a, b) => a + b, 0) / 7);
+  const area = `${line} L${pts[n - 1].x.toFixed(1)},${h} L${pts[0].x.toFixed(1)},${h} Z`;
+  const avg = Math.round(series.reduce((a, x) => a + x.pct, 0) / n);
+  const activeIdx = pts.findIndex(p => p.iso === selectedIso);
+
+  const labelsHtml = chartRange === 7
+    ? `<div class="chart-x" style="grid-template-columns:repeat(7,minmax(0,1fr))">${pts.map(p => `
+        <button type="button" data-iso="${p.iso}" aria-pressed="${p.iso === selectedIso}" aria-label="${DAYS[weekdayIdx(p.d)][0]} ${p.d.getDate()}: ${p.pct} %">
+          ${DAYS[weekdayIdx(p.d)][1]}<small>${p.pct}%</small>
+        </button>`).join('')}</div>`
+    : `<div class="chart-ends"><span>${pts[0].d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span><span>Media ${avg} %</span><span>Hoy (${pts[n - 1].pct} %)</span></div>`;
+
   el.innerHTML = `
-    <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Cumplimiento diario: ${D.map((d, i) => `${d[0]} ${pcts[i]} %`).join(', ')}. Media ${avg} %.">
+    <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Evolución de hábitos en ${chartRange} días. Media ${avg} %.">
+      <defs>
+        <linearGradient id="grad-progress" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" class="c-stop-top"/>
+          <stop offset="100%" class="c-stop-bottom"/>
+        </linearGradient>
+      </defs>
       <line class="c-grid" x1="0" x2="${w}" y1="${h - pad}" y2="${h - pad}"/>
       <line class="c-grid" x1="0" x2="${w}" y1="${pad + (h - pad * 2) / 2}" y2="${pad + (h - pad * 2) / 2}"/>
-      <line class="c-guide" x1="${pts[day].x}" x2="${pts[day].x}" y1="0" y2="${h}"/>
-      <path class="c-area" d="${area}"/>
+      ${activeIdx >= 0 ? `<line class="c-guide" x1="${pts[activeIdx].x.toFixed(1)}" x2="${pts[activeIdx].x.toFixed(1)}" y1="0" y2="${h}"/>` : ''}
+      <path class="c-area" fill="url(#grad-progress)" d="${area}"/>
       <path class="c-line" d="${line}"/>
-      ${pts.map((p, i) => `<circle class="c-dot${i === day ? ' c-dot-active' : ''}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === day ? 5 : 3.5}"/>`).join('')}
+      ${pts.map((p, i) => (chartRange === 7 || i === n - 1 || p.iso === selectedIso)
+        ? `<circle class="c-dot${p.iso === selectedIso ? ' c-dot-active' : ''}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.iso === selectedIso ? 5 : 3.5}"/>`
+        : '').join('')}
     </svg>
-    <div class="chart-x">${D.map((d, i) => `<button type="button" data-day="${i}" aria-pressed="${i === day}" aria-label="${d[0]}, ${pcts[i]} %">${d[1]}<small>${pcts[i]}%</small></button>`).join('')}</div>`;
+    ${labelsHtml}`;
 }
+
 function renderTradingChart() {
   const el = $('#trading-chart');
   if (!el || el.closest('[hidden]')) return;
@@ -723,48 +1474,35 @@ function renderTradingChart() {
   const area = n === 1 ? '' : `${line} L${pts[n - 1].x},${h} L${pts[0].x},${h} Z`;
   el.innerHTML = `
     <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Evolución de la cartera del diario: de ${fmtMoney(base)} a ${fmtMoney(last)} en ${trades.length} operaciones.">
+      <defs>
+        <linearGradient id="grad-trading" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" class="c-stop-top"/>
+          <stop offset="100%" class="c-stop-bottom"/>
+        </linearGradient>
+      </defs>
       <line class="c-base" x1="0" x2="${w}" y1="${y(base)}" y2="${y(base)}"/>
-      ${area ? `<path class="c-area" d="${area}"/>` : ''}
+      ${area ? `<path class="c-area" fill="url(#grad-trading)" d="${area}"/>` : ''}
       <path class="c-line ${up ? 'c-up' : 'c-down'}" d="${line}"/>
       <circle class="c-dot ${up ? 'c-up' : 'c-down'}" cx="${pts[n - 1].x.toFixed(1)}" cy="${pts[n - 1].y.toFixed(1)}" r="4"/>
     </svg>
     <div class="chart-ends"><span>Inicio ${fmtMoney(base)}</span><span>Ahora ${fmtMoney(last)}</span></div>`;
 }
-function renderNutriChart() {
-  const el = $('#nutri-week-chart');
-  if (!el || el.closest('[hidden]')) return;
-  const dt = dayTotals();
-  const goal = S.calaiGoals.dailyKcal || 2600;
-  if (!el.querySelector('svg')) el.innerHTML = '<svg></svg>';
-  const { w, h } = chartBox(el);
-  const pad = 6, col = w / 7, bw = Math.min(36, col * 0.56);
-  const max = Math.max(goal * 1.15, ...dt.map(x => x.k));
-  const y = v => h - pad - (h - pad * 2) * (v / max);
-  el.innerHTML = `
-    <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Calorías por día frente a la meta de ${fmtNum(goal)}: ${D.map((d, i) => `${d[0]} ${fmtNum(dt[i].k)}`).join(', ')}.">
-      <line class="c-grid" x1="0" x2="${w}" y1="${h - pad}" y2="${h - pad}"/>
-      ${dt.map((x, i) => { const top = y(x.k); return `<rect class="c-bar${i === day ? ' c-bar-active' : ''}" x="${(col * i + (col - bw) / 2).toFixed(1)}" y="${top.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0, h - pad - top).toFixed(1)}" rx="4"/>`; }).join('')}
-      <line class="c-goal" x1="0" x2="${w}" y1="${y(goal)}" y2="${y(goal)}"/>
-    </svg>
-    <div class="chart-x">${D.map((d, i) => `<button type="button" data-day="${i}" aria-pressed="${i === day}" aria-label="${d[0]}, ${fmtNum(dt[i].k)} kcal">${d[1]}<small>${fmtNum(dt[i].k / 1000, 1)}k</small></button>`).join('')}</div>`;
-}
-function renderCharts() { renderWeekChart(); renderTradingChart(); renderNutriChart(); }
 
-/* =========================================================================
-   RENDER ALL
-   ========================================================================= */
+function renderCharts() {
+  renderProgressChart();
+  renderTradingChart();
+}
+
 function render() {
-  renderStrips();
-  renderToday();
-  renderWeek();
-  renderUni();
+  renderHabits();
+  renderAgenda();
+  renderKitchen();
   renderFinance();
-  renderNutri();
   renderCharts();
 }
 
 /* =========================================================================
-   NETWORK: Blackboard ICS + YouTube (server proxy on Vercel, public fallbacks locally)
+   BLACKBOARD ICS SYNC
    ========================================================================= */
 async function fetchText(url, mustContain) {
   const tries = [];
@@ -777,11 +1515,15 @@ async function fetchText(url, mustContain) {
   for (const u of tries) {
     try {
       const res = await fetch(u, { cache: 'no-store' });
-      if (res.ok) { const t = await res.text(); if (t && (!mustContain || t.includes(mustContain))) return t; }
+      if (res.ok) {
+        const t = await res.text();
+        if (t && (!mustContain || t.includes(mustContain))) return t;
+      }
     } catch (e) { /* next */ }
   }
   throw new Error('fetch failed');
 }
+
 function parseIcsDate(val) {
   if (!val) return null;
   const m = val.replace(/^.*:/, '').trim().match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/);
@@ -789,6 +1531,7 @@ function parseIcsDate(val) {
   const a = [+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)];
   return m[7] === 'Z' ? new Date(Date.UTC(...a)) : new Date(...a);
 }
+
 function parseIcs(raw) {
   return raw.replace(/\r?\n[ \t]/g, '').split('BEGIN:VEVENT').slice(1).map(block => {
     const body = block.split('END:VEVENT')[0];
@@ -800,299 +1543,461 @@ function parseIcs(raw) {
       else if (line.startsWith('DTEND')) end = parseIcsDate(line);
     });
     const date = start || end;
-    return summary && date && !isNaN(date) ? { uid: id || summary + '_' + date.toISOString(), summary, date } : null;
+    return summary && date && !Number.isNaN(date.getTime()) ? { uid: id || summary + '_' + date.toISOString(), summary, date } : null;
   }).filter(Boolean);
 }
+
 function setBB(state, text) {
   $$('[data-bb-dot]').forEach(d => { d.dataset.state = state; });
   $$('[data-bb-text]').forEach(t => { t.textContent = text; });
   const b = $('#bb-sync-btn');
   if (b) b.setAttribute('aria-busy', String(state === 'loading'));
 }
+
 async function syncBlackboard(manual = false) {
   setBB('loading', 'Sincronizando Blackboard');
   try {
     const events = parseIcs(await fetchText(BLACKBOARD_ICS_URL, 'BEGIN:VCALENDAR'));
-    const wMon = mon();
-    const wSun = new Date(wMon); wSun.setDate(wSun.getDate() + 6); wSun.setHours(23, 59, 59, 999);
-    const t0 = new Date(); t0.setHours(0, 0, 0, 0);
+    const t0 = todayDate();
     let added = 0;
     events.forEach(ev => {
       if (S.bbSyncedUids[ev.uid]) return;
-      const dateStr = ev.date.toISOString().slice(0, 10);
+      if (ev.date < addDays(t0, -1)) return;
+      const dateStr = isoOf(ev.date);
       const examLike = /examen|parcial|control|prueba|convocatoria|test|final/i.test(ev.summary);
-      if (ev.date >= wMon && ev.date <= wSun) {
-        const di = (ev.date.getDay() + 6) % 7;
-        S.notes[di] = S.notes[di] || [];
-        if (!S.notes[di].some(n => n.bbUid === ev.uid || n.text === ev.summary)) {
-          const hr = ev.date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-          S.notes[di].push({ id: uid(), text: `${ev.summary} (${hr})`, done: false, fromBB: true, bbUid: ev.uid });
-          added++;
-        }
-      }
-      if (ev.date >= t0 && (examLike || ev.date > wSun)) {
-        if (!S.exams.some(x => x.bbUid === ev.uid || (x.name === ev.summary && x.date === dateStr))) {
-          S.exams.push({ id: uid(), name: ev.summary, date: dateStr, fromBB: true, bbUid: ev.uid });
-          added++;
-        }
+      const timeStr = ev.date.getHours() || ev.date.getMinutes()
+        ? ev.date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+        : '';
+      if (!S.agenda.some(x => x.bbUid === ev.uid || (x.text === ev.summary && x.date === dateStr))) {
+        S.agenda.push({
+          id: uid(),
+          text: ev.summary,
+          type: examLike ? 'examen' : 'entrega',
+          date: dateStr,
+          time: timeStr,
+          done: false,
+          fromBB: true,
+          bbUid: ev.uid
+        });
+        added++;
       }
       S.bbSyncedUids[ev.uid] = true;
     });
-    S.exams.sort((a, b) => new Date(a.date) - new Date(b.date));
-    save();
-    render();
+    if (added) save();
+    renderAgenda();
     setBB('ok', added ? `Blackboard: ${added} nuevas` : 'Blackboard al día');
-    if (manual) toast(added ? `${added} elementos nuevos de Blackboard` : 'Blackboard ya estaba al día');
+    if (manual) toast(added ? `${added} eventos añadidos desde Blackboard` : 'Blackboard ya estaba al día');
   } catch (e) {
     setBB('error', 'Blackboard sin conexión');
     if (manual) toast('No se pudo conectar con Blackboard');
   }
 }
-async function fetchYtSubs(manual = false) {
-  const note = $('#yt-note');
-  if (manual) note.textContent = 'Consultando YouTube';
-  try {
-    const html = await fetchText(YT_URL);
-    const m = html.match(/"subscriberCountText":\{"accessibility":\{"accessibilityData":\{"label":"([^"]+)"/) || html.match(/"metadataParts":\[\{"text":\{"content":"([^"]*suscriptor[^"]*)"/i);
-    if (m && m[1]) {
-      const n = parseInt(m[1].replace(/\D/g, ''), 10);
-      if (!isNaN(n) && n > 0 && !/mil|k|M/.test(m[1])) { S.projects.ytSubs = n; save(); renderFinance(); }
-      note.textContent = `YouTube: ${m[1]}`;
-      return;
-    }
-  } catch (e) { /* ignore */ }
-  note.textContent = 'Suscriptores (actualiza a mano si no carga)';
-}
 
 /* =========================================================================
-   CAL AI
+   DIALOGS (Habit editor + Settings)
    ========================================================================= */
-function compressImage(file, maxW = 800, q = 0.78) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = ev => {
-      const img = new Image();
-      img.onload = () => {
-        const s = Math.min(1, maxW / img.width);
-        const c = document.createElement('canvas');
-        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        resolve(c.toDataURL('image/jpeg', q));
-      };
-      img.onerror = reject;
-      img.src = ev.target.result;
-    };
-    r.onerror = reject;
-    r.readAsDataURL(file);
+function renderHabitModalControls() {
+  $('#habit-icons').innerHTML = HABIT_ICONS.map(([key, label]) => {
+    const on = key === habitFormIcon;
+    return `<button type="button" role="radio" aria-checked="${on}" tabindex="${on ? 0 : -1}" data-hicon="${key}" aria-label="${label}">${icon(key)}</button>`;
+  }).join('');
+
+  $('#habit-days').innerHTML = DAYS.map((d, idx) => {
+    const on = habitFormDays.includes(idx);
+    return `<button type="button" data-hday="${idx}" aria-pressed="${on}" aria-label="${d[0]}">${d[1]}</button>`;
+  }).join('');
+}
+
+function openHabitDialog(habitId = null) {
+  const dlg = $('#habit-dialog');
+  const existing = habitId ? S.habits.find(h => h.id === habitId) : null;
+  editingHabitId = existing ? existing.id : null;
+  $('#habit-dialog-title').textContent = existing ? 'Editar hábito' : 'Nuevo hábito';
+  $('#habit-name').value = existing ? existing.name : '';
+  habitFormIcon = existing ? (existing.icon || 'dumbbell') : 'dumbbell';
+  habitFormDays = existing && Array.isArray(existing.days) ? [...existing.days] : [0, 1, 2, 3, 4, 5, 6];
+  $('#habit-delete').hidden = !existing;
+  renderHabitModalControls();
+  dlg.showModal();
+  $('#habit-name').focus();
+}
+
+function openSettings() {
+  const dlg = $('#settings-dialog');
+  $('#token-input').value = getDashToken();
+  dlg.showModal();
+}
+
+function closeDialogs() {
+  ['#habit-dialog', '#settings-dialog'].forEach(sel => {
+    const d = $(sel);
+    if (d && d.open) d.close();
   });
 }
-async function handleMealPhoto(file) {
-  const dz = $('#dropzone');
-  const inner = $('#dropzone-inner');
-  dz.dataset.state = 'loading';
-  try {
-    const dataUrl = await compressImage(file, 760, 0.75);
-    currentMealThumb = await compressImage(file, 140, 0.6);
-    inner.innerHTML = `<img src="${dataUrl}" alt="Foto del plato"><span class="small strong" id="ai-scan-status">Analizando con IA</span>`;
-    const key = localStorage.getItem('nexora_ai_key');
-    if (!key) {
-      dz.dataset.state = 'error';
-      $('#ai-scan-status').textContent = 'Configura la IA abajo o escribe los valores a mano.';
-      $('#ai-config').open = true;
-      return;
-    }
-    const prompt = 'Analiza esta foto de comida como un nutricionista experto. Estima calorías y macronutrientes totales del plato. Responde solo con JSON válido: {"name":"Nombre breve en español","kcal":550,"protein":38,"carbs":45,"fat":18}';
-    let out;
-    if (aiProvider === 'openai') {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-        body: JSON.stringify({ model: 'gpt-4o-mini', response_format: { type: 'json_object' }, messages: [{ role: 'user', content: [{ type: 'text', text: prompt }, { type: 'image_url', image_url: { url: dataUrl } }] }] })
-      });
-      if (!res.ok) throw new Error('openai');
-      out = JSON.parse((await res.json()).choices?.[0]?.message?.content || '{}');
-    } else {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: 'image/jpeg', data: dataUrl.split(',')[1] } }] }], generationConfig: { responseMimeType: 'application/json' } })
-      });
-      if (!res.ok) throw new Error('gemini');
-      const raw = (await res.json()).candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-      out = JSON.parse(raw.replace(/```json|```/g, '').trim());
-    }
-    $('#meal-name').value = out.name || 'Comida escaneada';
-    $('#meal-kcal').value = Math.round(+out.kcal || 0);
-    $('#meal-prot').value = Math.round(+out.protein || 0);
-    $('#meal-carbs').value = Math.round(+out.carbs || 0);
-    $('#meal-fat').value = Math.round(+out.fat || 0);
-    dz.dataset.state = 'ok';
-    $('#ai-scan-status').textContent = 'Análisis listo. Revisa los valores y guarda.';
-  } catch (e) {
-    dz.dataset.state = 'error';
-    const st = $('#ai-scan-status');
-    if (st) st.textContent = 'No se pudo analizar. Revisa la clave o escribe los valores.';
+
+/* =========================================================================
+   BULK PANTRY PARSER & TRADING HELPERS
+   ========================================================================= */
+function parsePantryLine(raw) {
+  const clean = raw.replace(/^[-*•]+\s*/, '').trim();
+  if (!clean) return null;
+  const m = clean.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s*(kg|g|gr|l|ml|ud|uds|unidades|latas|huevos)?$/i);
+  if (!m) return { id: uid(), name: clean.slice(0, 60), qty: 0, unit: '' };
+  let qty = parseFloat(m[2].replace(',', '.')) || 0;
+  let u = (m[3] || 'ud').toLowerCase();
+  if (u === 'kg') { qty *= 1000; u = 'g'; }
+  else if (u === 'gr') { u = 'g'; }
+  else if (u === 'l') { qty *= 1000; u = 'ml'; }
+  else if (u.startsWith('ud') || u === 'unidades' || u === 'latas' || u === 'huevos') { u = 'ud'; }
+  return { id: uid(), name: m[1].trim().slice(0, 60), qty, unit: u };
+}
+
+function addOrMergePantry(item) {
+  const existing = S.kitchen.pantry.find(
+    p => p.name.toLowerCase() === item.name.toLowerCase() && (p.unit || '') === (item.unit || '')
+  );
+  if (existing && item.qty > 0) {
+    existing.qty = Number(existing.qty || 0) + item.qty;
+  } else {
+    S.kitchen.pantry.push(item);
   }
 }
 
-/* =========================================================================
-   ACTIONS
-   ========================================================================= */
-function toggleKey(k, force) {
-  if (force) S.c[k] = true; else S.c[k] = !S.c[k];
-  if (!S.c[k]) delete S.c[k];
-  save();
-  render();
-}
-function toggleHabit(dIdx, id) {
-  const h = KEY_HABITS.find(x => x.id === id);
-  const k = habitKeys(dIdx, h);
-  const all = k.every(x => S.c[x]);
-  k.forEach(x => { if (all) delete S.c[x]; else S.c[x] = true; });
-  save();
-  render();
-}
-function deleteItem(type, id) {
-  const p = S.projects;
-  if (type === 'note') S.notes[day] = (S.notes[day] || []).filter(x => x.id !== id);
-  if (type === 'exam') S.exams = S.exams.filter(x => x.id !== id);
-  if (type === 'trade') p.trades = p.trades.filter(x => x.id !== id);
-  if (type === 'clip') p.clipping = p.clipping.filter(x => x.id !== id);
-  if (type === 'hustle') p.sideHustles = p.sideHustles.filter(x => x.id !== id);
-  if (type === 'meal') S.calaiMeals[day] = (S.calaiMeals[day] || []).filter(x => x.id !== id);
-  save();
-  render();
-  toast('Eliminado');
-}
-function armReset(btn) {
-  if (!resetArmed) {
-    btn.textContent = 'Confirmar reinicio';
-    btn.setAttribute('aria-pressed', 'true');
-    resetArmed = setTimeout(() => { resetArmed = null; btn.textContent = 'Reiniciar'; btn.removeAttribute('aria-pressed'); }, 4000);
-    return;
-  }
-  clearTimeout(resetArmed);
-  resetArmed = null;
-  S.c = {};
-  S.calaiMeals = {};
-  save();
-  btn.textContent = 'Reiniciar';
-  btn.removeAttribute('aria-pressed');
-  render();
-  toast('Semana reiniciada');
-}
 function autoCalcTrade() {
   const buy = parseFloat($('#trade-buy').value), sell = parseFloat($('#trade-sell').value);
   const sl = parseFloat($('#trade-sl').value), qty = parseFloat($('#trade-qty').value);
-  if (isNaN(buy) || isNaN(sell)) return;
+  if (Number.isNaN(buy) || Number.isNaN(sell)) return;
   const diff = tradeSide === 'LONG' ? sell - buy : buy - sell;
-  if (!isNaN(qty) && qty > 0) $('#trade-profit').value = (diff * qty).toFixed(2);
-  if (!isNaN(sl) && Math.abs(buy - sl) > 0) $('#trade-rr').value = (diff / Math.abs(buy - sl)).toFixed(2);
+  if (!Number.isNaN(qty) && qty > 0) $('#trade-profit').value = (diff * qty).toFixed(2);
+  if (!Number.isNaN(sl) && Math.abs(buy - sl) > 0) $('#trade-rr').value = (diff / Math.abs(buy - sl)).toFixed(2);
 }
 
+/* =========================================================================
+   FORMS & ACTIONS
+   ========================================================================= */
 const forms = {
+  habit() {
+    const name = $('#habit-name').value.trim();
+    if (!name) return 'nosave';
+    const days = habitFormDays.length ? [...habitFormDays].sort((a, b) => a - b) : [0, 1, 2, 3, 4, 5, 6];
+    if (editingHabitId) {
+      const h = S.habits.find(x => x.id === editingHabitId);
+      if (h) { h.name = name; h.icon = habitFormIcon; h.days = days; }
+      toast('Hábito actualizado');
+    } else {
+      S.habits.push({ id: uid(), name, icon: habitFormIcon, days });
+      toast('Hábito creado');
+    }
+    closeDialogs();
+  },
+  supp(f) {
+    const inp = $('#supp-input');
+    const name = inp.value.trim();
+    if (!name) return 'nosave';
+    S.supplements.push({ id: uid(), name });
+    f.reset();
+    toast('Suplemento añadido');
+  },
   task(f) {
-    const i = $('#custom-task-input'); const text = i.value.trim(); if (!text) return;
-    (S.notes[day] = S.notes[day] || []).push({ id: uid(), text, done: false });
-    i.value = '';
+    const txt = $('#task-text').value.trim();
+    const date = $('#task-date').value || isoOf(todayDate());
+    const time = $('#task-time').value || '';
+    if (!txt) return 'nosave';
+    S.agenda.push({ id: uid(), text: txt, type: taskType, date, time, done: false });
+    f.reset();
+    $('#task-date').value = date;
+    setRadio($('#task-type'), 'ttype', taskType);
+    toast('Añadido a la agenda');
   },
-  exam() {
-    const n = $('#exam-name-input'), d = $('#exam-date-input');
-    if (!n.value.trim() || !d.value) return;
-    S.exams.push({ id: uid(), name: n.value.trim(), date: d.value });
-    S.exams.sort((a, b) => new Date(a.date) - new Date(b.date));
-    n.value = ''; d.value = '';
-    toast('Examen añadido');
+  pantry(f) {
+    const name = $('#pantry-name').value.trim();
+    const qty = parseFloat($('#pantry-qty').value) || 0;
+    if (!name) return 'nosave';
+    addOrMergePantry({ id: uid(), name, qty, unit: qty > 0 ? pantryUnit : '' });
+    f.reset();
+    setRadio($('#pantry-unit'), 'unit', pantryUnit);
+    toast('Añadido a la despensa');
   },
-  trade() {
+  'pantry-bulk'(f) {
+    const raw = $('#pantry-bulk').value;
+    const items = raw.split(/\r?\n/).map(parsePantryLine).filter(Boolean);
+    if (!items.length) return 'nosave';
+    items.forEach(addOrMergePantry);
+    f.reset();
+    toast(`${items.length} productos añadidos`);
+  },
+  prefs() {
+    const minK = Math.max(1200, parseInt($('#pref-min').value, 10) || 2800);
+    const maxK = Math.max(minK, parseInt($('#pref-max').value, 10) || 2900);
+    const prot = Math.max(40, parseInt($('#pref-prot').value, 10) || 180);
+    S.kitchen.prefs = {
+      minKcal: minK,
+      maxKcal: maxK,
+      protein: prot,
+      mealsPerDay: prefMeals,
+      notes: $('#pref-notes').value.trim()
+    };
+    $('#prefs').open = false;
+    toast('Preferencias guardadas');
+  },
+  trade(f) {
     const label = $('#trade-label').value.trim().toUpperCase();
     const buy = parseFloat($('#trade-buy').value), sell = parseFloat($('#trade-sell').value);
     const sl = parseFloat($('#trade-sl').value), qty = parseFloat($('#trade-qty').value);
     const profit = parseFloat($('#trade-profit').value);
     let rr = parseFloat($('#trade-rr').value);
-    if (!label || isNaN(buy) || isNaN(sell) || isNaN(profit)) return;
-    if (isNaN(rr) && !isNaN(sl) && sl !== buy) rr = Number(((tradeSide === 'LONG' ? sell - buy : buy - sell) / Math.abs(buy - sl)).toFixed(2));
-    S.projects.trades.push({ id: uid(), label, side: tradeSide, buyPrice: buy, sellPrice: sell, slPrice: isNaN(sl) ? null : sl, qty: isNaN(qty) ? null : qty, profit, rr: isNaN(rr) ? null : rr, date: shortDate() });
-    ['trade-label', 'trade-buy', 'trade-sell', 'trade-sl', 'trade-qty', 'trade-profit', 'trade-rr'].forEach(id => { $('#' + id).value = ''; });
+    if (!label || Number.isNaN(buy) || Number.isNaN(sell) || Number.isNaN(profit)) return 'nosave';
+    if (Number.isNaN(rr) && !Number.isNaN(sl) && sl !== buy) {
+      rr = Number(((tradeSide === 'LONG' ? sell - buy : buy - sell) / Math.abs(buy - sl)).toFixed(2));
+    }
+    S.projects.trades.push({
+      id: uid(),
+      label,
+      side: tradeSide,
+      buyPrice: buy,
+      sellPrice: sell,
+      slPrice: Number.isNaN(sl) ? null : sl,
+      qty: Number.isNaN(qty) ? null : qty,
+      profit,
+      rr: Number.isNaN(rr) ? null : rr,
+      date: shortDate()
+    });
+    const capVal = $('#initial-cap-input').value;
+    f.reset();
+    $('#initial-cap-input').value = capVal;
+    setRadio($('#trade-side'), 'side', tradeSide);
     toast('Operación registrada');
   },
-  clip() {
-    const title = $('#clip-title').value.trim(); if (!title) return;
-    S.projects.clipping.push({ id: uid(), title, views: parseInt($('#clip-views').value, 10) || 0, money: parseFloat($('#clip-money').value) || 0, date: shortDate() });
-    ['clip-title', 'clip-views', 'clip-money'].forEach(id => { $('#' + id).value = ''; });
-  },
-  hustle() {
-    const name = $('#hustle-name').value.trim(); if (!name) return;
-    S.projects.sideHustles.push({ id: uid(), name, amount: parseFloat($('#hustle-amount').value) || 0, date: shortDate() });
-    ['hustle-name', 'hustle-amount'].forEach(id => { $('#' + id).value = ''; });
-  },
-  meal() {
-    const name = $('#meal-name').value.trim(); if (!name) return;
-    (S.calaiMeals[day] = S.calaiMeals[day] || []).push({
-      id: uid(), name,
-      kcal: parseInt($('#meal-kcal').value, 10) || 0, prot: parseInt($('#meal-prot').value, 10) || 0,
-      carbs: parseInt($('#meal-carbs').value, 10) || 0, fat: parseInt($('#meal-fat').value, 10) || 0,
-      thumb: currentMealThumb, time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+  clip(f) {
+    const title = $('#clip-title').value.trim();
+    if (!title) return 'nosave';
+    S.projects.clipping.push({
+      id: uid(),
+      title,
+      views: parseInt($('#clip-views').value, 10) || 0,
+      money: parseFloat($('#clip-money').value) || 0,
+      date: shortDate()
     });
-    ['meal-name', 'meal-kcal', 'meal-prot', 'meal-carbs', 'meal-fat'].forEach(id => { $('#' + id).value = ''; });
-    currentMealThumb = null;
-    resetDropzone();
-    toast('Comida guardada');
+    f.reset();
+    toast('Lote registrado');
   },
-  ai() {
-    const key = $('#ai-api-key-input').value.trim();
-    if (key) localStorage.setItem('nexora_ai_key', key);
-    localStorage.setItem('nexora_ai_provider', aiProvider);
-    S.calaiGoals = { dailyKcal: parseInt($('#goal-kcal').value, 10) || 2600, dailyProt: parseInt($('#goal-prot').value, 10) || 170 };
-    $('#ai-config').open = false;
-    toast('Ajustes de IA guardados');
+  hustle(f) {
+    const name = $('#hustle-name').value.trim();
+    if (!name) return 'nosave';
+    S.projects.sideHustles.push({
+      id: uid(),
+      name,
+      amount: parseFloat($('#hustle-amount').value) || 0,
+      date: shortDate()
+    });
+    f.reset();
+    toast('Ingreso registrado');
   },
-  'revx-token'() {
-    const v = $('#revx-token-input').value.trim();
-    if (v) localStorage.setItem('habits_dash_token', v); else localStorage.removeItem('habits_dash_token');
-    $('#revx-config').open = false;
+  settings() {
+    const v = $('#token-input').value.trim();
+    if (v) localStorage.setItem(TOKEN_KEY, v);
+    else localStorage.removeItem(TOKEN_KEY);
+    closeDialogs();
     REVX.state = 'idle';
-    revxFetch(true);
+    pullCloudState(true);
+    if (view === 'finanzas') revxFetch(true);
     return 'nosave';
   }
 };
 
+function deleteById(kind, id) {
+  if (kind === 'supp') S.supplements = S.supplements.filter(x => String(x.id) !== String(id));
+  if (kind === 'task') S.agenda = S.agenda.filter(x => String(x.id) !== String(id));
+  if (kind === 'pantry') S.kitchen.pantry = S.kitchen.pantry.filter(x => String(x.id) !== String(id));
+  if (kind === 'trade') S.projects.trades = S.projects.trades.filter(x => String(x.id) !== String(id));
+  if (kind === 'clip') S.projects.clipping = S.projects.clipping.filter(x => String(x.id) !== String(id));
+  if (kind === 'hustle') S.projects.sideHustles = S.projects.sideHustles.filter(x => String(x.id) !== String(id));
+  save();
+  render();
+  toast('Eliminado');
+}
+
+function armClearPantry(btn) {
+  if (!clearPantryTimer) {
+    btn.textContent = 'Confirmar vaciado';
+    btn.setAttribute('aria-pressed', 'true');
+    clearPantryTimer = setTimeout(() => {
+      clearPantryTimer = null;
+      btn.textContent = 'Vaciar despensa';
+      btn.removeAttribute('aria-pressed');
+    }, 4000);
+    return;
+  }
+  clearTimeout(clearPantryTimer);
+  clearPantryTimer = null;
+  btn.textContent = 'Vaciar despensa';
+  btn.removeAttribute('aria-pressed');
+  S.kitchen.pantry = [];
+  save();
+  renderKitchen();
+  toast('Despensa vaciada');
+}
+
+function exportBackup() {
+  const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `habits-backup-${isoOf(todayDate())}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  toast('Copia descargada');
+}
+
+function importBackup(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(String(ev.target.result || ''));
+      S = normalizeState(parsed);
+      save();
+      render();
+      closeDialogs();
+      toast('Copia restaurada');
+    } catch (e) {
+      toast('El archivo no es una copia válida');
+    }
+  };
+  reader.readAsText(file);
+}
+
 /* =========================================================================
-   EVENTS (delegated)
+   DELEGATED EVENTS & KEYBOARD
    ========================================================================= */
 document.addEventListener('click', e => {
+  if (e.target.tagName === 'DIALOG') { e.target.close(); return; }
   const t = e.target.closest('button, a, [data-view]');
-  if (!t) return;
+  if (!t || t.disabled) return;
   const ds = t.dataset;
 
   if (ds.view && !ds.action) { setView(ds.view); return; }
-  if (ds.day !== undefined) { day = +ds.day; render(); return; }
-  if (ds.k) { toggleKey(ds.k, ds.force === '1'); return; }
-  if (ds.habit) { toggleHabit(+ds.hday, ds.habit); return; }
-  if (ds.note) {
-    const n = (S.notes[day] || []).find(x => x.id === +ds.note);
-    if (n) { n.done = !n.done; save(); render(); }
+  if (ds.iso) { selectedIso = ds.iso; renderHabits(); renderProgressChart(); return; }
+  if (ds.mday !== undefined) { menuDay = Number(ds.mday); renderKitchen(); return; }
+
+  if (ds.toggleHabit) {
+    const log = ensureDayLog(selectedIso);
+    if (log.habits[ds.toggleHabit]) delete log.habits[ds.toggleHabit];
+    else log.habits[ds.toggleHabit] = true;
+    save();
+    renderHabits();
+    renderProgressChart();
     return;
   }
-  if (ds.del) { deleteItem(ds.del, +ds.id); return; }
+  if (ds.editHabit) { openHabitDialog(ds.editHabit); return; }
+  if (ds.hicon) { habitFormIcon = ds.hicon; setRadio($('#habit-icons'), 'hicon', ds.hicon); return; }
+  if (ds.hday !== undefined) {
+    const d = Number(ds.hday);
+    if (habitFormDays.includes(d)) {
+      if (habitFormDays.length > 1) habitFormDays = habitFormDays.filter(x => x !== d);
+    } else {
+      habitFormDays.push(d);
+    }
+    renderHabitModalControls();
+    return;
+  }
+
+  if (ds.water !== undefined) {
+    const n = Number(ds.water);
+    const log = ensureDayLog(selectedIso);
+    log.water = log.water === n ? n - 1 : n;
+    save();
+    renderHabits();
+    return;
+  }
+  if (ds.supp) {
+    const log = ensureDayLog(selectedIso);
+    if (log.supps[ds.supp]) delete log.supps[ds.supp];
+    else log.supps[ds.supp] = true;
+    save();
+    renderHabits();
+    return;
+  }
+
+  if (ds.range) {
+    chartRange = Number(ds.range);
+    setRadio($('#range-group'), 'range', ds.range);
+    renderHabits();
+    renderProgressChart();
+    return;
+  }
+  if (ds.ttype) { taskType = ds.ttype; setRadio($('#task-type'), 'ttype', ds.ttype); return; }
+  if (ds.agfilter) { agFilter = ds.agfilter; setRadio($('#ag-filter'), 'agfilter', ds.agfilter); renderAgenda(); return; }
+  if (ds.toggleTask) {
+    const item = S.agenda.find(x => String(x.id) === String(ds.toggleTask));
+    if (item) { item.done = !item.done; save(); renderAgenda(); }
+    return;
+  }
+
+  if (ds.unit) { pantryUnit = ds.unit; setRadio($('#pantry-unit'), 'unit', ds.unit); return; }
+  if (ds.meals) { prefMeals = Number(ds.meals); setRadio($('#pref-meals'), 'meals', ds.meals); return; }
+  if (ds.eatMeal) {
+    const dayIso = dayDateForMenuIdx(menuDay);
+    S.kitchen.eaten[dayIso] = S.kitchen.eaten[dayIso] || {};
+    if (S.kitchen.eaten[dayIso][ds.eatMeal]) delete S.kitchen.eaten[dayIso][ds.eatMeal];
+    else S.kitchen.eaten[dayIso][ds.eatMeal] = true;
+    save();
+    renderKitchen();
+    return;
+  }
+  if (ds.swapMeal) { swapSingleMeal(ds.swapMeal); return; }
+  if (ds.toggleShop) {
+    const list = S.kitchen.menu?.shoppingList || [];
+    const item = list.find(x => String(x.id) === String(ds.toggleShop));
+    if (item) { item.done = !item.done; save(); renderKitchen(); }
+    return;
+  }
+  if (ds.shopToPantry) {
+    const list = S.kitchen.menu?.shoppingList || [];
+    const idx = list.findIndex(x => String(x.id) === String(ds.shopToPantry));
+    if (idx >= 0) {
+      const [item] = list.splice(idx, 1);
+      const parsed = parsePantryLine(`${item.name} ${item.qty || ''}`);
+      if (parsed) addOrMergePantry(parsed);
+      save();
+      renderKitchen();
+      toast(`${item.name} pasado a tu despensa`);
+    }
+    return;
+  }
+
   if (ds.side) { tradeSide = ds.side; setRadio($('#trade-side'), 'side', ds.side); autoCalcTrade(); return; }
-  if (ds.provider) { aiProvider = ds.provider; setRadio($('#ai-provider'), 'provider', ds.provider); return; }
+  if (ds.del) { deleteById(ds.del, ds.id); return; }
 
   switch (ds.action) {
-    case 'toggle-theme': setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); break;
-    case 'toggle-pending': onlyPending = !onlyPending; renderToday(); break;
-    case 'go-today': day = td; render(); break;
-    case 'reset-week': armReset(t); break;
-    case 'bb-sync': syncBlackboard(true); break;
-    case 'revx-refresh': revxFetch(true); break;
-    case 'yt-add': S.projects.ytSubs = Math.max(0, (S.projects.ytSubs || 0) + Number(ds.n)); save(); renderFinance(); break;
-    case 'yt-set': {
-      const v = prompt('Número actual de suscriptores:', S.projects.ytSubs || 0);
-      if (v !== null) { const n = parseInt(v.replace(/\D/g, ''), 10); if (!isNaN(n)) { S.projects.ytSubs = n; save(); renderFinance(); } }
+    case 'add-habit': openHabitDialog(null); break;
+    case 'habit-delete':
+      if (editingHabitId) {
+        S.habits = S.habits.filter(h => h.id !== editingHabitId);
+        editingHabitId = null;
+        closeDialogs();
+        save();
+        renderHabits();
+        renderProgressChart();
+        toast('Hábito eliminado');
+      }
       break;
-    }
-    case 'yt-refresh': fetchYtSubs(true); break;
-    case 'ai-clear': localStorage.removeItem('nexora_ai_key'); $('#ai-api-key-input').value = ''; renderNutri(); toast('Clave borrada'); break;
+    case 'open-settings': openSettings(); break;
+    case 'close-dialog': closeDialogs(); break;
+    case 'bb-sync': syncBlackboard(true); break;
+    case 'generate-menu': generateWeeklyMenu(); break;
+    case 'generate-local-menu':
+      S.kitchen.menu = buildLocalSurplusMenu(S.kitchen.pantry, S.kitchen.prefs);
+      S.kitchen.eaten = {};
+      save();
+      renderKitchen();
+      toast('Menú semanal cargado');
+      break;
+    case 'clear-pantry': armClearPantry(t); break;
+    case 'revx-refresh': revxFetch(true); break;
+    case 'sync-now': pullCloudState(true); break;
+    case 'export': exportBackup(); break;
     default: break;
   }
 });
@@ -1101,7 +2006,9 @@ document.addEventListener('submit', e => {
   const f = e.target.closest('[data-form]');
   if (!f) return;
   e.preventDefault();
-  const r = forms[f.dataset.form] && forms[f.dataset.form](f);
+  const fn = forms[f.dataset.form];
+  if (!fn) return;
+  const r = fn(f);
   if (r !== 'nosave') { save(); render(); }
 });
 
@@ -1109,7 +2016,7 @@ document.addEventListener('keydown', e => {
   const r = e.target.closest('[role="radio"]');
   if (!r || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) return;
   e.preventDefault();
-  const all = [...r.parentElement.querySelectorAll('[role="radio"]')];
+  const all = [...r.parentElement.querySelectorAll('[role="radio"]')].filter(b => !b.disabled);
   let i = all.indexOf(r);
   if (e.key === 'Home') i = 0;
   else if (e.key === 'End') i = all.length - 1;
@@ -1118,38 +2025,58 @@ document.addEventListener('keydown', e => {
   all[i].click();
 });
 
-$('#meal-photo-input').addEventListener('change', e => { const f = e.target.files?.[0]; if (f) handleMealPhoto(f); e.target.value = ''; });
-$('#initial-cap-input').addEventListener('change', e => { const n = parseFloat(e.target.value); S.projects.initialCapital = isNaN(n) ? 0 : n; save(); renderFinance(); renderCharts(); });
-['trade-buy', 'trade-sell', 'trade-sl', 'trade-qty'].forEach(id => $('#' + id).addEventListener('input', autoCalcTrade));
-$('#ai-config').addEventListener('toggle', e => {
-  if (!e.target.open) return;
-  $('#ai-api-key-input').value = localStorage.getItem('nexora_ai_key') || '';
-  $('#goal-kcal').value = S.calaiGoals.dailyKcal;
-  $('#goal-prot').value = S.calaiGoals.dailyProt;
-  setRadio($('#ai-provider'), 'provider', aiProvider);
+$('#initial-cap-input').addEventListener('change', e => {
+  const n = parseFloat(e.target.value);
+  S.projects.initialCapital = Number.isNaN(n) ? 0 : n;
+  save();
+  renderFinance();
+  renderTradingChart();
 });
-$('#revx-config').addEventListener('toggle', e => { if (e.target.open) $('#revx-token-input').value = localStorage.getItem('habits_dash_token') || ''; });
+['trade-buy', 'trade-sell', 'trade-sl', 'trade-qty'].forEach(id => $('#' + id).addEventListener('input', autoCalcTrade));
+$('#import-input').addEventListener('change', e => {
+  const f = e.target.files?.[0];
+  if (f) importBackup(f);
+  e.target.value = '';
+});
+
 window.addEventListener('hashchange', () => setView(location.hash.slice(1), false));
-document.addEventListener('visibilitychange', () => { if (!document.hidden && view === 'finanzas') revxFetch(); });
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    pullCloudState(false);
+    if (view === 'finanzas') revxFetch();
+  }
+});
 
 let rz;
-new ResizeObserver(() => { cancelAnimationFrame(rz); rz = requestAnimationFrame(renderCharts); }).observe(document.body);
+new ResizeObserver(() => {
+  cancelAnimationFrame(rz);
+  rz = requestAnimationFrame(renderCharts);
+}).observe(document.body);
 
 /* =========================================================================
    BOOT
    ========================================================================= */
 hydrateIcons();
 load();
+
+setRadio($('#range-group'), 'range', chartRange);
+setRadio($('#task-type'), 'ttype', taskType);
+setRadio($('#ag-filter'), 'agfilter', agFilter);
+setRadio($('#pantry-unit'), 'unit', pantryUnit);
+setRadio($('#pref-meals'), 'meals', prefMeals);
 setRadio($('#trade-side'), 'side', tradeSide);
-setRadio($('#ai-provider'), 'provider', aiProvider);
-setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+
+const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
+$$('meta[name="theme-color"]').forEach(m => m.setAttribute('content', themeColor));
+
 render();
-setView(location.hash.slice(1) || 'hoy', false);
+const initialHash = location.hash.slice(1);
+setView(VIEWS.includes(initialHash) ? initialHash : 'habitos', false);
+
+pullCloudState(false);
+syncBlackboard(false);
 if (view !== 'finanzas') revxFetch();
-syncBlackboard();
-fetchYtSubs();
-setInterval(syncBlackboard, 15 * 60 * 1000);
-setInterval(() => { if (!document.hidden) renderToday(); }, 60 * 1000);
+setInterval(() => syncBlackboard(false), 15 * 60 * 1000);
 
 if ('serviceWorker' in navigator && IS_HOSTED) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
